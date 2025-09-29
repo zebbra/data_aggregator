@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.AdministrationLive.Subscriptions do
+defmodule DataAggregatorWeb.AdministrationLive.User.Subscriptions do
   @moduledoc """
   This module contains helper functions for the administration subscriptions.
   """
@@ -70,7 +70,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Subscriptions do
 
   defmacro __using__(_opts) do
     quote do
-      import DataAggregatorWeb.AdministrationLive.Subscriptions,
+      import DataAggregatorWeb.AdministrationLive.User.Subscriptions,
         only: [subscribe_for_administration_updates: 2, handle_notification: 4]
 
       @impl true

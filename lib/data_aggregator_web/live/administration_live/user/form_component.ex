@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
+defmodule DataAggregatorWeb.AdministrationLive.User.FormComponent do
   @moduledoc false
   use DataAggregatorWeb, :live_component
 
@@ -273,7 +273,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
           socket
           |> push_event("submit:close", %{})
-          |> push_patch(to: build_path(~p"/administration", nil))
+          |> push_patch(to: build_path(~p"/administration/users", nil))
           |> put_flash(:info, message)
 
         {:error, form} ->

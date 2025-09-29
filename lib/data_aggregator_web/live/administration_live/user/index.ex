@@ -1,8 +1,8 @@
-defmodule DataAggregatorWeb.AdministrationLive.Index do
+defmodule DataAggregatorWeb.AdministrationLive.User.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.AdministrationLive.Subscriptions
+  use DataAggregatorWeb.AdministrationLive.User.Subscriptions
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
@@ -32,7 +32,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         |> noreply()
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/administration")}
+        {:noreply, push_navigate(socket, to: ~p"/administration/users")}
     end
   end
 
@@ -43,13 +43,20 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
       <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
         {~t"Administration"m}
         <:actions>
-          <.link patch={~p"/administration/new"} class="btn btn-primary max-sm:btn-sm">
+          <.link patch={~p"/administration/users/new"} class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-user-plus" class="max-sm:size-4" />
             <span class="max-sm:hidden">{~t"Add User"m}</span>
             <span class="sm:hidden">{~t"Add"m}</span>
           </.link>
         </:actions>
       </.page_header>
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/administration/users"} label={~t"Users"m} active />
+        <.secondary_navigation_item
+          href={~p"/administration/validation_responses"}
+          label={~t"Validation Imports"m}
+        />
+      </.secondary_navigation>
       <.table
         opts={[
           container_attrs: [
@@ -57,7 +64,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           ],
           no_results_content: no_results_content()
         ]}
-        path={~p"/administration"}
+        path={~p"/administration/users"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -98,7 +105,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         >
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
             <.table_action_button
-              patch={build_path(~p"/administration/#{user}/edit", @meta)}
+              patch={build_path(~p"/administration/users/#{user}/edit", @meta)}
               data-tip={~t"Edit"m}
               icon="hero-pencil-square-mini"
             />
@@ -113,7 +120,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/administration"} />
+      <.pagination meta={@meta} path={~p"/administration/users"} />
       <:secondary>
         <.slideover
           title={user_name(@selected_user)}
@@ -156,12 +163,12 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/administration", @meta))}
+          on_cancel={JS.patch(build_path(~p"/administration/users", @meta))}
           overflow="manual"
         >
           <.live_component
             :if={@live_action in [:new, :edit]}
-            module={DataAggregatorWeb.AdministrationLive.FormComponent}
+            module={DataAggregatorWeb.AdministrationLive.User.FormComponent}
             id={@user.id || :new}
             action={@live_action}
             user={@user}
@@ -265,7 +272,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
       description={~t"Get started by adding a new User."m}
       label={~t"New User"m}
       icon="hero-squares-2x2"
-      href={~p"/administration/new"}
+      href={~p"/administration/users/new"}
     />
     """
   end
