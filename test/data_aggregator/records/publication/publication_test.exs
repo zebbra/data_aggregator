@@ -491,30 +491,36 @@ defmodule DataAggregator.PublicationTest do
           rows,
           &Map.take(&1, [
             "decimalLongitude",
-            "decimalLatitude"
+            "decimalLatitude",
+            "coordinateUncertaintyInMeters"
           ])
         )
 
       expected = [
         %{
           "decimalLatitude" => 48.27606815,
-          "decimalLongitude" => 10.408043484
+          "decimalLongitude" => 10.408043484,
+          "coordinateUncertaintyInMeters" => 5000.0
         },
         %{
           "decimalLatitude" => 47.5898085,
-          "decimalLongitude" => 9.2002562
+          "decimalLongitude" => 9.2002562,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
           "decimalLatitude" => 47.5907987,
-          "decimalLongitude" => 9.1338001
+          "decimalLongitude" => 9.1338001,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
           "decimalLatitude" => 47.2719116,
-          "decimalLongitude" => 9.3880537
+          "decimalLongitude" => 9.3880537,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
           "decimalLatitude" => nil,
-          "decimalLongitude" => nil
+          "decimalLongitude" => nil,
+          "coordinateUncertaintyInMeters" => nil
         }
       ]
 
