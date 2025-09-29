@@ -174,27 +174,33 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  config :data_aggregator, DataAggregator.Mailer,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: System.get_env("MAILBOX_SMTP_RELAY") || "",
-    username: System.get_env("MAILBOX_USERNAME") || "",
-    password: System.get_env("MAILBOX_PASSWORD") || "",
-    ssl: false,
-    tls: :always,
-    auth: :always,
-    port: 587,
-    retries: 2,
-    no_mx_lookups: false,
-    tls_options: [
-      versions: [:"tlsv1.3"],
-      verify: :verify_peer,
-      cacerts: :public_key.cacerts_get(),
-      server_name_indication: ~c"smtp.office365.com",
-      depth: 99,
-      customize_hostname_check: [
-        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-      ]
-    ]
+  case System.get_env("USE_LOCAL_MAILER_ADAPTER") do
+    "true" ->
+      Logger.info("use the Local adapter for Swoosh Mailer")
+
+    _ ->
+      config :data_aggregator, DataAggregator.Mailer,
+        adapter: Swoosh.Adapters.SMTP,
+        relay: System.get_env("MAILBOX_SMTP_RELAY") || "",
+        username: System.get_env("MAILBOX_USERNAME") || "",
+        password: System.get_env("MAILBOX_PASSWORD") || "",
+        ssl: false,
+        tls: :always,
+        auth: :always,
+        port: 587,
+        retries: 2,
+        no_mx_lookups: false,
+        tls_options: [
+          versions: [:"tlsv1.3"],
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          server_name_indication: ~c"smtp.office365.com",
+          depth: 99,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+  end
 
   config :data_aggregator, DataAggregatorWeb.Endpoint,
     url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
