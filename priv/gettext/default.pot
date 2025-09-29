@@ -5287,122 +5287,122 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summ
 msgid "validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:57
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:347
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:58
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:362
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "An error has occurred"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:160
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:170
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:96
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:97
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Choose a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:323
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:338
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "File upload failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:80
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Import not validated records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:72
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:73
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Import validated records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:42
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:43
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Import validation layer data"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:157
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:167
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Next"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:66
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Please choose whether to import a file containing successfully validated records or a file containing non-validated records that have been refused by the Swiss species data centers."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:141
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:142
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Please make sure that the provided file has been verified and only contains correct and valid input. DAGI will only run a very simple verification check of the file."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:343
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:358
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Please select a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:155
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:165
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Save..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:61
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:62
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Show more"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:344
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:359
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Too large"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:157
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:167
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "Uploading..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:346
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:361
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "You have selected an unacceptable file type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:345
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:360
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "You have selected too many files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:121
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:122
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:99
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "or drag and drop"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:338
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:353
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
 msgid "up to %{max_file_size}"
@@ -5636,4 +5636,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "rows"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:150
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
+msgid "Provided file has been verified and only contains correct and valid input."
 msgstr ""
