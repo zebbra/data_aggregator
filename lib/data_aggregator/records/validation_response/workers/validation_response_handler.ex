@@ -30,7 +30,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
     with {:ok, validation_response} <-
            ValidationResponse.get_by_id(id) do
       Logger.info("Running ValidationResponse #{inspect(validation_response.id)} ...")
-      # ValidationResponse.run(validation_response)
       perform_with_actor(validation_response, User.get_by_id!(user_id))
     end
   end

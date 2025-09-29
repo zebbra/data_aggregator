@@ -61,31 +61,6 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     {:ok, assign(socket, assigns)}
   end
 
-  defp maybe_add_annotation_nil_count(nil_counts, :validated, _dataframe), do: nil_counts
-
-  defp maybe_add_annotation_nil_count(nil_counts, :not_validated, dataframe) do
-    if dataframe |> Explorer.DataFrame.names() |> Enum.member?("annotation") do
-      Map.merge(
-        nil_counts,
-        dataframe
-        |> Explorer.DataFrame.select(["annotation"])
-        |> Explorer.DataFrame.nil_count()
-        |> Explorer.DataFrame.to_rows(atom_keys: true)
-        |> List.first()
-      )
-    else
-      Map.put(nil_counts, :annotation, Explorer.DataFrame.n_rows(dataframe))
-    end
-  end
-
-  defp nil_counts(dataframe) do
-    dataframe
-    |> Explorer.DataFrame.select(["catalogNumber", "collectionCode"])
-    |> Explorer.DataFrame.nil_count()
-    |> Explorer.DataFrame.to_rows(atom_keys: true)
-    |> List.first()
-  end
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -218,6 +193,31 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
          |> put_flash(:error, ~t"Something went wrong with the Validation Response ingestion"m)
          |> close_and_redirect()}
     end
+  end
+
+  defp maybe_add_annotation_nil_count(nil_counts, :validated, _dataframe), do: nil_counts
+
+  defp maybe_add_annotation_nil_count(nil_counts, :not_validated, dataframe) do
+    if dataframe |> Explorer.DataFrame.names() |> Enum.member?("annotation") do
+      Map.merge(
+        nil_counts,
+        dataframe
+        |> Explorer.DataFrame.select(["annotation"])
+        |> Explorer.DataFrame.nil_count()
+        |> Explorer.DataFrame.to_rows(atom_keys: true)
+        |> List.first()
+      )
+    else
+      Map.put(nil_counts, :annotation, Explorer.DataFrame.n_rows(dataframe))
+    end
+  end
+
+  defp nil_counts(dataframe) do
+    dataframe
+    |> Explorer.DataFrame.select(["catalogNumber", "collectionCode"])
+    |> Explorer.DataFrame.nil_count()
+    |> Explorer.DataFrame.to_rows(atom_keys: true)
+    |> List.first()
   end
 
   defp missing_attributes(nil_counts) do

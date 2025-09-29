@@ -5186,99 +5186,99 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components"
 msgid "Running"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:104
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:79
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "%{count} %{type}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:114
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Based on the file provided, you are importing %{type} records from:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:191
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:166
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:122
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:97
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Center"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:125
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:149
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:170
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:100
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:124
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:145
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Count"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:140
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:115
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:143
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:118
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Dataset Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:188
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:163
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:146
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:121
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Institution Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:167
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:142
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Missing attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:218
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:193
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Something went wrong with the Validation Response ingestion"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:95
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:70
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Summary"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:160
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:135
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "The import file contains invalid rows with missing attributes. The following attributes are required for all rows: %{missing_attributes}."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:210
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:185
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Validation Response ingestion started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:102
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:77
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "You are about to import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:132
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:107
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "You are importing %{type} records to:"
@@ -5290,7 +5290,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summ
 msgid "not validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:110
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:85
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "records."

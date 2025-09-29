@@ -22,7 +22,6 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
   defp import_validation_data(%Changeset{} = changeset, actor) do
     attachment = changeset.data |> Ash.load!(:attachment) |> Map.get(:attachment)
-    # actor = changeset.data |> Ash.load!(:started_by) |> Map.get(:started_by)
     type = Changeset.get_attribute(changeset, :type)
 
     csv_content = Helpers.fetch_file_from_url(attachment.url)
