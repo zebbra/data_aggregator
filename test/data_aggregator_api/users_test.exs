@@ -253,6 +253,7 @@ defmodule DataAggregatorApi.UsersTest do
       assert is_binary(meta["token"])
     end
 
+    @tag capture_log: true
     test "sign in fails with invalid credentials", %{conn: conn} do
       # Create a user for sign in
       AccountsFixtures.user_fixture(%{
