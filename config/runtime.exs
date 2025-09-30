@@ -174,9 +174,14 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  case System.get_env("USE_LOCAL_MAILER_ADAPTER") do
+  case System.get_env("USE_LOGGER_MAILER_ADAPTER") do
     "true" ->
-      Logger.info("use the Local adapter for Swoosh Mailer")
+      Logger.info("use the Logger adapter for Swoosh Mailer")
+
+      config :data_aggregator, DataAggregator.Mailer,
+        adapter: Swoosh.Adapters.Logger,
+        level: :debug,
+        log_full_email: true
 
     _ ->
       config :data_aggregator, DataAggregator.Mailer,
