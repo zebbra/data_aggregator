@@ -226,10 +226,10 @@ defmodule DataAggregator.WorkflowTest do
         },
         %{state: :imported, publication_status: :stale, validation_status: :unknown},
         %{state: :imported, publication_status: :stale, validation_status: :unknown},
-        # once :validated, it doesn't change back to :unknown with an import
-        %{state: :imported, publication_status: :stale, validation_status: :validated},
+        # validation status changes back to :unknown on import
         %{state: :imported, publication_status: :stale, validation_status: :unknown},
-        # once :not_validated, it doesn't change back to :unknown with an import
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        # validation status changes back to :unknown on import
         %{state: :imported, publication_status: :stale, validation_status: :unknown}
       ]
 
