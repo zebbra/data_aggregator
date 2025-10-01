@@ -19,9 +19,10 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(error_message: nil)
+     |> assign(:error_message, nil)
      |> assign(:uploaded_files, [])
      |> assign(:uploading, false)
+     |> assign(:agreed, false)
      |> assign(:type, :validated)
      |> allow_upload(:file,
        max_entries: 1,
@@ -141,6 +142,14 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
                   {~t"Please make sure that the provided file has been verified and only contains correct and valid input. DAGI will only run a very simple verification check of the file."m}
                 </p>
               </div>
+              <label class="flex" phx-click="toggle:agree" phx-target={@myself}>
+                <div class="mr-[1.125rem] mt-0.5 ml-0.5 flex-shrink-0">
+                  <input type="checkbox" id="confirm" checked={@agreed} class="checkbox checkbox-sm" />
+                </div>
+                <p class="text-sm">
+                  {~t"Provided file has been verified and only contains correct and valid input."m}
+                </p>
+              </label>
             </.fieldgroup>
           </.fieldset>
         </div>
@@ -150,7 +159,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
             type="submit"
             class="btn btn-primary"
             disabled={
-              @uploading || Enum.any?(@uploads.file.errors) || Enum.empty?(@uploads.file.entries)
+              @agreed == false || @uploading || Enum.any?(@uploads.file.errors) ||
+                Enum.empty?(@uploads.file.entries)
             }
             phx-disable-with={~t"Save..."m}
           >
@@ -166,15 +176,15 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
   end
 
   @impl true
+  def handle_event("upload:validate", %{"_target" => ["file"]}, socket) do
+    {:noreply, check_for_errors(socket)}
+  end
+
+  @impl true
   def handle_event("upload:validate", %{"validation_response" => %{"type" => type}}, socket) do
     form = Form.validate(socket.assigns.form, %{type: String.to_atom(type)})
 
-    socket =
-      socket
-      |> check_for_errors()
-      |> assign(:form, form)
-
-    {:noreply, socket}
+    {:noreply, assign(socket, :form, form)}
   end
 
   @impl true
@@ -195,6 +205,11 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
 
       handle_upload_result(socket, results)
     end
+  end
+
+  @impl true
+  def handle_event("toggle:agree", _params, socket) do
+    {:noreply, update(socket, :agreed, &(!&1))}
   end
 
   defp handle_upload_result(socket, results) do

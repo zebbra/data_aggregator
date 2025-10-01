@@ -30,7 +30,16 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetMandatoryAttribut
   defp assign_mandatory_attributes(changeset, record) do
     mandatory_values = Map.take(record, record_attribute_name_keys())
 
-    Changeset.change_attributes(changeset, mandatory_values)
+    # take non-nil values from changeset attributes, otherwise use the mandatory values from the record
+    result =
+      Map.merge(
+        mandatory_values,
+        changeset.attributes
+        |> Map.take(Map.keys(mandatory_values))
+        |> Map.reject(fn {_k, v} -> is_nil(v) end)
+      )
+
+    Changeset.change_attributes(changeset, result)
   end
 
   defp record_attribute_name_keys do

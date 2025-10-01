@@ -4,7 +4,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Helpers do
   """
 
   def load do
-    [:attachment, :error_log, :created_by, :started_by, :duration]
+    [:attachment, :error_log, :created_by, :started_by, :duration, :validation_progress]
   end
 
   def can_edit?(nil), do: false

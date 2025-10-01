@@ -72,33 +72,31 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   Creates a changeset, validates the data to update the databese and returns the validitiy and/or errors
   """
   @spec valid_validation_row(map(), atom()) :: {boolean(), [Ash.Error.t()]}
-  def valid_validation_row(row, :validated) do
+  def valid_validation_row(%{record: %Record{}} = row, :validated) do
     changeset = ValidatedRecord.changeset_to_validate(row)
-
     {changeset.valid?, changeset.errors}
   end
 
-  def valid_validation_row(row, :not_validated) do
-    case Map.get(row, :record) do
-      nil ->
-        {false, [%{message: "Record not found"}]}
+  def valid_validation_row(%{record: %Record{}}, :not_validated) do
+    {true, []}
+  end
 
-      %Record{} ->
-        {true, []}
+  def valid_validation_row(%{record: record} = row, type) when not is_nil(record) do
+    message =
+      "[Validation response import :#{to_string(type)}] Error while looking for record on validation response import row: #{inspect(row)}, found: #{inspect(record)}"
 
-      unknown ->
-        message =
-          "[Validation response import :not_validated] Error while looking for record on validation response import row: #{inspect(row)}, found: #{inspect(unknown)}"
+    Logger.error(message)
 
-        Logger.error(message)
+    {false,
+     [
+       %{
+         message: message
+       }
+     ]}
+  end
 
-        {false,
-         [
-           %{
-             message: message
-           }
-         ]}
-    end
+  def valid_validation_row(_row, _type) do
+    {false, [%{message: "Record not found for given catalogNumber and collectionCode"}]}
   end
 
   @doc """
@@ -449,6 +447,13 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
           field: Map.get(error, :field),
           value: Map.get(error, :value),
           message: Map.get(error, :message)
+        }
+
+      %Ash.Error.Invalid.NoSuchInput{} = error ->
+        %{
+          field: Map.get(error, :input),
+          value: nil,
+          message: "There is no such input field."
         }
 
       _ ->

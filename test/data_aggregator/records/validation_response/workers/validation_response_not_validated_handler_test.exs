@@ -186,11 +186,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert {:ok, data_frame} = Explorer.DataFrame.from_csv(validation_response.error_log.url)
 
       assert Explorer.DataFrame.n_columns(data_frame) == 6
-
-      # only 2 invalid rows are in the file, but 5 errors occure:
-      # line 1: missing collectionCode leads to missing tenant (1) -> leads to
-      #   missing record (2) -> leads to missing collection (3)
-      # line 2: missing catalogNumber leads to missing record (4) -> this leads to missing collection (5)
       assert Explorer.DataFrame.n_rows(data_frame) == 2
       data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
 
@@ -251,7 +246,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       %{
         "catalogNumber" => nil,
         "field" => nil,
-        "message" => "Record not found",
+        "message" => "Record not found for given catalogNumber and collectionCode",
         "occurrenceID" => nil,
         "scientificName" => nil,
         "value" => nil
@@ -259,7 +254,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       %{
         "catalogNumber" => "GBIFCH00995787",
         "field" => nil,
-        "message" => "Record not found",
+        "message" => "Record not found for given catalogNumber and collectionCode",
         "occurrenceID" => nil,
         "scientificName" => nil,
         "value" => nil
