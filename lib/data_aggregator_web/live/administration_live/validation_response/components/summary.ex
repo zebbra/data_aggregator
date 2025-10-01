@@ -26,21 +26,26 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
       |> Helpers.fetch_file_from_url()
       |> Explorer.DataFrame.load_csv!()
 
-    nil_counts =
+    mandatory_attributes_nil_counts =
       dataframe
-      |> nil_counts()
+      |> mandatory_attributes_nil_counts()
       |> maybe_add_annotation_nil_count(validation_response.type, dataframe)
       |> Map.filter(fn {_k, v} -> v > 0 end)
 
-    # valid only if all nil_countss are 0
+    # valid only if all mandatory_attributes_nil_counts are 0
     valid? =
-      Enum.all?(Map.keys(nil_counts), fn key ->
-        nil_counts[key] == 0
+      Enum.all?(Map.keys(mandatory_attributes_nil_counts), fn key ->
+        mandatory_attributes_nil_counts[key] == 0
       end)
+
+    collection_attributes =
+      dataframe
+      |> Explorer.DataFrame.names()
+      |> Enum.filter(&(&1 in ["collectionCode", "datasetName", "institutionCode"]))
 
     collection_data =
       dataframe
-      |> Explorer.DataFrame.frequencies(["collectionCode", "datasetName", "institutionCode"])
+      |> Explorer.DataFrame.frequencies(collection_attributes)
       |> Explorer.DataFrame.to_rows(atom_keys: true)
 
     center_data =
@@ -54,7 +59,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
       socket
       |> assign(:collection_data, collection_data)
       |> assign(:center_data, center_data)
-      |> assign(:nil_counts, nil_counts)
+      |> assign(:mandatory_attributes_nil_counts, mandatory_attributes_nil_counts)
       |> assign(:valid?, valid?)
       |> assign(:validation_response, validation_response)
 
@@ -113,16 +118,16 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
               <div>
                 <.table items={@collection_data}>
                   <:col :let={data} label={~t"Dataset"m}>
-                    {data.datasetName}
+                    {format_collection_data(Map.get(data, :datasetName))}
                   </:col>
                   <:col :let={data} label={~t"Dataset Code"m}>
-                    {data.collectionCode}
+                    {format_collection_data(Map.get(data, :collectionCode))}
                   </:col>
                   <:col :let={data} label={~t"Institution Code"m}>
-                    {data.institutionCode}
+                    {format_collection_data(Map.get(data, :institutionCode))}
                   </:col>
                   <:col :let={data} label={~t"Count"m}>
-                    {data.counts}
+                    {Map.get(data, :counts)}
                   </:col>
                 </.table>
               </div>
@@ -134,11 +139,11 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
                 <p class="text-sm">
                   {mgettext(
                     "The import file contains invalid rows with missing attributes. The following attributes are required for all rows: %{missing_attributes}.",
-                    missing_attributes: missing_attributes(@nil_counts)
+                    missing_attributes: missing_attributes(@mandatory_attributes_nil_counts)
                   )}
                 </p>
               </div>
-              <.table items={@nil_counts}>
+              <.table items={@mandatory_attributes_nil_counts}>
                 <:col :let={nil_count} label={~t"Missing attribute"m}>
                   {elem(nil_count, 0)}
                 </:col>
@@ -195,12 +200,13 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     end
   end
 
-  defp maybe_add_annotation_nil_count(nil_counts, :validated, _dataframe), do: nil_counts
+  defp maybe_add_annotation_nil_count(mandatory_attributes_nil_counts, :validated, _dataframe),
+    do: mandatory_attributes_nil_counts
 
-  defp maybe_add_annotation_nil_count(nil_counts, :not_validated, dataframe) do
+  defp maybe_add_annotation_nil_count(mandatory_attributes_nil_counts, :not_validated, dataframe) do
     if dataframe |> Explorer.DataFrame.names() |> Enum.member?("annotation") do
       Map.merge(
-        nil_counts,
+        mandatory_attributes_nil_counts,
         dataframe
         |> Explorer.DataFrame.select(["annotation"])
         |> Explorer.DataFrame.nil_count()
@@ -208,11 +214,11 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
         |> List.first()
       )
     else
-      Map.put(nil_counts, :annotation, Explorer.DataFrame.n_rows(dataframe))
+      Map.put(mandatory_attributes_nil_counts, :annotation, Explorer.DataFrame.n_rows(dataframe))
     end
   end
 
-  defp nil_counts(dataframe) do
+  defp mandatory_attributes_nil_counts(dataframe) do
     dataframe
     |> Explorer.DataFrame.select(["catalogNumber", "collectionCode"])
     |> Explorer.DataFrame.nil_count()
@@ -220,8 +226,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     |> List.first()
   end
 
-  defp missing_attributes(nil_counts) do
-    nil_counts |> Map.keys() |> Enum.join(", ")
+  defp missing_attributes(mandatory_attributes_nil_counts) do
+    mandatory_attributes_nil_counts |> Map.keys() |> Enum.join(", ")
   end
 
   defp close_and_redirect(socket) do
@@ -229,6 +235,9 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     |> push_event("submit:close", %{})
     |> push_navigate(to: ~p"/administration/validation_responses")
   end
+
+  defp format_collection_data(nil), do: "N/A"
+  defp format_collection_data(value), do: value
 
   defp type(:validated), do: ~t"validated"m
   defp type(:not_validated), do: ~t"not validated"m
