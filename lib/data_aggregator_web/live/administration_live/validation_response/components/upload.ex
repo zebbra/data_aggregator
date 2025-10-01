@@ -147,7 +147,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
                   <input type="checkbox" id="confirm" checked={@agreed} class="checkbox checkbox-sm" />
                 </div>
                 <p class="text-sm">
-                  {~t"Provided file has been verified and only contains correct and valid input."m}
+                  {~t"I confirm that the provided file has been verified and only contains correct and valid input."m}
                 </p>
               </label>
             </.fieldgroup>

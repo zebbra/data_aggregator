@@ -1267,37 +1267,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Location"
 msgstr "Standort"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:220
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:247
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:285
 #, elixir-autogen, elixir-format
 msgid "Download error log"
 msgstr "Fehlerprotokoll runterladen"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:293
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:320
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:420
 #, elixir-autogen, elixir-format
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:287
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:314
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:414
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Field"
 msgstr "Feld"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:268
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:295
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:395
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Import Errors"
 msgstr "Import Fehler"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:302
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:329
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:429
 #, elixir-autogen, elixir-format
 msgid "Only the first 100 rows will be shown. Download the file to have the complete log"
 msgstr "Nur die ersten 100 Zeilen werden angezeigt. Für eine komplette Liste, lade das Fehlerlog runter"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:290
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:317
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:417
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:71
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:680
@@ -1930,12 +1930,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "In Publication"
 msgstr "In Veröffentlichung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:346
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Publication in progress"
-msgstr "Veröffentlichung läuft"
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:401
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
@@ -1977,30 +1971,6 @@ msgstr "Das Enkodieren ist"
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The record encoding was"
 msgstr "Das Enkodieren war"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:355
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Publication failed. Process should be started again"
-msgstr "Veröffentlichung fehlgeschlagen. Der Prozess sollte erneut gestartet werden"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:349
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record is now in the publication pipeline - no further action required"
-msgstr "Der Eintrag ist in Veröffentlichung - keine weitere Aktion erforderlich"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:352
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record publication was successful"
-msgstr "Die Veröffentlichung ist"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:358
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record was changed after publishing it and has to be republished"
-msgstr "Der Eintrag wurde geändert nachdem er veröffentlicht wurde und muss erneut publiziert werden"
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:433
 #, elixir-autogen, elixir-format, fuzzy
@@ -3193,12 +3163,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Dataset Publications"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:343
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "No publication information available. Publish the dataset to see the status"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:984
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -3276,35 +3240,17 @@ msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel validation"
 msgstr "Veröffentlichung abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:368
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "No validation information available. Validate the dataset to see the status"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:448
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Not Validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:374
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record validation was successful"
-msgstr "Die Genehmigung ist"
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:447
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validated"
 msgstr "Validierung"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:371
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Validation in progress"
-msgstr "Veröffentlichung läuft"
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:420
 #, elixir-autogen, elixir-format, fuzzy
@@ -4647,12 +4593,6 @@ msgstr ""
 msgid "min / max [m]"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:377
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record was rejected. It will not be validated by InfoSpecies Centers"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:408
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:411
 #, elixir-autogen, elixir-format, fuzzy
@@ -4808,7 +4748,7 @@ msgstr "Reich"
 msgid "Not Validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:178
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:205
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Total Rows"
 msgstr ""
@@ -5420,33 +5360,33 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:235
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:262
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "An unknown error occurred"
 msgstr "Ein unbekannter Fehler ist aufgetreten"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:281
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:308
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Catalog Number"
 msgstr "Katalognummer"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:97
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:172
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:199
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Created at"
 msgstr "Erstellt am"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:100
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:169
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:196
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Created by"
 msgstr "Erstellt"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:203
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:230
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Error Log"
@@ -5459,7 +5399,7 @@ msgid "Errors"
 msgstr "Fehler!"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:91
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:162
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:189
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "File"
@@ -5477,49 +5417,49 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Invalid"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:365
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:428
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "New Validation Response"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:398
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:461
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No Validation Imports"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:399
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:462
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No Validation Imports have been created yet."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:238
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:265
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No errors found"
 msgstr "Keine Fehler gefunden"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:216
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:243
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Open error log preview"
 msgstr "Fehlerprotokoll Vorschau öffnen"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:213
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:240
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Preview error log"
 msgstr "Fehlerprotokoll Vorschau"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:284
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:311
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Scientific Name"
 msgstr "Wissenschaftlicher Name"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:143
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:170
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Show validation import details"
@@ -5532,14 +5472,14 @@ msgid "Size"
 msgstr "Größe"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:103
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:246
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:273
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Started at"
 msgstr "Gestartet am"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:109
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:243
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:270
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Started by"
@@ -5551,14 +5491,14 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "State"
 msgstr "Status"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:156
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:183
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "State:"
 msgstr "Status:"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:88
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:175
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:202
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Type"
@@ -5576,7 +5516,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validated"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:149
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:176
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Import"
@@ -5584,19 +5524,19 @@ msgstr "Validierung"
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:49
 #: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:65
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:359
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:422
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Imports"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:373
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:436
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Response Summary"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:207
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:234
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "detected errors:"
@@ -5620,19 +5560,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation of the record has been refused. The validation status of the record has changed to"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:181
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:208
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Progress"
 msgstr "Fortschritt"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:197
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:224
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "invalid rows:"
 msgstr "ungültige Zeilen:"
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:191
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:218
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "rows"
@@ -5641,5 +5581,137 @@ msgstr "Zeilen"
 #: lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:150
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload"
-msgid "Provided file has been verified and only contains correct and valid input."
+msgid "I confirm that the provided file has been verified and only contains correct and valid input."
 msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:153
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Cancel import"
+msgstr "Import abbrechen"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:399
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Failed to cancel validation import"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:146
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Rerun import"
+msgstr "Import starten"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:396
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Validation import canceled successfully"
+msgstr "Veröffentlichung erfolgreich gelöscht"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:343
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "No publication information available. Publish the dataset to see the status."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:368
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "No validation information available. Validate the dataset to see the status."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:355
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Publication failed. Process should be started again."
+msgstr "Veröffentlichung fehlgeschlagen. Der Prozess sollte erneut gestartet werden"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:346
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Publication in progress."
+msgstr "Veröffentlichung läuft"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:349
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Record is now in the publication pipeline - no further action required."
+msgstr "Der Eintrag ist in Veröffentlichung - keine weitere Aktion erforderlich"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:352
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Record publication was successful."
+msgstr "Die Veröffentlichung ist"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:358
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Record was changed after publishing it and has to be republished."
+msgstr "Der Eintrag wurde geändert nachdem er veröffentlicht wurde und muss erneut publiziert werden"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:377
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Record was rejected. It will not be validated by InfoSpecies Centers."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:374
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "The record has been successfully validated."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:371
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Validation in progress."
+msgstr "Veröffentlichung läuft"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/components.ex:87
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components"
+msgid "Cancelled"
+msgstr "Abbrechen"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:356
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Are you sure you want to delete this validation import?"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:162
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Are you sure?"
+msgstr "Bist Du sicher?"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:159
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Delete import"
+msgstr "Ja, Import löschen"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:412
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Failed to delete validation import"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:360
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "This will delete the validation import and attached files."
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:409
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Validation import deleted successfully"
+msgstr "Veröffentlichung erfolgreich gelöscht"
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:357
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Yes, delete validation import"
+msgstr "Ja, Veröffentlichung löschen"

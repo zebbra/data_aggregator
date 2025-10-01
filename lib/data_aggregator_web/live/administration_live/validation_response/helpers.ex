@@ -9,4 +9,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Helpers do
 
   def can_edit?(nil), do: false
   def can_edit?(validation_response), do: validation_response.state in [:pending]
+
+  def can_rerun?(nil), do: false
+  def can_rerun?(validation_response), do: validation_response.state in [:cancelled]
 end
