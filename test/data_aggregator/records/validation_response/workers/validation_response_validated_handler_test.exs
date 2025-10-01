@@ -193,7 +193,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
       assert validation_response.rows_invalid_count == 2
       assert validation_response.rows_validated_count == 4
 
-      assert validation_response.rows_error_count == 5
+      assert validation_response.rows_error_count == 2
 
       assert validation_response.error_log != nil
 
@@ -201,11 +201,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
       assert Explorer.DataFrame.n_columns(data_frame) == 6
 
-      # only 2 invalid rows are in the file, but 5 errors occure:
-      # line 1: missing collectionCode leads to missing tenant (1) -> leads to
-      #   missing record (2) -> leads to missing collection (3)
-      # line 2: missing catalogNumber leads to missing record (4) -> this leads to missing collection (5)
-      assert Explorer.DataFrame.n_rows(data_frame) == 5
+      assert Explorer.DataFrame.n_rows(data_frame) == 2
       data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
 
       # check if all updated records have the correct validation_status
@@ -264,40 +260,16 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
     [
       %{
         "catalogNumber" => nil,
-        "field" => "collection_id",
-        "message" => "Field is required but was empty.",
-        "occurrenceID" => "occurrenceID6",
-        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
-        "value" => nil
-      },
-      %{
-        "catalogNumber" => nil,
-        "field" => "record_id",
-        "message" => "Field is required but was empty.",
-        "occurrenceID" => "occurrenceID6",
-        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
-        "value" => nil
-      },
-      %{
-        "catalogNumber" => nil,
-        "field" => "mte_catalog_number",
-        "message" => "Field is required but was empty.",
+        "field" => nil,
+        "message" => "Record not found for given catalogNumber and collectionCode",
         "occurrenceID" => "occurrenceID6",
         "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
         "value" => nil
       },
       %{
         "catalogNumber" => "GBIFCH00995787",
-        "field" => "collection_id",
-        "message" => "Field is required but was empty.",
-        "occurrenceID" => "occurrenceID5",
-        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
-        "value" => nil
-      },
-      %{
-        "catalogNumber" => "GBIFCH00995787",
-        "field" => "record_id",
-        "message" => "Field is required but was empty.",
+        "field" => nil,
+        "message" => "Record not found for given catalogNumber and collectionCode",
         "occurrenceID" => "occurrenceID5",
         "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
         "value" => nil
