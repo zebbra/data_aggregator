@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components do
 
   defp validation_response_state_icon_class(state) do
     cond do
-      state in [:pending] ->
+      state in [:pending, :cancelled] ->
         {"hero-clock-solid", "text-base-content opacity-60"}
 
       state in [:queued, :running] ->
@@ -84,6 +84,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components do
       state in [:running] -> ~t"Running"m
       state in [:done] -> ~t"Done"m
       state in [:failed] -> ~t"Failed"m
+      state in [:cancelled] -> ~t"Cancelled"m
     end
   end
 
@@ -92,7 +93,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components do
 
   defp state_color(state) do
     cond do
-      state in [:pending] -> "gray"
+      state in [:pending, :cancelled] -> "gray"
       state in [:queued, :running] -> "blue"
       state in [:done] -> "green"
       state in [:failed] -> "red"

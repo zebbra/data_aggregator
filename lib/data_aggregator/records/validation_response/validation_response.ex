@@ -73,11 +73,12 @@ defmodule DataAggregator.Records.ValidationResponse do
     default_initial_state :pending
 
     transitions do
-      transition :enqueue, from: [:pending, :done, :failed], to: :queued
+      transition :enqueue, from: [:pending, :done, :failed, :cancelled], to: :queued
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
       transition :set_failed, from: :running, to: :failed
+      transition :set_cancelled, from: [:queued, :running], to: :cancelled
     end
   end
 
@@ -148,6 +149,13 @@ defmodule DataAggregator.Records.ValidationResponse do
       change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
 
+    update :set_cancelled do
+      require_atomic? false
+
+      change transition_state(:cancelled)
+      change set_attribute(:started_at, nil)
+    end
+
     update :run do
       accept []
       require_atomic? false
@@ -205,9 +213,10 @@ defmodule DataAggregator.Records.ValidationResponse do
     prefix "validation_response"
 
     publish_all :create, ["created", [:id, nil]]
-    publish_all :destroy, ["deleted", [:id, nil]]
+    publish_all :destroy, ["destroyed", [:id, nil]]
     publish :add_validation_progress, ["updated", [:id, nil]]
     publish :set_failed, ["updated", [:id, nil]]
+    publish :set_cancelled, ["updated", [:id, nil]]
     publish :set_done, ["updated", [:id, nil]]
     publish :set_running, ["updated", [:id, nil]]
     publish :enqueue, ["updated", [:id, nil]]
@@ -224,6 +233,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :set_done
     define :set_running
     define :set_failed
+    define :set_cancelled
     define :update_attachment, args: [:attachment]
     define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
