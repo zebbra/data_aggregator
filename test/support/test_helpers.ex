@@ -48,7 +48,7 @@ defmodule DataAggregator.TestHelpers do
     encoded_record =
       EncodedRecord.get_by_record!(record_fixture.id, tenant: record_fixture.collection)
 
-    EncodedRecord.update!(encoded_record, update_set)
+    EncodedRecord.update_return_minimal_fields!(encoded_record, update_set)
     record_fixture
   end
 end
