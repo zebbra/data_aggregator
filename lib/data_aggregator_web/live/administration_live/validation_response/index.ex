@@ -154,8 +154,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
             icon="hero-x-mark"
           />
           <.table_action_button
-            phx-click="validation_response:delete"
-            phx-value-id={validation_response.id}
+            phx-click={JS.push("validation_response:delete", value: %{id: validation_response.id})}
             data-tip={~t"Delete import"m}
             icon="hero-trash"
             class="text-error hover:bg-error/10"
