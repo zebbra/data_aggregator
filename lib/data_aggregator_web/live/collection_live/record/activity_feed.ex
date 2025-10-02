@@ -89,7 +89,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   def activity_feed_element(%{activity: activity} = assigns)
-      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_publication_status] do
+      when activity.name in [
+             :set_encoded,
+             :set_encoding_failed,
+             :update_validation_status,
+             :update_publication_status,
+             :set_validation_status_not_validated
+           ] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -134,6 +140,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_validation_status,
+              :set_validation_status_not_validated,
               :update_publication_status,
               :add_image_url
             ] do
@@ -184,6 +191,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     >
       {badge_text(@activity.name, @activity.content)}
     </.badge>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name in [:set_validation_status_not_validated] do
+    ~H"""
+    <span class="font-medium">
+      {text(@activity.name, @activity.content)}
+    </span>
+    <.badge
+      :if={badge_text(@activity.name, @activity.content)}
+      color={badge_color(@activity.name, @activity.content)}
+    >
+      {badge_text(@activity.name, @activity.content)}
+    </.badge>
+    <span class="font-medium"></span>
     """
   end
 
@@ -328,6 +350,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def icon_lookup(:set_validation_status_not_validated, _), do: "hero-exclamation-triangle-solid"
+
   def icon_lookup(:add_image_url, _), do: "hero-photo"
 
   def icon_lookup(_, _), do: "hero-question-mark-circle-solid"
@@ -381,6 +405,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def icon_tooltip(:set_validation_status_not_validated, content) do
+    case content["validation_status"] do
+      "not_validated" ->
+        ~t"Record was rejected. It will not be validated by InfoSpecies Centers."m
+
+      _ ->
+        nil
+    end
+  end
+
   def icon_tooltip(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
 
   def icon_tooltip(_, _), do: nil
@@ -421,6 +455,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  defp text(:set_validation_status_not_validated, content) do
+    mgettext(
+      "The validation of the record has been refused: %{annotation}. The validation status of the record has changed to",
+      annotation: content["validation_annotation"]
+    )
+  end
+
   defp text(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
 
   defp text(name, _), do: name
@@ -450,6 +491,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def badge_text(:set_validation_status_not_validated, _), do: ~t"Not Validated"m
+
   def badge_text(_, _), do: nil
 
   def badge_color(:import, _), do: "blue"
@@ -478,6 +521,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> "gray"
     end
   end
+
+  def badge_color(:set_validation_status_not_validated, _), do: "orange"
 
   def badge_color(:add_image_url, _), do: "green"
 

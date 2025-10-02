@@ -103,6 +103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       :not_validated
     ]
 
+  attr :annotation, :string, default: nil
   attr :tooltip, :boolean, default: true
 
   def validation_state_badge(assigns) do
@@ -114,12 +115,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <.badge
       class={if @tooltip, do: "tooltip", else: nil}
-      color={ActivityFeed.badge_color(@name, @content)}
-      data-tip={if @tooltip, do: ActivityFeed.icon_tooltip(@name, @content), else: nil}
+      color={badge_color(@state)}
+      data-tip={if @tooltip, do: icon_tooltip(@state, @annotation), else: nil}
     >
-      <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
+      <.icon name={icon_lookup(@state)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        {ActivityFeed.badge_text(@name, @content)}
+        {badge_text(@state)}
       </span>
     </.badge>
     """
@@ -135,12 +136,63 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       color={swiss_species_color(@registered, @center)}
       data-tip={swiss_species_tooltip(@registered, @center)}
     >
-      <.icon name={swiss_species_icon_name(@registered, @center)} />
+      <.icon name={swiss_species_icon_name(@registered, @center)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
         {swiss_species_text(@registered, @center)}
       </span>
     </.badge>
     """
+  end
+
+  defp badge_color(state) do
+    case state do
+      :unknown -> "gray"
+      :requested -> "blue"
+      :validated -> "green"
+      :not_validated -> "orange"
+      _ -> "gray"
+    end
+  end
+
+  defp icon_tooltip(state, annotation) do
+    case state do
+      :unknown ->
+        ~t"No validation information available. Validate the dataset to see the status."m
+
+      :requested ->
+        ~t"Validation in progress."m
+
+      :validated ->
+        ~t"The record has been successfully validated."m
+
+      :not_validated ->
+        mgettext("The validation of the record has been refused: %{annotation}.",
+          annotation: annotation
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  defp icon_lookup(state) do
+    case state do
+      :unknown -> "hero-question-mark-circle-solid"
+      :requested -> "hero-cog-6-tooth-solid"
+      :validated -> "hero-check-circle-solid"
+      :not_validated -> "hero-exclamation-triangle-solid"
+      _ -> "hero-check-badge"
+    end
+  end
+
+  defp badge_text(state) do
+    case state do
+      :unknown -> ~t"Unknown"m
+      :requested -> ~t"Requested"m
+      :validated -> ~t"Validated"m
+      :not_validated -> ~t"Not Validated"m
+      unhandled_status -> unhandled_status
+    end
   end
 
   def swiss_species_text(nil, _center), do: ~t"Unknown"m

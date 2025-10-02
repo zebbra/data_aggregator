@@ -38,7 +38,7 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
       new()
       |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
       |> to(to_mails)
-      |> subject("Dagi: Your Dataset became validated data")
+      |> subject("DAGI: New validated data available for #{collection.code}")
       |> text_body(get_message_body(collection, validation.type))
       |> Mailer.deliver()
     end)
@@ -47,22 +47,34 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
   end
 
   defp get_message_body(collection, :validated) do
-    "Hi,\n" <>
-      "We reach out to you because your data in the GBIF Dagi project has been updated.\n" <>
-      "Multiple records were annotated with reasons why they were not validated.\n" <>
-      "Your original data remained unchanged.\n" <>
-      "The affected collection '#{collection.code} - #{collection.name}' " <>
-      "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
-      System.get_env("BASE_URL") <> "/datasets/#{collection.id}/records"
+    "--- If you are not responsible for this dataset in your institution, you may ignore this message. ---\n\n" <>
+      "Dear Collection Administrator,\n" <>
+      "The dataset #{collection.code} requested for validation to the InfoSpecies data centers in DAGI has now been processed.\n\n" <>
+      " - Records that passed validation have been marked as 'Validated'.\n" <>
+      " - Records that did not pass validation have been marked as 'Not validated' and annotated accordingly.\n\n" <>
+      "Your original data has not been modified. The new validated values are available in the validation layer of the DAGI dataset.\n\n" <>
+      "Please note that the 'Not validated' status does not prevent records from being published on GBIF.\n\n" <>
+      "You can access the updated dataset #{collection.code} - #{collection.name} " <>
+      "of #{collection.grscicoll_institution_name} here: " <>
+      System.get_env("BASE_URL") <>
+      "/datasets/#{collection.id}/records \n\n" <>
+      "Kind regards,\n\n" <>
+      "Your DAGI team"
   end
 
   defp get_message_body(collection, :not_validated) do
-    "Hi,\n" <>
-      "We reach out to you because your data in the GBIF Dagi project has been updated.\n" <>
-      "Multiple records were annotated with reasons why they were not validated.\n" <>
-      "Your original data remained unchanged.\n" <>
-      "The affected collection '#{collection.code} - #{collection.name}' " <>
-      "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
-      System.get_env("BASE_URL") <> "/datasets/#{collection.id}/records"
+    "--- If you are not responsible for this dataset in your institution, you may ignore this message. ---\n\n" <>
+      "Dear Collection Administrator,\n" <>
+      "The dataset #{collection.code} requested for validation to the InfoSpecies data centers in DAGI has now been processed.\n\n" <>
+      " - Records that passed validation have been marked as 'Validated'.\n" <>
+      " - Records that did not pass validation have been marked as 'Not validated' and annotated accordingly.\n\n" <>
+      "Your original data has not been modified. The new validated values are available in the validation layer of the DAGI dataset.\n\n" <>
+      "Please note that the 'Not validated' status does not prevent records from being published on GBIF.\n\n" <>
+      "You can access the updated dataset #{collection.code} - #{collection.name} " <>
+      "of #{collection.grscicoll_institution_name} here: " <>
+      System.get_env("BASE_URL") <>
+      "/datasets/#{collection.id}/records \n\n" <>
+      "Kind regards,\n\n" <>
+      "Your DAGI team"
   end
 end

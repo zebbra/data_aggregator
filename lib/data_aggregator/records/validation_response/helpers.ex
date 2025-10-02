@@ -387,18 +387,18 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @spec update_records({Collection.t(), [map()]}, User.t()) :: [map()]
   defp update_records({tenant, rows}, actor) do
     Enum.reduce(rows, [], fn row, errors ->
-      with {:ok, record} <-
-             Record.update(row.record, %{validation_annotation: row.validation_annotation}, %{
+      case Record.set_validation_status_not_validated(
+             row.record,
+             row.validation_annotation,
+             %{},
+             %{
                actor: actor,
                tenant: tenant
-             }),
-           {:ok, _record} <-
-             Record.update_validation_status(record, :not_validated, %{}, %{
-               actor: actor,
-               tenant: tenant
-             }) do
-        errors
-      else
+             }
+           ) do
+        {:ok, _record} ->
+          errors
+
         {:error, error} ->
           errors ++ [error]
       end
