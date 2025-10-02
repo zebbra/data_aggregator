@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.FormComponent 
   def render(assigns) do
     ~H"""
     <div class="contents">
-      <div :if={@validation_response.state in [nil, :pending]} class="contents">
+      <div :if={@validation_response.state in [nil, :pending, :cancelled]} class="contents">
         <.live_component
           :if={@action in [:new]}
           module={Components.Upload}

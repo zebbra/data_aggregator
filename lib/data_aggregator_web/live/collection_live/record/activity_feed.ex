@@ -311,7 +311,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "not_published" -> "hero-question-mark-circle-solid"
       "publishing" -> "hero-cog-6-tooth-solid"
       "in_publication" -> "hero-globe-alt-solid"
-      "published" -> "hero-check-solid"
+      "published" -> "hero-check-circle-solid"
       "publication_failed" -> "hero-x-mark-solid"
       "stale" -> "hero-exclamation-triangle-solid"
       _ -> "hero-globe-alt"
@@ -322,7 +322,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     case content["validation_status"] do
       "unknown" -> "hero-question-mark-circle-solid"
       "requested" -> "hero-cog-6-tooth-solid"
-      "validated" -> "hero-check-solid"
+      "validated" -> "hero-check-circle-solid"
       "not_validated" -> "hero-exclamation-triangle-solid"
       _ -> "hero-check-badge"
     end
@@ -340,22 +340,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:update_publication_status, content) do
     case content["publication_status"] do
       "not_published" ->
-        ~t"No publication information available. Publish the dataset to see the status"m
+        ~t"No publication information available. Publish the dataset to see the status."m
 
       "publishing" ->
-        ~t"Publication in progress"m
+        ~t"Publication in progress."m
 
       "in_publication" ->
-        ~t"Record is now in the publication pipeline - no further action required"m
+        ~t"Record is now in the publication pipeline - no further action required."m
 
       "published" ->
-        ~t"Record publication was successful"m
+        ~t"Record publication was successful."m
 
       "publication_failed" ->
-        ~t"Publication failed. Process should be started again"m
+        ~t"Publication failed. Process should be started again."m
 
       "stale" ->
-        ~t"Record was changed after publishing it and has to be republished"m
+        ~t"Record was changed after publishing it and has to be republished."m
 
       _ ->
         nil
@@ -365,16 +365,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:update_validation_status, content) do
     case content["validation_status"] do
       "unknown" ->
-        ~t"No validation information available. Validate the dataset to see the status"m
+        ~t"No validation information available. Validate the dataset to see the status."m
 
       "requested" ->
-        ~t"Validation in progress"m
+        ~t"Validation in progress."m
 
       "validated" ->
-        ~t"Record validation was successful"m
+        ~t"The record has been successfully validated."m
 
       "not_validated" ->
-        ~t"Record was rejected. It will not be validated by InfoSpecies Centers"m
+        ~t"Record was rejected. It will not be validated by InfoSpecies Centers."m
 
       _ ->
         nil

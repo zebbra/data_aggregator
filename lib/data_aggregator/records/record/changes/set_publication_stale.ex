@@ -18,11 +18,7 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
     )
     |> Changeset.atomic_update(
       :validation_status,
-      expr(
-        if validation_status in [:not_validated, :validated],
-          do: validation_status,
-          else: :unknown
-      )
+      expr(:unknown)
     )
   end
 end

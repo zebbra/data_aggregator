@@ -54,26 +54,33 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   defp perform_with_actor(record, actor \\ nil) do
     Logger.debug("Encoding for Record #{record.id} in progress...")
 
-    Enum.reduce_while(
-      Catalog.get_catalogs(),
-      {:ok, record},
-      fn catalog, {:ok, acc} ->
-        case Record.encode(acc, catalog,
-               actor: actor,
-               authorize?: false,
-               tenant: record.collection
-             ) do
-          {:ok, record} ->
-            {:cont, {:ok, record}}
+    {:ok, _} =
+      Enum.reduce_while(
+        Catalog.get_catalogs(),
+        {:ok, record},
+        fn catalog, {:ok, acc} ->
+          case Record.encode(acc, catalog,
+                 actor: actor,
+                 authorize?: false,
+                 tenant: record.collection
+               ) do
+            {:ok, record} ->
+              {:cont, {:ok, record}}
 
-          {:error, error} ->
-            Logger.error(
-              "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} and catalog #{to_string(catalog)} failed with error #{inspect(error)}"
-            )
+            {:error, error} ->
+              Logger.error(
+                "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} and catalog #{to_string(catalog)} failed with error #{inspect(error)}"
+              )
 
-            {:halt, {:error, error}}
+              {:halt, {:error, error}}
+          end
         end
-      end
+      )
+
+    Record.update_validation_status(record, :unknown,
+      actor: actor,
+      authorize?: false,
+      tenant: record.collection
     )
   rescue
     e ->

@@ -135,6 +135,33 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
             data-tip={~t"summary"m}
             icon="hero-pencil-square-mini"
           />
+          <.table_action_button
+            :if={can_rerun?(validation_response)}
+            patch={
+              build_path(
+                ~p"/administration/validation_responses/#{validation_response.id}/summary",
+                @meta
+              )
+            }
+            data-tip={~t"Rerun import"m}
+            icon="hero-arrow-path"
+          />
+          <.table_action_button
+            :if={validation_response.state in [:running]}
+            phx-click="validation_response:cancel"
+            phx-value-id={validation_response.id}
+            data-tip={~t"Cancel import"m}
+            icon="hero-x-mark"
+          />
+          <.table_action_button
+            phx-click="validation_response:delete"
+            phx-value-id={validation_response.id}
+            data-tip={~t"Delete import"m}
+            icon="hero-trash"
+            class="text-error hover:bg-error/10"
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_validation_response_alert"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/administration/validation_responses"} />
@@ -323,6 +350,16 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
             current_user={@current_user}
           />
         </.modal>
+        <.alert
+          id="confirm_validation_response_alert"
+          size="md"
+          title={~t"Are you sure you want to delete this validation import?"m}
+          confirm_button_label={~t"Yes, delete validation import"m}
+        >
+          <p class="mt-2 text-sm">
+            {~t"This will delete the validation import and attached files."m}
+          </p>
+        </.alert>
       </:portal>
     </.page>
     """
@@ -348,6 +385,32 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
     validation_response = get_validation_response(id, get_actor(socket))
 
     {:noreply, assign(socket, :selected_validation_response, validation_response)}
+  end
+
+  @impl true
+  def handle_event("validation_response:cancel", %{"id" => id}, socket) do
+    validation_response = get_validation_response(id, get_actor(socket))
+
+    case ValidationResponse.set_cancelled(validation_response, actor: get_actor(socket)) do
+      {:ok, _} ->
+        {:noreply, put_flash(socket, :info, ~t"Validation import canceled successfully"m)}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"Failed to cancel validation import"m)}
+    end
+  end
+
+  @impl true
+  def handle_event("validation_response:delete", %{"id" => id}, socket) do
+    validation_response = get_validation_response(id, get_actor(socket))
+
+    case ValidationResponse.destroy(validation_response, actor: get_actor(socket)) do
+      :ok ->
+        {:noreply, put_flash(socket, :info, ~t"Validation import deleted successfully"m)}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"Failed to delete validation import"m)}
+    end
   end
 
   defp get_validation_response(id, actor) do

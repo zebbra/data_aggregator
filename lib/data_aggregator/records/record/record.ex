@@ -340,7 +340,8 @@ defmodule DataAggregator.Records.Record do
                         :state,
                         :last_imported_at,
                         :import_data,
-                        :extra_data
+                        :extra_data,
+                        :validation_status
                       ]
     end
 
