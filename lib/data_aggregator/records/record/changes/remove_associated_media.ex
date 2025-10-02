@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Record.Image.Changes.RemoveAssociatedMedia do
           |> Enum.reject(fn url -> url == image.image_url end)
           |> Enum.join(" | ")
 
-        EncodedRecord.update!(image.record.encoded_record, %{
+        EncodedRecord.update_return_minimal_fields!(image.record.encoded_record, %{
           mte_associated_media: updated_media_urls
         })
 

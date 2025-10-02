@@ -100,5 +100,35 @@ defmodule DataAggregator.EncodedRecordTest do
     test "destroy/1 with invalid id returns error" do
       assert {:error, %Invalid{}} = EncodedRecord.destroy(%EncodedRecord{id: "invalid"})
     end
+
+    test "update_return_minimal_fields/1 returns only minimal data" do
+      original_encoded_record =
+        encoded_record_fixture(%{tax_family: "Oenantheae", tax_kingdom: "Plantae"})
+
+      encoded_record =
+        EncodedRecord.update_return_minimal_fields!(original_encoded_record, %{
+          tax_family: "new family"
+        })
+
+      assert encoded_record != nil
+
+      # according to Encoding.Changes.SelectMinimalFields --> nsure correct attributes are present and loaded...
+      assert encoded_record.id == original_encoded_record.id
+      assert encoded_record.record_id == original_encoded_record.record_id
+      assert encoded_record.collection_id == original_encoded_record.collection_id
+      assert encoded_record.mte_catalog_number == original_encoded_record.mte_catalog_number
+      assert encoded_record.tax_scientific_name == original_encoded_record.tax_scientific_name
+
+      # ...and not explicitly loaded attributes are not loaded
+      assert encoded_record.tax_family == %Ash.NotLoaded{
+               type: :attribute,
+               field: :tax_family
+             }
+
+      # then reload the record to ensure the updated values are loaded
+      encoded_record = Ash.reload!(encoded_record)
+
+      assert encoded_record.tax_family == "new family"
+    end
   end
 end

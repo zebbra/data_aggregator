@@ -110,6 +110,10 @@ defmodule DataAggregator.Records.EncodedRecord do
       change Encoding.Changes.SetOptionalAttributes
     end
 
+    update :update_return_minimal_fields do
+      change Encoding.Changes.SelectMinimalFields
+    end
+
     update :add_image_url do
       argument :image, :struct, allow_nil?: false
       require_atomic? false
@@ -127,6 +131,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :read
     define :create
     define :update
+    define :update_return_minimal_fields
     define :add_image_url, args: [:image]
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
