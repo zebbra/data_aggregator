@@ -507,7 +507,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Validation status"m}
           class="text-center"
         >
-          <.validation_state_badge state={record.validation_status} />
+          <.validation_state_badge
+            state={record.validation_status}
+            annotation={record.validation_annotation}
+          />
         </:col>
         <:col
           :let={{_id, record}}
@@ -602,6 +605,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   registered={@selected_record.encoded_record.oth_swiss_species_registered}
                   center={@selected_record.encoded_record.oth_swiss_species_center}
                 />
+              </:item>
+              <:item :if={@selected_record.validation_annotation} title={~t"Rejection comment"m}>
+                {@selected_record.validation_annotation}
               </:item>
             </.list>
             <.image_carousel
@@ -1097,6 +1103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :state,
         :publication_status,
         :validation_status,
+        :validation_annotation,
         :updated_at
       ]
 

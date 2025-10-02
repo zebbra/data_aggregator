@@ -251,7 +251,12 @@ defmodule DataAggregator.Records.Record do
     ]
 
     ignore_actions [:destroy]
-    on_actions [:update_publication_status, :update_validation_status]
+
+    on_actions [
+      :update_publication_status,
+      :update_validation_status,
+      :set_validation_status_not_validated
+    ]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
@@ -424,6 +429,14 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:validation_status, expr(^arg(:status)))
     end
 
+    update :set_validation_status_not_validated do
+      argument :annotation, :string, allow_nil?: false
+      require_atomic? false
+
+      change set_attribute(:validation_status, :not_validated)
+      change set_attribute(:validation_annotation, expr(^arg(:annotation)))
+    end
+
     update :update_last_validation_started_at do
       accept []
       require_atomic? false
@@ -476,6 +489,7 @@ defmodule DataAggregator.Records.Record do
     define :enqueue_encoder
     define :update_publication_status, args: [:status]
     define :update_validation_status, args: [:status]
+    define :set_validation_status_not_validated, args: [:annotation]
     define :check_if_published
     define :enqueue_publication_verifier, args: [:published_record]
     define :update_last_validation_started_at

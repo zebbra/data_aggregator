@@ -22,11 +22,17 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.UpdateRawRecordState
   defp set_validated(validated_record, %{actor: actor, tenant: tenant}) do
     validated_record = maybe_performant_load_record(validated_record, tenant)
 
-    Record.update_validation_status!(validated_record.record, :validated,
-      actor: actor,
-      authorize?: false
-    )
-
-    {:ok, validated_record}
+    with {:ok, record} <-
+           Record.update(validated_record.record, %{validation_annotation: nil}, %{
+             actor: actor,
+             tenant: tenant
+           }),
+         {:ok, _} <-
+           Record.update_validation_status(record, :validated,
+             actor: actor,
+             authorize?: false
+           ) do
+      {:ok, validated_record}
+    end
   end
 end
