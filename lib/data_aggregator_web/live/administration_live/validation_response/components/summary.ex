@@ -7,8 +7,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
 
+  alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.ValidationResponse
-  alias DataAggregator.Records.ValidationResponse.Helpers
 
   require Logger
 
@@ -19,12 +19,11 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
 
   @impl true
   def update(%{validation_response: validation_response} = assigns, socket) do
-    validation_response = Ash.load!(validation_response, [:attachment])
+    validation_response = Ash.load!(validation_response, attachment: :cached_file)
 
-    dataframe =
-      validation_response.attachment.url
-      |> Helpers.fetch_file_from_url()
-      |> Explorer.DataFrame.load_csv!()
+    %{cached_file: cached_file} = validation_response.attachment
+
+    {:ok, dataframe} = DataFrame.from_file(cached_file)
 
     mandatory_attributes_nil_counts =
       dataframe

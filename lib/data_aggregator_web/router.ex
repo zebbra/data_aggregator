@@ -99,6 +99,14 @@ defmodule DataAggregatorWeb.Router do
       live "/administration/users/new", AdministrationLive.User.Index, :new
       live "/administration/users/:user_id/edit", AdministrationLive.User.Index, :edit
 
+      live "/datasets/new", CollectionLive.Index, :new
+      live "/datasets/:id/edit", CollectionLive.Index, :edit
+    end
+
+    ash_authentication_live_session :admin_required,
+      on_mount:
+        default_hooks ++
+          [{DataAggregatorWeb.LiveUserAuth, :live_admin_required}] do
       live "/administration/validation_responses",
            AdministrationLive.ValidationResponse.Index,
            :index
@@ -110,9 +118,6 @@ defmodule DataAggregatorWeb.Router do
       live "/administration/validation_responses/:id/summary",
            AdministrationLive.ValidationResponse.Index,
            :summary
-
-      live "/datasets/new", CollectionLive.Index, :new
-      live "/datasets/:id/edit", CollectionLive.Index, :edit
     end
 
     ash_authentication_live_session :data_digitizer_required,

@@ -16,8 +16,6 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
     field = Map.get(ctx, :from, :path)
     filename = Changeset.get_argument_or_attribute(changeset, field)
 
-    Records.DataFrame.from_file(filename)
-
     case count_rows(filename) do
       {:ok, rows_count} ->
         Changeset.change_attribute(changeset, :rows_count, rows_count)
@@ -41,7 +39,7 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
   defp count_rows(filename) do
     Logger.debug("Counting rows for file #{inspect(filename)} ...")
 
-    with {:ok, df} <- Explorer.DataFrame.from_csv(filename) do
+    with {:ok, df} <- Records.DataFrame.from_file(filename) do
       rows_count = Explorer.DataFrame.n_rows(df)
 
       Logger.debug("Detected #{rows_count} in import file #{inspect(filename)}")
