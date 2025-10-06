@@ -21,17 +21,15 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   end
 
   defp import_validation_data(%Changeset{} = changeset, actor) do
-    attachment = changeset.data |> Ash.load!(:attachment) |> Map.get(:attachment)
+    attachment = changeset.data |> Ash.load!(attachment: :cached_file) |> Map.get(:attachment)
     type = Changeset.get_attribute(changeset, :type)
 
-    csv_content = Helpers.fetch_file_from_url(attachment.url)
-
-    process(changeset, csv_content, type, actor)
+    process(changeset, attachment.cached_file, type, actor)
   end
 
   @spec process(Changeset.t(), String.t(), atom(), User.t()) :: Changeset.t()
-  defp process(changeset, csv_content, type, actor) do
-    with {:ok, df} <- Explorer.DataFrame.load_csv(csv_content),
+  defp process(changeset, cached_file, type, actor) do
+    with {:ok, df} <- Records.DataFrame.from_file(cached_file),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
       process_in_chunks(changeset, stream, type, actor)

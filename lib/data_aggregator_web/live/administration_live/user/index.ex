@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Index do
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Gbif
+  alias DataAggregator.Records.ValidationResponse
 
   @dialyzer {:no_return, render: 1}
 
@@ -53,6 +54,7 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Index do
       <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item href={~p"/administration/users"} label={~t"Users"m} active />
         <.secondary_navigation_item
+          :if={ValidationResponse.can_read?(@current_user)}
           href={~p"/administration/validation_responses"}
           label={~t"Validation Imports"m}
         />

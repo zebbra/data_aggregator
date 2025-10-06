@@ -4916,144 +4916,144 @@ msgctxt "DataAggregatorWeb.AdministrationLive.User.FormComponent"
 msgid "User updated successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:104
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:106
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:49
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:50
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Add"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:48
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:49
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Add User"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:138
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:140
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Address"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:44
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:247
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:45
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:249
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:116
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:181
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:118
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:183
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:115
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:117
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:132
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:134
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "E-Mail"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:109
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:111
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Edit"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:259
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:261
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Edit User"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:76
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:78
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Email"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:79
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:81
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "First Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:272
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:274
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Get started by adding a new User."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:95
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:135
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:97
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:137
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Institution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:82
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:84
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Last Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:253
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:273
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:255
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:275
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "New User"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:271
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:273
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "No Users"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:85
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:87
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Phone"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:88
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:149
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:90
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:151
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Roles"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:214
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:216
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "User deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:54
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:55
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Users"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:57
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:59
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Validation Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/user/index.ex:182
+#: lib/data_aggregator_web/live/administration_live/user/index.ex:184
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.User.Index"
 msgid "Yes, delete user"
@@ -5113,117 +5113,117 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components"
 msgid "Running"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:84
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:83
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "%{count} %{type}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:94
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Based on the file provided, you are importing %{type} records from:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:171
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:170
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:102
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:101
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Center"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:105
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:129
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:150
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:104
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:128
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:149
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Count"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:120
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:119
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:123
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:122
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Dataset Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:168
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:167
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:126
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:125
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Institution Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:147
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:146
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Missing attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:198
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:197
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Something went wrong with the Validation Response ingestion"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:75
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:74
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Summary"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:140
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "The import file contains invalid rows with missing attributes. The following attributes are required for all rows: %{missing_attributes}."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:190
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:189
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "Validation Response ingestion started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:82
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:81
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "You are about to import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:112
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:111
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "You are importing %{type} records to:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:243
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:242
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "not validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:90
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:89
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "records."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:242
+#: lib/data_aggregator_web/live/administration_live/validation_response/components/summary.ex:241
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary"
 msgid "validated"

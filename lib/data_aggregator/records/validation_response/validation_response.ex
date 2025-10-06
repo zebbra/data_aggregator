@@ -7,7 +7,10 @@ defmodule DataAggregator.Records.ValidationResponse do
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
     extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
-    notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub],
+    authorizers: [Ash.Policy.Authorizer]
+
+  import DataAggregator.Checks.Custom
 
   alias __MODULE__
   alias DataAggregator.Accounts.User
@@ -152,6 +155,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     update :set_cancelled do
       require_atomic? false
 
+      change Changes.CancelJob
       change transition_state(:cancelled)
       change set_attribute(:started_at, nil)
     end
@@ -239,6 +243,12 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :update_error_log, args: [:error_log]
     define :add_affected_collection, args: [:collection]
     define :create_from_path, args: [:path, :filename]
+  end
+
+  policies do
+    bypass with_role("admin") do
+      authorize_if always()
+    end
   end
 
   postgres do

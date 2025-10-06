@@ -3,7 +3,6 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   Helper functions for the `DataAggregator.Records.ValidationResponse` context.
   """
 
-  alias Ash.Changeset
   alias Ash.Error.Changes.Required
   alias DataAggregator.Accounts.User
   alias DataAggregator.DarwinCore.Schema
@@ -47,24 +46,6 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     case Enum.at(dwca_zip_file, 0) do
       nil -> nil
       {_file_name, csv_content} -> csv_content
-    end
-  end
-
-  @doc """
-  Counts the number of rows in the provided CSV blob and updates given changeset
-  """
-  @spec count_rows(Changeset.t(), binary()) :: Changeset.t()
-  def count_rows(changeset, csv_content) do
-    case Explorer.DataFrame.load_csv(csv_content) do
-      {:ok, df} ->
-        rows_count = Explorer.DataFrame.n_rows(df)
-
-        Changeset.change_attribute(changeset, :rows_count, rows_count)
-
-      {:error, error} ->
-        Logger.warning("Validation CSV could not be read, error was #{inspect(error)}")
-
-        Changeset.add_error(changeset, error)
     end
   end
 
