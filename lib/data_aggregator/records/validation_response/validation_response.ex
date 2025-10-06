@@ -155,6 +155,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     update :set_cancelled do
       require_atomic? false
 
+      change Changes.CancelJob
       change transition_state(:cancelled)
       change set_attribute(:started_at, nil)
     end
