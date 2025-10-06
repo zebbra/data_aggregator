@@ -606,7 +606,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   center={@selected_record.encoded_record.oth_swiss_species_center}
                 />
               </:item>
-              <:item :if={@selected_record.validation_annotation} title={~t"Rejection comment"m}>
+              <:item :if={@selected_record.validation_annotation} title={~t"Info Species Feedback"m}>
                 {@selected_record.validation_annotation}
               </:item>
             </.list>

@@ -345,7 +345,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "unknown" -> "hero-question-mark-circle-solid"
       "requested" -> "hero-cog-6-tooth-solid"
       "validated" -> "hero-check-circle-solid"
-      "not_validated" -> "hero-exclamation-triangle-solid"
       _ -> "hero-check-badge"
     end
   end
@@ -397,9 +396,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "validated" ->
         ~t"The record has been successfully validated."m
 
-      "not_validated" ->
-        ~t"Record was rejected. It will not be validated by InfoSpecies Centers."m
-
       _ ->
         nil
     end
@@ -447,9 +443,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "validated" ->
         ~t"The record has been successfully validated. The validation status of the record has changed to"m
 
-      "not_validated" ->
-        ~t"The validation of the record has been refused. The validation status of the record has changed to"m
-
       _ ->
         ~t"Validation status was updated"m
     end
@@ -457,7 +450,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp text(:set_validation_status_not_validated, content) do
     mgettext(
-      "The validation of the record has been refused: %{annotation}. The validation status of the record has changed to",
+      "The validation of the record has been processed: %{annotation}. The validation status of the record has changed to",
       annotation: content["validation_annotation"]
     )
   end
@@ -486,7 +479,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "unknown" -> ~t"Unknown"m
       "requested" -> ~t"Requested"m
       "validated" -> ~t"Validated"m
-      "not_validated" -> ~t"Not Validated"m
       unhandled_status -> unhandled_status
     end
   end
@@ -517,7 +509,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "unknown" -> "gray"
       "requested" -> "blue"
       "validated" -> "green"
-      "not_validated" -> "orange"
       _ -> "gray"
     end
   end
