@@ -76,12 +76,6 @@ defmodule DataAggregator.Repo.Migrations.UpdateValidationStatusNotValidatedToUnk
   end
 
   def down do
-    # We do not rollback data changes. If you need to rollback, do it manually with SQL UPDATE.
-    execute """
-    DO $$
-    BEGIN
-      RAISE NOTICE 'Rolling back validation_status changes. Note: Legacy values are not valid enum values. We do not rollback.';
-    END $$;
-    """
+    # We do not rollback data changes
   end
 end
