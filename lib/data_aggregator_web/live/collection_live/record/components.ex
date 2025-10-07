@@ -166,7 +166,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         ~t"The record has been successfully validated."m
 
       :not_validated ->
-        mgettext("The validation of the record has been refused: %{annotation}.",
+        mgettext("The validation of the record has been processed: %{annotation}.",
           annotation: annotation
         )
 
