@@ -20,5 +20,9 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
       :validation_status,
       expr(:unknown)
     )
+    |> Changeset.atomic_update(
+      :validation_annotation,
+      nil
+    )
   end
 end

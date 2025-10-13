@@ -346,7 +346,8 @@ defmodule DataAggregator.Records.Record do
                         :last_imported_at,
                         :import_data,
                         :extra_data,
-                        :validation_status
+                        :validation_status,
+                        :validation_annotation
                       ]
     end
 
@@ -428,6 +429,7 @@ defmodule DataAggregator.Records.Record do
       require_atomic? false
 
       change set_attribute(:validation_status, expr(^arg(:status)))
+      change set_attribute(:validation_annotation, nil)
     end
 
     update :set_validation_status_not_validated do
