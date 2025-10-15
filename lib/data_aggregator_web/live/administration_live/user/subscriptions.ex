@@ -8,6 +8,8 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Subscriptions do
 
   import DataAggregatorWeb.Helpers, only: [get_actor: 1]
 
+  alias Ash.Error.Invalid
+  alias Ash.Error.Query.NotFound
   alias Ash.Notifier.Notification
   alias DataAggregator.Accounts.User
   alias DataAggregator.PubSub
@@ -54,6 +56,9 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Subscriptions do
   defp handle_user_created(%Notification{data: %{id: id}}, socket) do
     user = User.get_by_id!(id, actor: get_actor(socket))
     {:noreply, stream_insert(socket, :results, user, at: 0)}
+  rescue
+    # Ignore if the user was not found --> it was deleted or not accessible
+    _error in [NotFound, Invalid] -> {:noreply, socket}
   end
 
   defp handle_user_updated(%Notification{data: %{id: id}}, socket) do
@@ -61,7 +66,7 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Subscriptions do
     {:noreply, stream_insert(socket, :results, user, at: 0)}
   rescue
     # Ignore if the user was not found --> it was deleted
-    _error in [Ash.Error.Query.NotFound, Ash.Error.Invalid] -> {:noreply, socket}
+    _error in [NotFound, Invalid] -> {:noreply, socket}
   end
 
   defp handle_user_destroyed(%Notification{data: user}, socket) do

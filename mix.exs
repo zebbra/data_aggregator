@@ -213,7 +213,7 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 3.6", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      {:ash_postgres, "~> 2.4", override: true},
+      {:ash_postgres, "~> 2.6", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.4"},
