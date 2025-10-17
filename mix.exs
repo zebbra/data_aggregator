@@ -199,7 +199,7 @@ defmodule DataAggregator.MixProject do
       {:usage_rules, "~> 0.1", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
-      {:bandit, "~> 1.7.0"},
+      {:bandit, "~> 1.8.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
