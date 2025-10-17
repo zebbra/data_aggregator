@@ -5,7 +5,9 @@ defmodule DataAggregator.WorkflowTest do
   use Mimic
 
   import DataAggregator.AccountsFixtures, only: [user_fixture: 0]
-  import DataAggregator.EncodingFixtures, only: [expect_correct_swiss_species_api_call: 0]
+
+  import DataAggregator.EncodingFixtures,
+    only: [expect_correct_swiss_species_api_call: 0, expect_correct_swiss_species_api_call: 1]
 
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
@@ -374,6 +376,10 @@ defmodule DataAggregator.WorkflowTest do
       actor: actor,
       collection: tenant
     } do
+      # Expect additional SwissSpecies API calls during publication for coordinate obfuscation
+      # All 6 records have Switzerland as country and will get taxon_ids druing encoding
+      expect_correct_swiss_species_api_call(6)
+
       # Sanity check
       assert length(records) == 6
 
