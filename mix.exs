@@ -208,6 +208,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.8.0"},
       {:tidewave, "~> 0.4", only: [:dev]},
       {:live_debugger, "~> 0.3", only: [:dev]},
+      {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
       {:ash, "~> 3.6", override: true},
