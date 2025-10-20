@@ -447,8 +447,8 @@ idf_attributes = [
   },
   %{
     dwc_field: "typifiedName",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://rs.tdwg.org/dwc/terms/typifiedName",
+    dwca_file: :core,
     attribute: %Attribute{
       name: :typified_name,
       type: :string,
@@ -1354,8 +1354,8 @@ mte_attributes = [
   },
   %{
     dwc_field: "sampleDesignation",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/sampleDesignation",
+    dwca_file: :material_sample,
     attribute: %Attribute{name: :sample_designation, type: :string, allow_nil?: true}
   },
   %{
@@ -1753,8 +1753,8 @@ pvn_attributes = [
   },
   %{
     dwc_field: "preservationType",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/preservationType",
+    dwca_file: :preservation,
     attribute: %Attribute{name: :preservation_type, type: :string, allow_nil?: true}
   },
   %{
@@ -1934,8 +1934,8 @@ oth_attributes = [
   },
   %{
     dwc_field: "typeDesignatedBy",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://rs.gbif.org/terms/1.0/typeDesignatedBy",
+    dwca_file: :core,
     attribute: %Attribute{name: :type_designated_by, type: :string, allow_nil?: true}
   },
   %{
