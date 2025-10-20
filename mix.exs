@@ -280,7 +280,7 @@ defmodule DataAggregator.MixProject do
       {:explorer, "~> 0.10.0"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1.9"},
-      {:ex_aws, "~> 2.5.4"},
+      {:ex_aws, "~> 2.6.0"},
       {:ex_aws_s3, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
