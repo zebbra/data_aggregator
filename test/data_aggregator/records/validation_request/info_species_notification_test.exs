@@ -123,7 +123,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
         InfoSpecies.notify(validation_request, query, 2)
 
       assert validation_request.collection_id == collection.id
-      assert validation_request.attachment_id != nil
+      assert validation_request.attachment_id
     end
 
     test "InfoSpecies.notify/2 all records have an updated last_validation_started_at date",

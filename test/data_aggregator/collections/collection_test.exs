@@ -111,7 +111,7 @@ defmodule DataAggregator.CollectionTest do
     test "destroy/1 deletes the collection" do
       collection = collection_fixture()
       assert :ok = Collection.destroy(collection)
-      assert_raise Ash.Error.Invalid, fn -> Collection.get_by_id!(collection.id) end
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
     end
 
     test "destroy/1 with invalid id returns error" do

@@ -138,7 +138,7 @@ defmodule DataAggregator.StartValidationsTest do
         {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
 
         Enum.each(validation_requests, fn vr ->
-          assert vr != nil
+          assert vr
           assert vr.attachment_id == nil
           assert vr.state == :queued
         end)
@@ -157,8 +157,8 @@ defmodule DataAggregator.StartValidationsTest do
       assert length(validation_requests) == 2
 
       Enum.each(validation_requests, fn vr ->
-        assert vr != nil
-        assert vr.attachment_id != nil
+        assert vr
+        assert vr.attachment_id
         assert vr.state == :done
       end)
 

@@ -17,7 +17,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
   describe "as admin" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "usr_02z55LjrUZFNkbZy1tVKje",
@@ -164,7 +164,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
   describe "as collection_administrator" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "usr_02z55LjrUZFNkbZy1tVKje",
@@ -304,7 +304,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
   describe "as data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -447,7 +447,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
   describe "as collection_administrator and data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",

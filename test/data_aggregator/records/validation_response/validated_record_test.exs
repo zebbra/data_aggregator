@@ -106,7 +106,7 @@ defmodule DataAggregator.ValidatedRecordTest do
       validated_record = validated_record_fixture()
       assert :ok = ValidatedRecord.destroy(validated_record)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         ValidatedRecord.get_by_id!(validated_record.id, tenant: validated_record.collection)
       end
     end

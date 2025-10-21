@@ -249,10 +249,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   end
 
   def count_from_query(query, collection) do
-    Record
-    |> AshPagify.query_for_filters_map(query)
-    |> Ash.Query.set_tenant(collection)
-    |> Ash.count!()
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(query)
+      |> Ash.Query.set_tenant(collection)
+
+    Ash.count!(%{query | sort: []})
   end
 
   @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()

@@ -63,8 +63,8 @@ defmodule DataAggregatorApi.RecordVersionsTest do
 
       # Get the first record version
       record_version = Enum.at(data, 0)
-      assert not is_nil(record_version)
-      assert not is_nil(record_version["id"])
+      assert record_version
+      assert record_version["id"]
     end
 
     test "filters record versions by record id", %{

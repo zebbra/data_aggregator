@@ -94,8 +94,8 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
       encoded_record = Record.get_by_id!(invalid_record.id)
 
-      assert encoded_record != nil
-      assert error != nil
+      assert encoded_record
+      assert error
       assert encoded_record.state == :failed
 
       assert logs =~

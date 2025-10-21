@@ -17,7 +17,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as admin" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -181,7 +181,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as collection_administrator" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -331,7 +331,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -476,7 +476,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as collection_administrator and data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",

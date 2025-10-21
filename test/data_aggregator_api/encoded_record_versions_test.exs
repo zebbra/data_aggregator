@@ -74,8 +74,8 @@ defmodule DataAggregatorApi.EncodedRecordVersionsTest do
       # Get the first record version
       version = Enum.at(data, 0)
 
-      assert not is_nil(version)
-      assert not is_nil(version["id"])
+      assert version
+      assert version["id"]
     end
 
     test "filters encoded_record versions by record id", %{

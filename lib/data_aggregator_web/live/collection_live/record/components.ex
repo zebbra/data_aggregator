@@ -246,7 +246,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  attr :record, Record, required: true
 
   def slideover_subtitle(assigns) do
     assigns = assign(assigns, :record, Ash.load!(assigns.record, :collection, lazy?: true))
@@ -280,7 +280,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  attr :record, Record, required: true
   attr :deletable, :boolean, default: false
   attr :delete_action, :string, default: nil
   attr :rest, :global
@@ -314,7 +314,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  attr :record, Record, required: true
   attr :layer, :atom, required: true
 
   def elevation(assigns) do

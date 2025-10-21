@@ -181,7 +181,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
 
       assert validation_response.rows_error_count == 2
 
-      assert validation_response.error_log != nil
+      assert validation_response.error_log
 
       assert {:ok, data_frame} = Explorer.DataFrame.from_csv(validation_response.error_log.url)
 

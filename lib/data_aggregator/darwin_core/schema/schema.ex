@@ -2138,9 +2138,6 @@ defmodule DataAggregator.DarwinCore.Schema do
   #{DataAggregator.DarwinCore.Schema.Docs.schema_docs(categories)}
   """
 
-  alias Ash.Resource.Attribute
-  alias DataAggregator.DarwinCore.Schema.Category
-  alias DataAggregator.DarwinCore.Schema.CollectionAttribute
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
   @categories categories

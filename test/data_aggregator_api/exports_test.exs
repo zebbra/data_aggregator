@@ -111,7 +111,7 @@ defmodule DataAggregatorApi.ExportsTest do
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
 
-      assert not is_nil(data)
+      assert data
       assert data["id"] == export_1.id
     end
 
@@ -205,7 +205,7 @@ defmodule DataAggregatorApi.ExportsTest do
       error = Enum.at(errors, 0)
 
       # Assert on the response
-      assert not is_nil(error)
+      assert error
       assert length(errors) == 1
       assert error["code"] == "not_found"
       assert error["detail"] =~ "No exports record found with "

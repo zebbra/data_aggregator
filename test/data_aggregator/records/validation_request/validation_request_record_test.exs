@@ -272,7 +272,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
 
       # Verify by trying to get by id
       # The ValidationRequestRecord should be deleted when the record is deleted
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         ValidationRequestRecord.get_by_record!(record.id, tenant: collection)
       end
     end
