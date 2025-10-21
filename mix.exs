@@ -205,7 +205,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.1.14"},
-      {:phoenix_storybook, "~> 0.8.0"},
+      {:phoenix_storybook, "~> 0.9.2"},
       {:tidewave, "~> 0.4", only: [:dev]},
       {:live_debugger, "~> 0.3", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
