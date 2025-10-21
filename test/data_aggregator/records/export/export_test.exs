@@ -86,7 +86,7 @@ defmodule DataAggregator.ExportTest do
       export = export_fixture()
       assert :ok = Export.destroy(export, tenant: export.collection)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         Export.get_by_id!(export.id, tenant: export.collection)
       end
     end
@@ -285,8 +285,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == @default_mapping
-      assert Explorer.DataFrame.n_columns(data_frame) == Enum.count(Map.keys(@default_mapping))
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == Enum.count(Map.keys(@default_mapping))
+      assert DataFrame.n_rows(data_frame) == 2
     end
 
     @tag mapping: @valid_custom_mapping
@@ -297,10 +297,10 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == @valid_custom_mapping
-      assert Explorer.DataFrame.n_columns(data_frame) == 2
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 2
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), [
+      assert_lists_equal(DataFrame.names(data_frame), [
         "Famille",
         "Numéro scientifique GBIF"
       ])
@@ -319,18 +319,18 @@ defmodule DataAggregator.ExportTest do
                "Custom Attribute" => "Custom Attribute"
              }
 
-      assert columns = Explorer.DataFrame.names(data_frame)
+      assert columns = DataFrame.names(data_frame)
 
-      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
-      assert Enum.member?(columns, "Scientific Name - collection")
-      assert Enum.member?(columns, "Custom Attribute")
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 3
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 2
 
       custom_attribute_values =
         data_frame
-        |> Explorer.DataFrame.to_rows()
+        |> DataFrame.to_rows()
         |> Enum.map(&Map.get(&1, "Custom Attribute"))
 
       assert custom_attribute_values == ["Value 1", "Value 2"]
@@ -340,7 +340,7 @@ defmodule DataAggregator.ExportTest do
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "transforms values according to the transformers", %{data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
         Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
@@ -357,7 +357,7 @@ defmodule DataAggregator.ExportTest do
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "replaces linebreaks", %{data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
         Enum.map(rows, &Map.take(&1, ["verbatimLabel"]))
@@ -374,7 +374,7 @@ defmodule DataAggregator.ExportTest do
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "gets values from collection", %{export: export, data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       collection_attributes =
         Enum.map(
@@ -423,7 +423,7 @@ defmodule DataAggregator.ExportTest do
       {_, file_content} = Enum.at(body, 0)
 
       assert {:ok, %DataFrame{} = new_data_frame} = DataFrame.load_csv(file_content)
-      new_rows = Explorer.DataFrame.to_rows(new_data_frame)
+      new_rows = DataFrame.to_rows(new_data_frame)
 
       collection_attributes =
         Enum.map(
@@ -474,14 +474,14 @@ defmodule DataAggregator.ExportTest do
                "Custom Attribute" => "Custom Attribute"
              }
 
-      assert columns = Explorer.DataFrame.names(data_frame)
+      assert columns = DataFrame.names(data_frame)
 
-      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
-      assert Enum.member?(columns, "Scientific Name - collection")
-      assert Enum.member?(columns, "Custom Attribute")
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 3
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 2
     end
 
     @tag mapping: nil
@@ -493,10 +493,10 @@ defmodule DataAggregator.ExportTest do
     } do
       assert export.mapping == expected_dwc_attribute_mapping()
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 303
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_rows(data_frame) == 2
     end
 
     @tag mapping: nil
@@ -508,10 +508,10 @@ defmodule DataAggregator.ExportTest do
     } do
       assert export.mapping == expected_dwc_attribute_mapping()
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 303
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_rows(data_frame) == 2
     end
   end
 end

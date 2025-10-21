@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.ImageUpload.CreateFromPathTest do
              )
 
     assert image_upload.state == :new
-    assert image_upload.attachment_id != nil
+    assert image_upload.attachment_id
     assert image_upload.attachment.filename == "image_upload_test_catalog_number.zip"
   end
 

@@ -50,7 +50,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert lookedup_encoded_record.tax_taxon_rank === "SPECIES"
       assert lookedup_encoded_record.oth_swiss_species_center === "infofauna"
       assert lookedup_encoded_record.oth_swiss_species_registered == true
-      refute is_nil(lookedup_encoded_record.oth_swiss_species_registered_at)
+      assert lookedup_encoded_record.oth_swiss_species_registered_at
       assert encoded_record.state === :encoded
     end
 
@@ -68,9 +68,9 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
 
       assert lookedup_encoded_record.oth_swiss_species_center === nil
       assert lookedup_encoded_record.oth_swiss_species_registered == false
-      refute is_nil(lookedup_encoded_record.oth_swiss_species_registered_at)
+      assert lookedup_encoded_record.oth_swiss_species_registered_at
       assert lookedup_record.state === :encoded
-      assert lookedup_record != nil
+      assert lookedup_record
       assert logs =~ "no matching encoded_record found for taxon_id: 0"
     end
 

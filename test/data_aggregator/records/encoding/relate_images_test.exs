@@ -72,7 +72,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
 
       record = Ash.load!(record, [:encoded_record, images: [:attachment, :image_url]])
 
-      assert record.encoded_record.mte_associated_media != nil
+      assert record.encoded_record.mte_associated_media
 
       assert record.encoded_record.mte_associated_media |> String.split(" | ") |> length() ==
                length(record.images)
@@ -102,7 +102,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
 
       record = Ash.load!(record, [:encoded_record, images: [:attachment, :image_url]])
 
-      assert record.encoded_record.mte_associated_media != nil
+      assert record.encoded_record.mte_associated_media
 
       assert record.encoded_record.mte_associated_media |> String.split(" | ") |> length() ==
                length(record.images)

@@ -92,7 +92,7 @@ defmodule DataAggregator.EncodedRecordTest do
       encoded_record = encoded_record_fixture()
       assert :ok = EncodedRecord.destroy(encoded_record)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection)
       end
     end
@@ -110,7 +110,7 @@ defmodule DataAggregator.EncodedRecordTest do
           tax_family: "new family"
         })
 
-      assert encoded_record != nil
+      assert encoded_record
 
       # according to Encoding.Changes.SelectMinimalFields --> nsure correct attributes are present and loaded...
       assert encoded_record.id == original_encoded_record.id

@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.RecordTest do
       assert record.occ_occurrence_id === record.mte_catalog_number
       assert record.oth_basis_of_record === "PreservedSpecimen"
 
-      assert record.encoded_record != nil
+      assert record.encoded_record
 
       assert record.encoded_record.occ_occurrence_id === record.mte_catalog_number
       assert record.encoded_record.oth_basis_of_record === "PreservedSpecimen"
@@ -244,12 +244,12 @@ defmodule DataAggregator.Records.RecordTest do
 
       # Load the relationship and verify published record is associated with record1
       record1_with_published = Ash.load!(record1, :published_record, tenant: record1.collection)
-      assert record1_with_published.published_record != nil
+      assert record1_with_published.published_record
       assert record1_with_published.published_record.id == published_record_1.id
 
       # Load the relationship and verify published record is associated with record2
       record2_with_published = Ash.load!(record2, :published_record, tenant: record2.collection)
-      assert record2_with_published.published_record != nil
+      assert record2_with_published.published_record
       assert record2_with_published.published_record.id == published_record_2.id
 
       # Delete record1
