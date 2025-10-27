@@ -197,7 +197,10 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
       assert validation_response.error_log
 
-      assert {:ok, data_frame} = Explorer.DataFrame.from_csv(validation_response.error_log.url)
+      assert {:ok, data_frame} =
+               Explorer.DataFrame.from_csv(validation_response.error_log.url,
+                 infer_schema_length: 0
+               )
 
       assert Explorer.DataFrame.n_columns(data_frame) == 6
 
