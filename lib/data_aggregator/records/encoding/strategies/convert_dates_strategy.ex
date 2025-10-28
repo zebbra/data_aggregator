@@ -5,12 +5,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
 
   import DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers,
     only: [
-      all_dates_present?: 1,
-      date_range?: 1,
       day_month_year_present?: 1,
-      only_event_date_missing?: 1,
       only_event_date_present?: 1,
-      populate_day_month_year_range: 1,
       populate_day_month_year: 1,
       populate_event_date: 1,
       get_dates: 1
@@ -47,24 +43,35 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
   defp process_encoded_record(encoded_record, ctx) do
     dates = get_dates(encoded_record)
 
-    with {:ok, converted_dates} <- convert_dates(dates) do
-      {:ok, Strategy.update_encoded_record(converted_dates, encoded_record, @output_attributes, ctx)}
+    case convert_dates(dates) do
+      {:ok, converted_dates} ->
+        {:ok, Strategy.update_encoded_record(converted_dates, encoded_record, @output_attributes, ctx)}
+
+      {:invalid_event_date, error} ->
+        handle_error(encoded_record.id, error)
+
+        # set the event date to nil, because it is invalid
+        EncodedRecord.update!(encoded_record, %{eve_event_date: nil})
+
+        {:error, error}
     end
   end
 
-  @spec convert_dates(map()) :: {:ok, map()} | {:error, String.t()}
+  @spec convert_dates(map()) :: {:ok, map()} | {:invalid_event_date, String.t()}
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp convert_dates(dates) do
     cond do
-      all_dates_present?(dates) or day_month_year_present?(dates) or
-          only_event_date_missing?(dates) ->
+      day_month_year_present?(dates) ->
         populate_event_date(dates)
 
-      only_event_date_present?(dates) and not date_range?(dates) ->
-        populate_day_month_year(dates)
+      only_event_date_present?(dates) ->
+        case populate_day_month_year(dates) do
+          {:ok, dates} ->
+            {:ok, dates}
 
-      only_event_date_present?(dates) and date_range?(dates) ->
-        populate_day_month_year_range(dates)
+          {:error, error} ->
+            {:invalid_event_date, error}
+        end
 
       true ->
         {:ok, dates}

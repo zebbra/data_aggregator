@@ -102,10 +102,10 @@ jobs:
         if: always()
 
   build:
+    name: Build Docker image
     permissions:
       contents: write
       pull-requests: write
-    name: Build Docker image
     needs: test
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
@@ -172,8 +172,17 @@ jobs:
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
             APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
 
+  deploy_zebbra:
+    name: Deploy to zebbra staging
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: build
+    if: github.repository == 'zebbra/data_aggregator' && github.ref_type == 'tag'
+    runs-on: hetzner
+    environment: zebbra
+    steps:
       - name: Update Helm chart version and appVersion
-        if: github.ref_type == 'tag'
         run: |
           VERSION=${GITHUB_REF_NAME}
 

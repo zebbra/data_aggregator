@@ -164,6 +164,7 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       assert record.state == :encoded
     end
 
+    @tag run: true
     test "encode/2 for :convert_dates catalog - invalid event date",
          %{
            record_fixture_invalid_event_date: record
@@ -174,7 +175,10 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       record = Ash.load!(record, :encoded_record)
       encoded_record = record.encoded_record
 
-      assert encoded_record.eve_event_date == "2025-INVALID-01"
+      assert record.state == :failed
+
+      # set event date to nil, to avoid wrong event_date on the encoding layer
+      assert encoded_record.eve_event_date == nil
       assert encoded_record.eve_day == nil
       assert encoded_record.eve_month == nil
       assert encoded_record.eve_year == nil
@@ -182,7 +186,8 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       assert encoded_record.eve_end_of_period_month == nil
       assert encoded_record.eve_end_of_period_year == nil
 
-      assert logs =~ "Can not populate day, month and year, invalid event_date:"
+      assert logs =~
+               "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: \\\"2025-INVALID-01\\\" {:error, :no_match}"
     end
 
     test "encode/2 for :convert_dates catalog - invalid event date range",
@@ -195,7 +200,8 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       record = Ash.load!(record, :encoded_record)
       encoded_record = record.encoded_record
 
-      assert encoded_record.eve_event_date == "2025-01-01/2025-INVALID-02"
+      assert record.state == :failed
+      assert encoded_record.eve_event_date == nil
       assert encoded_record.eve_day == nil
       assert encoded_record.eve_month == nil
       assert encoded_record.eve_year == nil
@@ -203,7 +209,8 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       assert encoded_record.eve_end_of_period_month == nil
       assert encoded_record.eve_end_of_period_year == nil
 
-      assert logs =~ "Can not populate day, month and year, invalid event_date:"
+      assert logs =~
+               "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: \\\"2025-01-01/2025-INVALID-02\\\" {:error, :no_match}"
     end
 
     test "encode/2 for :convert_dates catalog - only event date present",
