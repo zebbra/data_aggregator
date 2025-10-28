@@ -53,7 +53,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
       assert version.version_source_id == vrr.id
       assert version.collection_id == collection.id
       assert is_nil(version.user_id)
-      assert version.changes != nil
+      assert version.changes
     end
 
     test "update action generates a version record with changes", %{
@@ -90,7 +90,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
       # Create version
       assert create_version.version_action_type == :create
       assert is_nil(create_version.user_id)
-      assert create_version.changes != nil
+      assert create_version.changes
 
       # Update version
       assert update_version.version_action_type == :update
@@ -151,7 +151,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
       assert third.changes["data"]["tax_scientific_name"] == "First Update"
 
       assert create.version_action_type == :create
-      assert create.changes != nil
+      assert create.changes
     end
   end
 

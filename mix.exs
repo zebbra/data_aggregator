@@ -211,7 +211,7 @@ defmodule DataAggregator.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.6", override: true},
+      {:ash, "~> 3.7", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.6", override: true},
@@ -223,8 +223,8 @@ defmodule DataAggregator.MixProject do
       {:ash_authentication_phoenix, "~> 2.0"},
 
       # Database and Ecto
-      {:ecto, "~> 3.11"},
-      {:ecto_sql, "~> 3.11"},
+      {:ecto, "~> 3.13"},
+      {:ecto_sql, "~> 3.13"},
       {:ecto_dev_logger, "~> 0.11"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
@@ -239,7 +239,7 @@ defmodule DataAggregator.MixProject do
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 2.1", only: :test},
-      {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
       {:ex_machina, "~> 2.8.0", only: :test},
 

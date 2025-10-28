@@ -22,7 +22,7 @@ defmodule DataAggregator.PublicationTest do
 
   describe "publication tests" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
@@ -200,8 +200,8 @@ defmodule DataAggregator.PublicationTest do
       {core_file_name, core_file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      assert core_file_name
+      assert core_file_content
 
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
 
@@ -471,8 +471,8 @@ defmodule DataAggregator.PublicationTest do
       {core_file_name, core_file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      assert core_file_name
+      assert core_file_content
 
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
 

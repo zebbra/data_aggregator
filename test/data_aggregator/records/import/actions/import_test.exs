@@ -53,8 +53,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :imported
       assert import.records_count == 18
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 18
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 18
@@ -62,7 +62,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.import_progress == 1.0
 
       assert record = Record |> Ash.Query.set_tenant(collection) |> Ash.read!() |> hd()
-      assert record.eve_event_date != nil
+      assert record.eve_event_date
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
@@ -91,8 +91,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :failed
       assert import.records_count == 0
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0
@@ -128,8 +128,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :failed
       assert import.records_count == 0
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0

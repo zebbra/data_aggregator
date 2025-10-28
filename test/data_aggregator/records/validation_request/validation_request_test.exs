@@ -113,8 +113,8 @@ defmodule DataAggregator.ValidationRequestTest do
       {file_name, file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"validation.csv" end)
 
-      assert file_name != nil
-      assert file_content != nil
+      assert file_name
+      assert file_content
 
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
 
