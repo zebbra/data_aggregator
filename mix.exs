@@ -277,7 +277,7 @@ defmodule DataAggregator.MixProject do
       {:castore, "~> 1.0"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.10.0"},
+      {:explorer, "~> 0.11.1"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1.9"},
       {:ex_aws, "~> 2.5.4"},
