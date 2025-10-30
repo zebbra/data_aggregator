@@ -262,6 +262,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag run: true
     test "encoding workflow performs as expected", %{
       import: import,
       actor: actor,

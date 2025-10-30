@@ -75,7 +75,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     row_count =
       validation_file.path
-      |> DataFrame.from_csv!()
+      |> DataFrame.from_csv!(infer_schema_length: 0)
       |> DataFrame.n_rows()
 
     # remove file from local tmp dir, as it is now stored on s3

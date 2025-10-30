@@ -593,7 +593,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   defp error_log_preview_data(error_log) do
     error_log = Ash.load!(error_log, [:url], lazy?: true)
 
-    case Explorer.DataFrame.from_csv(error_log.url, max_rows: 100) do
+    case Explorer.DataFrame.from_csv(error_log.url, max_rows: 100, infer_schema_length: 0) do
       {:ok, df} ->
         Explorer.DataFrame.to_rows(df, atom_keys: true)
 
