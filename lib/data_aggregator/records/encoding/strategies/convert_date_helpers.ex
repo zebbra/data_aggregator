@@ -16,6 +16,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
     :eve_end_of_period_year
   ]
 
+  @yyyymmdd ~r/^(\d{4})-(\d{2})-(\d{2})$/
+  @yyyymm ~r/^(\d{4})-(\d{2})$/
+  @yyyy ~r/^(\d{4})$/
+
   @doc """
     Get the date fields and their values from the encoded record as map
 
@@ -48,6 +52,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
         iex> ConvertDateHelpers.only_event_date_present?(dates)
         true
 
+        iex> dates = %{eve_event_date: "some-non-date-value-which-gets-not-validated-here", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.only_event_date_present?(dates)
+        true
+
         iex> dates = %{eve_event_date: nil, eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
         iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
         iex> ConvertDateHelpers.only_event_date_present?(dates)
@@ -62,54 +71,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
       {_event_date, popped_dates} ->
         all_dates_nil?(popped_dates)
     end
-  end
-
-  @doc """
-    Check if the event date is missing in the map
-
-    ## Examples
-
-        iex> dates = %{eve_event_date: nil, eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.only_event_date_missing?(dates)
-        true
-
-        iex> dates = %{eve_event_date: "2020-01-01", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.only_event_date_missing?(dates)
-        false
-  """
-  @spec only_event_date_missing?(map()) :: boolean()
-  def only_event_date_missing?(dates) do
-    Map.get(dates, :eve_event_date) === nil and
-      relevant_fields_are_present?(dates, [
-        :eve_day,
-        :eve_month,
-        :eve_year,
-        :eve_end_of_period_day,
-        :eve_end_of_period_month,
-        :eve_end_of_period_year
-      ])
-  end
-
-  @doc """
-    Check if all date fields are present in the map
-
-    ## Examples
-
-        iex> dates = %{eve_event_date: "2020-01-01", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.all_dates_present?(dates)
-        true
-
-        iex> dates = %{eve_event_date: "2020-01-01", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.all_dates_present?(dates)
-        false
-  """
-  @spec all_dates_present?(map()) :: boolean()
-  def all_dates_present?(dates) do
-    relevant_fields_are_present?(dates, @date_fields)
   end
 
   @doc """
@@ -135,62 +96,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @doc """
-    Check if the event date is a range
-
-    ## Examples
-
-        iex> dates = %{eve_event_date: "2020-01-01/2020-01-02", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.date_range?(dates)
-        true
-
-        iex> dates = %{eve_event_date: "2020-01-01", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.date_range?(dates)
-        false
-  """
-  @spec date_range?(map()) :: boolean()
-  def date_range?(dates) do
-    case Map.get(dates, :eve_event_date) do
-      nil ->
-        false
-
-      event_date ->
-        String.contains?(event_date, "/")
-    end
-  end
-
-  @doc """
-    Populate the day, month and year fields from the event date
-
-    ## Examples
-
-        iex> dates = %{eve_event_date: "2029-11-29/2030-07-22", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.populate_day_month_year_range(dates)
-        {:ok, %{eve_event_date: "2029-11-29/2030-07-22", eve_day: 29, eve_month: 11, eve_year: 2029, eve_end_of_period_day: 22, eve_end_of_period_month: 07, eve_end_of_period_year: 2030}}
-
-        iex> dates = %{eve_event_date: "2020-01-01/2020-01-02", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
-        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
-        iex> ConvertDateHelpers.populate_day_month_year_range(dates)
-        {:ok, %{eve_event_date: "2020-01-01/2020-01-02", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}}
-  """
-  @spec populate_day_month_year_range(map()) :: {:ok, map()} | {:error, String.t()}
-  def populate_day_month_year_range(dates) do
-    case Map.get(dates, :eve_event_date) do
-      nil ->
-        {:ok, dates}
-
-      event_date ->
-        [start_date, end_date] = String.split(event_date, "/")
-
-        with {:ok, dates} <- populate_start_date(dates, start_date) do
-          populate_end_date(dates, end_date)
-        end
-    end
-  end
-
-  @doc """
     Populate the day, month and year fields from the event date
 
     ## Examples
@@ -204,12 +109,45 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
         iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
         iex> ConvertDateHelpers.populate_day_month_year(dates)
         {:ok, %{eve_event_date: "2021-12-06", eve_day: 6, eve_month: 12, eve_year: 2021, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}}
+
+        iex> dates = %{eve_event_date: "2021-13-06", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:error, "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: \\"2021-13-06\\" false"}
+
+        iex> dates = %{eve_event_date: "2021-12-06/2021-12-08", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:ok, %{eve_event_date: "2021-12-06/2021-12-08", eve_day: 6, eve_month: 12, eve_year: 2021, eve_end_of_period_day: 8, eve_end_of_period_month: 12, eve_end_of_period_year: 2021}}
+
+        iex> dates = %{eve_event_date: "2021-12/2022-01", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:ok, %{eve_event_date: "2021-12/2022-01", eve_day: nil, eve_month: 12, eve_year: 2021, eve_end_of_period_day: nil, eve_end_of_period_month: 1, eve_end_of_period_year: 2022}}
+
+        iex> dates = %{eve_event_date: "2021/2022", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:ok, %{eve_event_date: "2021/2022", eve_day: nil, eve_month: nil, eve_year: 2021, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: 2022}}
+
+        iex> dates = %{eve_event_date: "2021-2022", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:error, "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: \\"2021-2022\\" {:error, :no_match}"}
+
+        iex> dates = %{eve_event_date: "2021-43/2022-12", eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.populate_day_month_year(dates)
+        {:error, "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: \\"2021-43\\" false"}
   """
   @spec populate_day_month_year(map()) :: {:ok, map()} | {:error, String.t()}
-  def populate_day_month_year(dates) do
-    event_date = Map.get(dates, :eve_event_date)
+  def populate_day_month_year(all_dates) do
+    event_date = Map.get(all_dates, :eve_event_date)
 
-    populate_start_date(dates, event_date)
+    case get_event_date_range(event_date) do
+      {:ok, dates} -> populate_day_month_year_range(all_dates, dates)
+      {:error, _} -> populate_start_date(all_dates, event_date)
+    end
   end
 
   @doc """
@@ -228,18 +166,81 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
         {:ok, %{eve_event_date: "2020-01-01/2020-01-02", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}}
   """
   @spec populate_event_date(map()) :: {:ok, map()} | {:error, String.t()}
-  def populate_event_date(dates) do
+  def populate_event_date(all_dates) do
     relevant_fields = [:eve_day, :eve_month, :eve_year]
 
-    with true <- relevant_fields_are_present?(dates, relevant_fields),
-         {:ok, event_date} <- build_event_date(dates) do
-      maybe_create_ranged_event_date(dates, event_date)
+    with true <- relevant_fields_are_present?(all_dates, relevant_fields),
+         {:ok, event_date} <- build_event_date(all_dates) do
+      maybe_create_ranged_event_date(all_dates, event_date)
     else
       false ->
         {:error, "Can not populate event_date, day, month and year are missing"}
 
       {:error, error} ->
         {:error, error}
+    end
+  end
+
+  defp year_month_day(date) do
+    cond do
+      String.match?(date, @yyyymmdd) ->
+        {:ok, @yyyymmdd |> Regex.run(date) |> tl()}
+
+      String.match?(date, @yyyymm) ->
+        {:ok, @yyyymm |> Regex.run(date) |> tl() |> Enum.concat([nil])}
+
+      String.match?(date, @yyyy) ->
+        {:ok, @yyyy |> Regex.run(date) |> tl() |> Enum.concat([nil, nil])}
+
+      true ->
+        {:error, :no_match}
+    end
+  end
+
+  defp valid_date?([year, nil, nil]), do: valid_date?([year, "01", "01"])
+  defp valid_date?([year, month, nil]), do: valid_date?([year, month, "01"])
+
+  defp valid_date?([year, month, day]) do
+    case Date.from_iso8601("#{year}-#{month}-#{day}") do
+      {:ok, _} -> true
+      {:error, _} -> false
+    end
+  end
+
+  defp get_event_date_range(event_date) do
+    with true <- is_binary(event_date),
+         true <- correct_range_length(event_date),
+         true <- String.contains?(event_date, "/"),
+         dates = String.split(event_date, "/"),
+         2 <- length(dates) do
+      Logger.debug("Correct date range: #{inspect(dates)}")
+
+      {:ok, dates}
+    else
+      _ ->
+        Logger.debug("Invalid date range: #{inspect(event_date)}")
+
+        {:error, "Invalid date range"}
+    end
+  end
+
+  # check for the correct length if its a correct date range:
+  # yyyy/yyyy --> year and endOfPeriodYear
+  # yyyy-mm/yyyy-mm --> year month and endOfPeriodYear endOfPeriodMonth
+  # yyyy-mm-dd/yyyy-mm-dd --> year month day and endOfPeriodYear endOfPeriodMonth endOfPeriodDay
+  defp correct_range_length(event_date) do
+    String.length(event_date) == 9 or
+      String.length(event_date) == 15 or
+      String.length(event_date) == 21
+  end
+
+  # Populate the day, month and year fields from the event date
+  @spec populate_day_month_year_range(map(), list()) :: {:ok, map()} | {:error, String.t()}
+  defp populate_day_month_year_range(all_dates, from_to) do
+    [from, to] = from_to
+
+    with {:ok, dates} <- populate_start_date(all_dates, from) do
+      populate_end_date(dates, to)
     end
   end
 
@@ -259,7 +260,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @spec falsy?(any()) :: boolean()
-  defp falsy?(value), do: value in [nil, "", " ", 0, false]
+  defp falsy?(value), do: value in [nil, "", " ", false]
 
   @spec all_dates_nil?(map()) :: boolean()
   defp all_dates_nil?(dates) do
@@ -269,8 +270,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @spec populate_start_date(map(), String.t()) :: {:ok, map()} | {:error, String.t()}
-  defp populate_start_date(dates, event_date) do
-    populate_date(dates, event_date, %{
+  defp populate_start_date(all_dates, event_date) do
+    populate_date(all_dates, event_date, %{
       day_field: :eve_day,
       month_field: :eve_month,
       year_field: :eve_year
@@ -287,20 +288,29 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @spec populate_date(map(), String.t(), map()) :: {:ok, map()} | {:error, String.t()}
-  defp populate_date(dates, event_date, %{day_field: day_field, month_field: month_field, year_field: year_field}) do
-    case Date.from_iso8601(event_date) do
-      {:ok, %Date{day: day, month: month, year: year}} ->
-        dates =
-          dates
-          |> Map.put(day_field, day)
-          |> Map.put(month_field, month)
-          |> Map.put(year_field, year)
+  defp populate_date(all_dates, event_date, %{day_field: day_field, month_field: month_field, year_field: year_field}) do
+    with {:ok, year_month_day} <- year_month_day(event_date),
+         true <- valid_date?(year_month_day),
+         [year, month, day] <- Enum.map(year_month_day, &maybe_to_integer/1) do
+      dates =
+        all_dates
+        |> Map.put(day_field, day)
+        |> Map.put(month_field, month)
+        |> Map.put(year_field, year)
 
-        {:ok, dates}
-
-      {:error, _} ->
-        {:error, "Can not populate day, month and year, invalid event_date: #{inspect(event_date)}"}
+      {:ok, dates}
+    else
+      unexpected ->
+        {:error,
+         "Can not populate day, month and year. Could not convert or parse eventDate because of wrong format: #{inspect(event_date)} #{inspect(unexpected)}"}
     end
+  end
+
+  defp maybe_to_integer(nil), do: nil
+  defp maybe_to_integer(""), do: nil
+
+  defp maybe_to_integer(date_slice) do
+    String.to_integer(date_slice)
   end
 
   @spec maybe_create_ranged_event_date(map(), String.t()) ::
