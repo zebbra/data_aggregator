@@ -4,11 +4,25 @@ defmodule DataAggregator.CollectionTest do
   use DataAggregator.DataCase, async: true
   use Mimic
 
+  import DataAggregator.ExportFixtures
+  import DataAggregator.ImageUploadFixtures
   import DataAggregator.RecordsFixtures
+  import DataAggregator.ValidationRequestRecordFixtures
+  import DataAggregator.ValidationResponseFixtures
 
   alias Ash.Error.Invalid
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Export
+  alias DataAggregator.Records.ImageUpload
+  alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequestRecord
+  alias DataAggregator.Records.ValidationRequestRecord.Version, as: ValidationRequestRecordVersion
+  alias DataAggregator.Records.ValidationResponse
 
   describe "collections" do
     @invalid_attrs %{
@@ -110,13 +124,164 @@ defmodule DataAggregator.CollectionTest do
 
     test "destroy/1 deletes the collection" do
       collection = collection_fixture()
-      assert :ok = Collection.destroy(collection)
+      assert :ok = Collection.destroy(collection, tenant: collection)
       assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
     end
 
+    test "destroy/1 deletes the collection and cascades to imports" do
+      collection = collection_fixture()
+
+      import =
+        Import.create_from_path!(
+          collection,
+          "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+          tenant: collection
+        )
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+
+      assert_raise Invalid, fn ->
+        Import.get_by_id!(import.id, tenant: collection)
+      end
+    end
+
+    test "destroy/1 deletes the collection and cascades to exports" do
+      collection = collection_fixture()
+
+      export = export_fixture(%{collection: collection})
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+      assert_raise Invalid, fn -> Export.get_by_id!(export.id, tenant: collection) end
+    end
+
+    test "destroy/1 deletes the collection and cascades to records" do
+      collection = collection_fixture()
+
+      record =
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "test_record_123",
+          tax_scientific_name: "Test species"
+        })
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+      assert_raise Invalid, fn -> Record.get_by_id!(record.id, tenant: collection) end
+    end
+
+    test "destroy/1 deletes the collection and cascades to image uploads" do
+      collection = collection_fixture()
+
+      image_upload = image_upload_fixture(collection)
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+      assert_raise Invalid, fn -> ImageUpload.get_by_id!(image_upload.id, tenant: collection) end
+    end
+
+    test "destroy/1 deletes the collection and cascades to validation responses" do
+      collection = collection_fixture()
+
+      validation_response = validation_response_fixture(%{type: :validated})
+
+      ValidationResponse.add_affected_collection!(validation_response, collection)
+
+      loaded_collection =
+        collection.id |> Collection.get_by_id!() |> Ash.load!([:validation_responses])
+
+      assert length(loaded_collection.validation_responses) == 1
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+
+      # The validation response itself should still exist (its not cascade deleted,
+      # just disassociated because it could be used by other colections)
+      assert ValidationResponse.get_by_id!(validation_response.id)
+    end
+
+    @tag run: true
+    test "destroy/1 deletes collection with multiple related entities" do
+      collection = collection_fixture()
+
+      import =
+        Import.create_from_path!(
+          collection,
+          "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+          tenant: collection
+        )
+
+      export = export_fixture(%{collection: collection, name: "Multi Test Export"})
+
+      record =
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "multi_test_record_456",
+          tax_scientific_name: "Multi test species"
+        })
+
+      validation_request_record =
+        validation_request_record_fixture(%{collection: collection, record: record})
+
+      publication =
+        Publication.create!(
+          %{
+            name: "Publication 2",
+            records_query: %{},
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, publication} = Publication.run(publication)
+
+      validation_request =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request",
+            center: :infofauna,
+            records_query: %{},
+            total_rows_count: 1,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request} = ValidationRequest.run(validation_request)
+
+      image_upload = image_upload_fixture(collection)
+
+      assert :ok = Collection.destroy(collection, tenant: collection)
+
+      assert_raise Invalid, fn -> Collection.get_by_id!(collection.id) end
+      assert_raise Invalid, fn -> Import.get_by_id!(import.id, tenant: collection) end
+      assert_raise Invalid, fn -> Export.get_by_id!(export.id, tenant: collection) end
+      assert_raise Invalid, fn -> Record.get_by_id!(record.id, tenant: collection) end
+      assert_raise Invalid, fn -> ImageUpload.get_by_id!(image_upload.id, tenant: collection) end
+      assert_raise Invalid, fn -> Publication.get_by_id!(publication.id, tenant: collection) end
+
+      assert_raise Invalid, fn ->
+        ValidationRequestRecord.get_by_id!(validation_request_record.id)
+      end
+
+      assert_raise Invalid, fn ->
+        ValidationRequest.get_by_id!(validation_request.id)
+      end
+
+      assert_lists_equal([], ValidationRequestRecordVersion.read!(tenant: collection))
+
+      assert_lists_equal([], Attachment.read!())
+    end
+
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Invalid{}} =
-               Collection.destroy(%Collection{id: "62809dc5-f143-459a-be1a-6f03e63fc044"})
+      collection = %Collection{id: "62809dc5-f143-459a-be1a-6f03e63fc044"}
+      assert {:error, %Invalid{}} = Collection.destroy(collection, tenant: collection)
     end
   end
 end

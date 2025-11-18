@@ -174,7 +174,7 @@ defmodule DataAggregator.ValidationResponseTest do
       )
 
       # check if deletions of collections are handled correctly
-      assert :ok = Collection.destroy(collection2)
+      assert :ok = Collection.destroy(collection2, tenant: collection)
       assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
 
       assert_lists_equal(

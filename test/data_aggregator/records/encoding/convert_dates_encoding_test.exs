@@ -164,7 +164,6 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       assert record.state == :encoded
     end
 
-    @tag run: true
     test "encode/2 for :convert_dates catalog - invalid event date",
          %{
            record_fixture_invalid_event_date: record

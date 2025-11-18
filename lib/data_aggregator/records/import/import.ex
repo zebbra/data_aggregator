@@ -147,7 +147,7 @@ defmodule DataAggregator.Records.Import do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy, :update]
+    defaults [:read, :update]
 
     read :active do
       filter expr(state in [:importing, :import_queued])
@@ -271,6 +271,13 @@ defmodule DataAggregator.Records.Import do
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change SetRecordsCountAfterTransaction
     end
+
+    destroy :destroy do
+      primary? true
+
+      change cascade_destroy(:attachment)
+      change cascade_destroy(:error_log)
+    end
   end
 
   pub_sub do
@@ -311,8 +318,11 @@ defmodule DataAggregator.Records.Import do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update, index?: true
-      reference :error_log, on_delete: :delete, on_update: :update, index?: true
+      reference :collection,
+        on_delete: :nothing,
+        on_update: :update,
+        index?: true,
+        deferrable: true
     end
   end
 

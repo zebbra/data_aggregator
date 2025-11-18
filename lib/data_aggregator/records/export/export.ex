@@ -94,7 +94,7 @@ defmodule DataAggregator.Records.Export do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy]
+    defaults [:read]
 
     read :active do
       filter expr(state in [:running, :queued])
@@ -193,6 +193,14 @@ defmodule DataAggregator.Records.Export do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
+
+    destroy :destroy do
+      accept []
+
+      primary? true
+
+      change cascade_destroy(:attachment)
+    end
   end
 
   pub_sub do
@@ -230,8 +238,11 @@ defmodule DataAggregator.Records.Export do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update, index?: true
-      reference :attachment, on_delete: :delete, on_update: :update, index?: true
+      reference :collection,
+        on_delete: :nothing,
+        on_update: :update,
+        index?: true,
+        deferrable: true
     end
   end
 

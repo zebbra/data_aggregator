@@ -106,6 +106,8 @@ defmodule DataAggregator.Records.Collection do
     has_many :exports, DataAggregator.Records.Export, public?: true
     has_many :records, DataAggregator.Records.Record, public?: true
     has_many :image_uploads, DataAggregator.Records.ImageUpload, public?: true
+    has_many :validation_requests, DataAggregator.Records.ValidationRequest, public?: true
+    has_many :publications, DataAggregator.Records.Publication, public?: true
 
     many_to_many :validation_responses, ValidationResponse do
       through ValidationResponseCollection
@@ -282,13 +284,16 @@ defmodule DataAggregator.Records.Collection do
     end
 
     destroy :destroy do
-      accept []
-
       primary? true
       require_atomic? false
-
       change Changes.SetDeleting
-      change Changes.DeleteAllMedia
+
+      change cascade_destroy(:imports, after_action?: false)
+      change cascade_destroy(:exports, after_action?: false)
+      change cascade_destroy(:image_uploads, after_action?: false)
+      change cascade_destroy(:validation_requests, after_action?: false)
+      change cascade_destroy(:records, after_action?: false)
+      change cascade_destroy(:publications, after_action?: false)
     end
 
     action :create_endpoint, :map do
@@ -425,6 +430,7 @@ defmodule DataAggregator.Records.Collection do
 
   postgres do
     table "collections"
+
     repo DataAggregator.Repo
   end
 

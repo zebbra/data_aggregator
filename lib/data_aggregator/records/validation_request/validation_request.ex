@@ -93,7 +93,7 @@ defmodule DataAggregator.Records.ValidationRequest do
 
     actions do
       default_accept :*
-      defaults [:read, :destroy, :update]
+      defaults [:read, :update]
 
       read :active do
         filter expr(state in [:running, :queued])
@@ -195,6 +195,12 @@ defmodule DataAggregator.Records.ValidationRequest do
         change transition_state(:failed)
         change set_attribute(:finished_at, &DateTime.utc_now/0)
       end
+
+      destroy :destroy do
+        primary? true
+
+        change cascade_destroy(:attachment, after_action?: false)
+      end
     end
 
     pub_sub do
@@ -246,8 +252,11 @@ defmodule DataAggregator.Records.ValidationRequest do
       repo DataAggregator.Repo
 
       references do
-        reference :collection, on_delete: :delete, on_update: :update, index?: true
-        reference :attachment, on_delete: :delete, on_update: :update, index?: true
+        reference :collection,
+          on_delete: :nothing,
+          on_update: :update,
+          index?: true,
+          deferrable: true
       end
     end
 

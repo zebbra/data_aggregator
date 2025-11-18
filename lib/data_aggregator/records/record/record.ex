@@ -459,6 +459,7 @@ defmodule DataAggregator.Records.Record do
       require_atomic? false
 
       change Changes.DecrementCollectionRecordsCountAfterAction
+      change cascade_destroy(:images, after_action?: false)
     end
   end
 

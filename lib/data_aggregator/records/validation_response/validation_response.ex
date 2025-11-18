@@ -108,7 +108,8 @@ defmodule DataAggregator.Records.ValidationResponse do
       primary? true
       require_atomic? false
 
-      change Changes.DeleteAttachments
+      change cascade_destroy(:attachment, after_action?: false)
+      change cascade_destroy(:error_log, after_action?: false)
     end
 
     create :create do
@@ -253,6 +254,7 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   postgres do
     table "validation_responses"
+
     repo DataAggregator.Repo
   end
 

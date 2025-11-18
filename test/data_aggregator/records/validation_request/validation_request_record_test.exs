@@ -284,7 +284,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
       vrr = validation_request_record_fixture(%{collection: collection, record: record})
 
       # Delete the collection (this will also delete the record due to cascade)
-      assert :ok = Collection.destroy(collection)
+      assert :ok = Collection.destroy(collection, tenant: collection)
 
       assert ValidationRequestRecord
              |> Ash.Query.filter(id == ^vrr.id)

@@ -144,14 +144,14 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               icon="hero-pencil-square-mini"
             />
           </div>
-          <%!-- <.table_action_button
+          <.table_action_button
             phx-click={JS.push("collection:delete", value: %{id: collection.id})}
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_collection_alert"
             disabled={collection.busy}
             icon="hero-trash-mini"
-          /> --%>
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets"} />
@@ -226,12 +226,20 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @impl true
   def handle_event("collection:delete", %{"id" => id}, socket) do
     collection = Collection.get_by_id!(id, actor: get_actor(socket))
-    :ok = Collection.destroy(collection, actor: get_actor(socket))
 
-    {:noreply,
-     socket
-     |> put_flash(:info, ~t"Dataset deleted successfully"m)
-     |> stream_delete(:results, collection)}
+    case Collection.destroy(collection, actor: get_actor(socket), tenant: collection) do
+      :ok ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Dataset deleted successfully"m)
+         |> stream_delete(:results, collection)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, ~t"Failed to delete dataset"m)
+         |> stream_delete(:results, collection)}
+    end
   end
 
   defp list_collections(params, actor, opts \\ [load: @load]) do

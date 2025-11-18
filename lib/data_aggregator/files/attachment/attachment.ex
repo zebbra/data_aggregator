@@ -43,6 +43,8 @@ defmodule DataAggregator.Files.Attachment do
 
     read :read do
       primary? true
+
+      pagination offset?: true, keyset?: true, required?: false
       prepare build(load: [:url])
     end
 

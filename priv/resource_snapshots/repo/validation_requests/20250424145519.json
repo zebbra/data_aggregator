@@ -139,7 +139,7 @@
       "precision": null,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
@@ -152,7 +152,7 @@
           "strategy": null
         },
         "name": "validation_requests_collection_id_fkey",
-        "on_delete": "delete",
+        "on_delete": "nothing",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
@@ -205,7 +205,7 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": true,
+        "index?": false,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -214,8 +214,8 @@
           "strategy": null
         },
         "name": "validation_requests_attachment_id_fkey",
-        "on_delete": "delete",
-        "on_update": "update",
+        "on_delete": null,
+        "on_update": null,
         "primary_key?": true,
         "schema": "public",
         "table": "file_attachments"
@@ -243,7 +243,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "0764F927CDED6D9B96B1FBC01E622C6F56CB2442EB9881E5FC41944C7FDD1B64",
+  "hash": "18395DB56817CF14CF4A48764FE3B6306D35756C67AFC43A031EACAD27246A89",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

@@ -16,6 +16,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.DeleteAllMedia do
   require Ash.Query
   require Logger
 
+  @impl true
   def change(%Changeset{data: image_upload} = changeset, _opts, _ctx) do
     image_upload =
       Ash.load!(image_upload, [:attachment, :upload_log, :image_attachments, :images], lazy?: true)
@@ -28,6 +29,15 @@ defmodule DataAggregator.Records.ImageUpload.Changes.DeleteAllMedia do
       changeset,
       &delete_media_files(&1, &2, attachments_to_delete, images)
     )
+  end
+
+  @impl true
+  def after_batch(changesets_and_results, _opts, _context) do
+    Enum.each(changesets_and_results, fn {_changeset, attachment} ->
+      delete_attachment(attachment)
+    end)
+
+    :ok
   end
 
   defp collect_media_files(image_upload) do

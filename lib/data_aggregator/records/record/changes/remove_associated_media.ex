@@ -16,6 +16,7 @@ defmodule DataAggregator.Records.Record.Image.Changes.RemoveAssociatedMedia do
   require Ash.Query
   require Logger
 
+  @impl true
   def change(%Changeset{data: image} = changeset, _opts, _ctx) do
     image = Ash.load!(image, [:image_url, :attachment, record: :encoded_record])
 
@@ -23,6 +24,15 @@ defmodule DataAggregator.Records.Record.Image.Changes.RemoveAssociatedMedia do
       changeset,
       &remove_obsolete_image_url(&1, &2, image)
     )
+  end
+
+  @impl true
+  def after_batch(changesets_and_results, _opts, _context) do
+    Enum.each(changesets_and_results, fn {_changeset, attachment} ->
+      delete_attachment(attachment)
+    end)
+
+    :ok
   end
 
   defp remove_obsolete_image_url(_changeset, _deleted_image, image) do

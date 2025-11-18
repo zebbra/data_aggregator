@@ -4,8 +4,10 @@
       "allow_nil?": false,
       "default": "fragment(\"uuid_generate_v7()\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": true,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "id",
       "type": "uuid"
@@ -14,8 +16,10 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "name",
       "type": "text"
@@ -24,8 +28,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "published_at",
       "type": "utc_datetime"
@@ -34,8 +40,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "started_at",
       "type": "utc_datetime"
@@ -44,8 +52,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "finished_at",
       "type": "utc_datetime"
@@ -54,8 +64,10 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "records_query",
       "type": "map"
@@ -64,8 +76,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "published_count",
       "type": "bigint"
@@ -74,8 +88,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "rows_count",
       "type": "bigint"
@@ -84,8 +100,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "center",
       "type": "text"
@@ -94,8 +112,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "existing_dataset_key",
       "type": "text"
@@ -104,8 +124,10 @@
       "allow_nil?": false,
       "default": "\"validation\"",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "layer",
       "type": "text"
@@ -114,8 +136,10 @@
       "allow_nil?": false,
       "default": "\"cc_by\"",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "license",
       "type": "text"
@@ -124,8 +148,10 @@
       "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "inserted_at",
       "type": "utc_datetime_usec"
@@ -134,8 +160,10 @@
       "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
@@ -144,6 +172,7 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -165,6 +194,7 @@
         "schema": "public",
         "table": "collections"
       },
+      "scale": null,
       "size": null,
       "source": "collection_id",
       "type": "uuid"
@@ -173,6 +203,7 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -194,6 +225,7 @@
         "schema": "public",
         "table": "users"
       },
+      "scale": null,
       "size": null,
       "source": "started_by_id",
       "type": "uuid"
@@ -202,13 +234,14 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": true,
+        "index?": false,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -217,12 +250,13 @@
           "strategy": null
         },
         "name": "publications_attachment_id_fkey",
-        "on_delete": "delete",
-        "on_update": "update",
+        "on_delete": null,
+        "on_update": null,
         "primary_key?": true,
         "schema": "public",
         "table": "file_attachments"
       },
+      "scale": null,
       "size": null,
       "source": "attachment_id",
       "type": "uuid"
@@ -231,8 +265,10 @@
       "allow_nil?": false,
       "default": "\"pending\"",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "state",
       "type": "text"
@@ -243,7 +279,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "034A17DB268B2579722B0868D0ED736EA0014E2020A7F0F143D0BEC750E7C248",
+  "hash": "1BEDEDE42048AEE526F01537DE87CB2757930B96A4D6C45B778D2C51667D7349",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",
