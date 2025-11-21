@@ -78,8 +78,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Subscriptions 
   defp maybe_assign_selected_validation_response(
          %{assigns: %{selected_validation_response: nil}} = socket,
          _validation_response
-       ),
-       do: socket
+       ), do: socket
 
   defp maybe_assign_selected_validation_response(socket, validation_response),
     do: assign(socket, :selected_validation_response, validation_response)
