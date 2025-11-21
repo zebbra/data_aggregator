@@ -4014,13 +4014,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "rows"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/subscriptions.ex:126
+#: lib/data_aggregator_web/live/collection_live/validation_request/subscriptions.ex:127
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions"
 msgid "The validation request failed, please try again"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/subscriptions.ex:130
+#: lib/data_aggregator_web/live/collection_live/validation_request/subscriptions.ex:131
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions"
 msgid "The validation request has been completed"
