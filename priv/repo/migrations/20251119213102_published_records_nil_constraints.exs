@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.PublishedRecordsConstraints do
+defmodule DataAggregator.Repo.Migrations.PublishedRecordsNilConstraints do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
