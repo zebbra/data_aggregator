@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     end
 
     belongs_to :publication, Publication do
-      allow_nil? false
+      allow_nil? true
       public? true
     end
 
