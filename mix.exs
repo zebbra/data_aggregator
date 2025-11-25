@@ -198,6 +198,7 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ash_oban, "~> 0.6"},
       {:usage_rules, "~> 0.1", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
@@ -287,10 +288,9 @@ defmodule DataAggregator.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
-
       # Background Jobs
-      {:oban, "~> 2.20"},
-      {:oban_live_dashboard, "~> 0.2.1"},
+      {:oban, "~> 2.0"},
+      {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},

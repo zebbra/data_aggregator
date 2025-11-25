@@ -4,7 +4,6 @@ defmodule DataAggregator.Files.AttachmentTest do
   use DataAggregatorWeb.ConnCase, async: true
 
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Files.Workers.AttachmentDeleter
 
   @example_file "test/support/fixtures/files/gbifch_swiss-species-registry-small.csv"
 
@@ -31,7 +30,9 @@ defmodule DataAggregator.Files.AttachmentTest do
     conn = get(build_conn(), attachment.url)
 
     assert conn.status == 200
-    assert {:ok, %Attachment{deletable: true}} = Attachment.destroy(attachment)
+
+    assert {:ok, %{deleted?: true}} =
+             Attachment.destroy(attachment, load: [:deleted?])
 
     conn = get(build_conn(), attachment.url)
 
@@ -39,12 +40,17 @@ defmodule DataAggregator.Files.AttachmentTest do
     assert conn.status == 200
   end
 
-  test "destroy (soft) deletes file and oban-worker hard_deletes it" do
+  test "destroy soft-deletes file and hard_destroy deletes it for good" do
     {:ok, attachment} = Attachment.import_from_path(@example_file)
 
-    assert {:ok, %Attachment{deletable: true}} = Attachment.destroy(attachment)
+    assert {:ok, attachment} = Attachment.destroy(attachment, load: [:deleted?])
 
-    :ok = AttachmentDeleter.perform(%Oban.Job{id: "my-id", meta: %{"cron" => true}})
+    assert attachment.deleted? == true
+
+    assert {:ok, attachments} = Attachment.read_deleted()
+    assert length(attachments) == 1
+
+    assert :ok = Attachment.hard_destroy!(attachment)
 
     conn = get(build_conn(), attachment.url)
 
