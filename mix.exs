@@ -214,7 +214,7 @@ defmodule DataAggregator.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.9", override: true},
+      {:ash, "~> 3.10", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.6", override: true},
