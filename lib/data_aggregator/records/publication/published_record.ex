@@ -62,7 +62,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
-      reference :publication, on_delete: :nothing, on_update: :update
+      reference :publication, on_delete: :delete, on_update: :update
 
       reference :record,
         on_delete: :delete,

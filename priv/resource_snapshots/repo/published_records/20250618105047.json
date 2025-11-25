@@ -3663,7 +3663,7 @@
           "strategy": "attribute"
         },
         "name": "published_records_publication_id_fkey",
-        "on_delete": "nothing",
+        "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
@@ -3713,7 +3713,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "12650C67406B72966709375E9DEC2B1D524B71A49275DEFC7DE6B074475752AE",
+  "hash": "90B431A7D6653ED302F8443E6E9F3BDAC461FF5FE8E28298AAA521AF166E3A68",
   "identities": [
     {
       "all_tenants?": false,
