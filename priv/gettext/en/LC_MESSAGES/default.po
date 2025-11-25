@@ -1632,28 +1632,22 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by data mids level"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:492
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:493
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 1"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:493
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:494
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 2"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:494
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with a Mids Level of at least 3"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:495
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with a Mids Level of at least 4"
+msgid "Records with a Mids Level of at least 3"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:56
@@ -5776,4 +5770,10 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Failed to delete dataset"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:492
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records with a Mids Level of at least 0"
 msgstr ""
