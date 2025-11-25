@@ -138,6 +138,11 @@ defmodule DataAggregator.Records.Record do
       public? true
       filter expr(collection_id == parent(collection_id))
     end
+
+    has_one :validated_record, DataAggregator.Records.ValidationResponse.ValidatedRecord do
+      public? true
+      filter expr(collection_id == parent(collection_id))
+    end
   end
 
   calculations do

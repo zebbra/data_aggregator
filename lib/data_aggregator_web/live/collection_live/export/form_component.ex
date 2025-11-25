@@ -89,6 +89,16 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
                   required
                   value="encoded"
                 />
+                <.field
+                  field={@form[:data_layer]}
+                  name="data_layer"
+                  id="data_layer_3"
+                  label="Validated"
+                  description="Exported data will consist of validated data from various thesauri and vocabularies"
+                  type="radio"
+                  required
+                  value="validated"
+                />
               </.fieldgroup>
             </.fieldset>
           </section>

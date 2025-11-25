@@ -40,6 +40,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     load =
       case data_layer do
         :encoded -> [:encoded_record]
+        :validated -> [:validated_record]
         _ -> []
       end
 
@@ -89,13 +90,15 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  defp map_record(record, mapping, :encoded) do
-    map_layers(record, mapping)
+  defp map_record(record, mapping, :encoded) when record.encoded_record == nil do
+    Logger.info(
+      "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
+    )
+
+    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  # map all layers of the record to a single map for exporting the record consoliated.
-  @spec map_layers(Record.t(), map()) :: map()
-  defp map_layers(record, mapping) when record.encoded_record != nil do
+  defp map_record(record, mapping, :encoded) do
     raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
 
     encoded_layer =
@@ -104,12 +107,19 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     Map.merge(raw_layer, encoded_layer)
   end
 
-  defp map_layers(record, mapping) when record.encoded_record == nil do
-    Logger.info(
-      "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
-    )
+  defp map_record(record, mapping, :validated) when record.validated_record == nil do
+    Logger.info("Record with id #{record.id} has no validated record. Raw Data will be used.")
 
     record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+  end
+
+  defp map_record(record, mapping, :validated) do
+    raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+    validated_layer =
+      record.validated_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+    Map.merge(raw_layer, validated_layer)
   end
 
   # returns the mapping according to the given header source and if a collection- or export-mapping is given.
