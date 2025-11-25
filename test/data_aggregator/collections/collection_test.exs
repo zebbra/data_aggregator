@@ -276,7 +276,7 @@ defmodule DataAggregator.CollectionTest do
       assert_lists_equal([], ValidationRequestRecordVersion.read!(tenant: collection))
 
       assert {:ok, attachments} = Attachment.read()
-      assert length(attachments) == 0
+      assert attachments == []
 
       assert {:ok, attachments} = Attachment.read_deleted()
       assert length(attachments) == 4
