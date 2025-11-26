@@ -276,10 +276,10 @@ defmodule DataAggregator.CollectionTest do
       assert_lists_equal([], ValidationRequestRecordVersion.read!(tenant: collection))
 
       assert {:ok, attachments} = Attachment.read()
+      assert attachments == []
 
-      Enum.each(attachments, fn attachment ->
-        assert attachment.deletable == true
-      end)
+      assert {:ok, attachments} = Attachment.read_deleted()
+      assert length(attachments) == 4
     end
 
     test "destroy/1 with invalid id returns error" do

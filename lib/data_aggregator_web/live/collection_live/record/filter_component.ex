@@ -482,17 +482,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       target={@target}
       options={[
         [key: ~t"Any"m, value: ""],
-        [key: 1, value: "1"],
-        [key: 2, value: "2"],
-        [key: 3, value: "3"],
-        [key: 4, value: "4"]
+        [key: 0, value: "1"],
+        [key: 1, value: "2"],
+        [key: 2, value: "3"],
+        [key: 3, value: "4"]
       ]}
       option_descriptions={
         %{
-          "1" => ~t"Records with a Mids Level of at least 1"m,
-          "2" => ~t"Records with a Mids Level of at least 2"m,
-          "3" => ~t"Records with a Mids Level of at least 3"m,
-          "4" => ~t"Records with a Mids Level of at least 4"m
+          "1" => ~t"Records with a Mids Level of at least 0"m,
+          "2" => ~t"Records with a Mids Level of at least 1"m,
+          "3" => ~t"Records with a Mids Level of at least 2"m,
+          "4" => ~t"Records with a Mids Level of at least 3"m
         }
       }
       legend_size="md"
