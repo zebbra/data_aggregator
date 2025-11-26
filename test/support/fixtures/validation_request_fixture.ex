@@ -7,6 +7,7 @@ defmodule DataAggregator.ValidationRequestFixtures do
   def expected_dwc_column_headers do
     [
       "collectionCode",
+      "collectionID",
       "datasetID",
       "gbifDOI",
       "institutionCode",
