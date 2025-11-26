@@ -5,11 +5,15 @@ defmodule DataAggregator.MixProject do
     System.get_env("APP_VERSION") || "0.0.42"
   end
 
+  def cli do
+    [preferred_envs: ["test.watch": :test]]
+  end
+
   def project do
     [
       app: :data_aggregator,
       version: version(),
-      elixir: "~> 1.18",
+      elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -17,9 +21,6 @@ defmodule DataAggregator.MixProject do
       aliases: aliases(),
       package: package(),
       deps: deps(),
-      preferred_cli_env: [
-        "test.watch": :test
-      ],
 
       # Dialyzer
       dialyzer: [
@@ -32,7 +33,8 @@ defmodule DataAggregator.MixProject do
       name: "Data Aggregator",
       source_url: "https://github.com/zebbra/data_aggregator",
       homepage_url: "https://github.com/zebbra/data_aggregator",
-      docs: docs()
+      docs: docs(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -201,18 +203,18 @@ defmodule DataAggregator.MixProject do
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
       {:bandit, "~> 1.8.0"},
-      {:phoenix, "~> 1.7.14"},
+      {:phoenix, "~> 1.8.1"},
       {:phoenix_ecto, "~> 4.6"},
-      {:phoenix_html, "~> 4.1"},
-      {:phoenix_live_reload, "~> 1.5", only: :dev},
+      {:phoenix_html, "~> 4.3"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:phoenix_live_view, "~> 1.1.14"},
-      {:phoenix_storybook, "~> 0.8.0"},
+      {:phoenix_storybook, "~> 0.9.3"},
       {:tidewave, "~> 0.4", only: [:dev]},
       {:live_debugger, "~> 0.3", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.9", override: true},
+      {:ash, "~> 3.10"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.6", override: true},
@@ -221,7 +223,7 @@ defmodule DataAggregator.MixProject do
       {:ash_paper_trail, "~> 0.4"},
       {:ash_pagify, "~> 1.4"},
       {:ash_authentication, "~> 4.0"},
-      {:ash_authentication_phoenix, "~> 2.0"},
+      {:ash_authentication_phoenix, "~> 2.10"},
 
       # Database and Ecto
       {:ecto, "~> 3.13"},
@@ -257,7 +259,7 @@ defmodule DataAggregator.MixProject do
        override: true},
 
       # Internationalization and Localization
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 0.26"},
       {:ex_cldr, "~> 2.37"},
       {:ex_cldr_dates_times, "~> 2.20"},
       {:ex_cldr_numbers, "~> 2.31"},
@@ -306,11 +308,7 @@ defmodule DataAggregator.MixProject do
       {:sourceror, "~> 1.7", only: [:dev, :test]},
 
       # Documentation
-      {:ex_doc, "~> 0.35", runtime: false},
-
-      # Livebook Widgets
-      {:kino, "~> 0.12", only: :dev},
-      {:kino_explorer, "~> 0.1", only: :dev}
+      {:ex_doc, "~> 0.35", runtime: false}
     ]
   end
 
@@ -391,7 +389,7 @@ defmodule DataAggregator.MixProject do
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
-        "cmd cd assets && npm install"
+        "cmd --cd assets npm install"
       ],
       "assets.build": [
         "tailwind data_aggregator",
