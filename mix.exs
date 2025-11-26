@@ -311,6 +311,7 @@ defmodule DataAggregator.MixProject do
       {:ex_doc, "~> 0.35", runtime: false}
 
       # Livebook Widgets
+      # as of found here: https://elixirforum.com/t/oban-bringing-app-down-with-repo-not-available-error-in-development/54433/29
       # {:kino, "~> 0.12", only: :dev},
       # {:kino_explorer, "~> 0.1", only: :dev}
     ]
