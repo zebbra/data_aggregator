@@ -214,7 +214,7 @@ defmodule DataAggregator.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.10", override: true},
+      {:ash, "~> 3.10"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.6", override: true},
@@ -309,11 +309,6 @@ defmodule DataAggregator.MixProject do
 
       # Documentation
       {:ex_doc, "~> 0.35", runtime: false}
-
-      # Livebook Widgets
-      # as of found here: https://elixirforum.com/t/oban-bringing-app-down-with-repo-not-available-error-in-development/54433/29
-      # {:kino, "~> 0.12", only: :dev},
-      # {:kino_explorer, "~> 0.1", only: :dev}
     ]
   end
 

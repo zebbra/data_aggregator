@@ -168,8 +168,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
+            OTP_VERSION=${{ steps.versions.outputs.erlang }}
+            ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
             APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
-
   deploy_zebbra:
     name: Deploy to zebbra staging
     permissions:
