@@ -206,7 +206,6 @@ defmodule DataAggregator.CollectionTest do
       assert ValidationResponse.get_by_id!(validation_response.id)
     end
 
-    @tag run: true
     test "destroy/1 deletes collection with multiple related entities" do
       collection = collection_fixture()
 
@@ -276,7 +275,11 @@ defmodule DataAggregator.CollectionTest do
 
       assert_lists_equal([], ValidationRequestRecordVersion.read!(tenant: collection))
 
-      assert_lists_equal([], Attachment.read!())
+      assert {:ok, attachments} = Attachment.read()
+      assert attachments == []
+
+      assert {:ok, attachments} = Attachment.read_deleted()
+      assert length(attachments) == 4
     end
 
     test "destroy/1 with invalid id returns error" do

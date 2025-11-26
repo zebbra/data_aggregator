@@ -28,10 +28,14 @@ defmodule DataAggregator.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: DataAggregator.Finch},
       # Start the Oban queue
-      {Oban, Application.fetch_env!(:data_aggregator, Oban)},
+      {Oban,
+       AshOban.config(
+         Application.fetch_env!(:data_aggregator, :ash_domains),
+         Application.fetch_env!(:data_aggregator, Oban)
+       )},
       # Start the AshAuthentication system
-      {AshAuthentication.Supervisor, otp_app: :data_aggregator},
       # Start the Endpoint (http/https)
+      {AshAuthentication.Supervisor, otp_app: :data_aggregator},
       DataAggregatorWeb.Endpoint
     ]
 
