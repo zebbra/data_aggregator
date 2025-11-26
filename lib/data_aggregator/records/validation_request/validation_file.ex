@@ -18,6 +18,7 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
   ]
 
   @collection_headers [
+    "collectionID",
     "collectionCode",
     "datasetID",
     "institutionCode",
