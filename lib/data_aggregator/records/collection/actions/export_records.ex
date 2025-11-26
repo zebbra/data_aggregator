@@ -114,12 +114,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   end
 
   defp map_record(record, mapping, :validated) do
-    raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
-
-    validated_layer =
-      record.validated_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
-
-    Map.merge(raw_layer, validated_layer)
+    record.validated_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
   # returns the mapping according to the given header source and if a collection- or export-mapping is given.

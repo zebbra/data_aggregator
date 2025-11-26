@@ -94,7 +94,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
                   name="data_layer"
                   id="data_layer_3"
                   label="Validated"
-                  description="Exported data will consist of validated data from various thesauri and vocabularies"
+                  description="Exported data will consist of validated data."
                   type="radio"
                   required
                   value="validated"
