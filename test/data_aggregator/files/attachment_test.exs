@@ -24,15 +24,37 @@ defmodule DataAggregator.Files.AttachmentTest do
     )
   end
 
-  test "destroy also deletes file" do
+  test "destroy also (soft) deletes file" do
     {:ok, attachment} = Attachment.import_from_path(@example_file)
 
     conn = get(build_conn(), attachment.url)
+
     assert conn.status == 200
 
-    assert :ok = Attachment.destroy(attachment)
+    assert {:ok, %{deleted?: true}} =
+             Attachment.destroy(attachment, load: [:deleted?])
 
     conn = get(build_conn(), attachment.url)
+
+    # the attachment still exists, because it's only soft-deleted
+    assert conn.status == 200
+  end
+
+  test "destroy soft-deletes file and hard_destroy deletes it for good" do
+    {:ok, attachment} = Attachment.import_from_path(@example_file)
+
+    assert {:ok, attachment} = Attachment.destroy(attachment, load: [:deleted?])
+
+    assert attachment.deleted? == true
+
+    assert {:ok, attachments} = Attachment.read_deleted()
+    assert length(attachments) == 1
+
+    assert :ok = Attachment.hard_destroy!(attachment)
+
+    conn = get(build_conn(), attachment.url)
+
+    # the attachment is now hard-deleted
     assert conn.status == 404
   end
 end

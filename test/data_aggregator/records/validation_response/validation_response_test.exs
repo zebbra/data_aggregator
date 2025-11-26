@@ -202,7 +202,9 @@ defmodule DataAggregator.ValidationResponseTest do
         ValidationResponse.get_by_id!(validation_response.id)
       end
 
-      # check if deletions of attachments are handled referential correctly
+      # check if deletions of attachments are handled referential correctly,
+      # it should be soft-deleted
+
       assert_raise Invalid, fn ->
         Attachment.get_by_id!(attachment.id)
       end

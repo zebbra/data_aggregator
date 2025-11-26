@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     end
 
     belongs_to :publication, Publication do
-      allow_nil? false
+      allow_nil? true
       public? true
     end
 
@@ -62,7 +62,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
-      reference :publication, on_delete: :nothing, on_update: :update
+      reference :publication, on_delete: :delete, on_update: :update
 
       reference :record,
         on_delete: :delete,

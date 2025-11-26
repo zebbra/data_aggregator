@@ -18,6 +18,8 @@ config :ash, :use_all_identities_in_manage_relationship?, false
 # prevent deprecated warning for wrong usage of timestamp dateformat
 config :ash, :utc_datetime_type, :naive_datetime
 
+config :ash_oban, pro?: false
+
 # AshPagify global configuration
 config :ash_pagify,
   default_limit: 15,
@@ -58,7 +60,8 @@ config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},
-    {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)}
+    {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)},
+    {Oban.Plugins.Cron, []}
   ],
   queues: [
     imports: 1,
@@ -69,7 +72,8 @@ config :data_aggregator, Oban,
     extractions: 1,
     mappings: 1,
     validation_responses: 1,
-    validation_requests: 1
+    validation_requests: 1,
+    attachment_deletion: 1
   ]
 
 config :data_aggregator, :ash_uuid,
