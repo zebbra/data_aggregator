@@ -10,5 +10,6 @@
   {"test/support/fixtures/encoding_fixtures.ex", "Function ExUnit.Callbacks.__noop__/0 does not exist."},
   {"test/support/fixtures/record_encoding_result_fixture.ex", "Function ExUnit.Callbacks.__merge__/4 does not exist."},
   {"test/support/fixtures/record_encoding_result_fixture.ex", "Function ExUnit.Callbacks.__noop__/0 does not exist."},
-  {"test/support/test_helpers.ex", "Function ExUnit.CaseTemplate.__proxy__/2 does not exist."}
+  {"test/support/test_helpers.ex", "Function ExUnit.CaseTemplate.__proxy__/2 does not exist."},
+  {"lib/data_aggregator_web/gettext.ex"}
 ]

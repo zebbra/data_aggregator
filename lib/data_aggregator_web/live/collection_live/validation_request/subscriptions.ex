@@ -117,8 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
   defp maybe_assign_selected_validation_request(
          %{assigns: %{selected_validation_request: nil}} = socket,
          _validation_request
-       ),
-       do: socket
+       ), do: socket
 
   defp maybe_assign_selected_validation_request(socket, validation_request),
     do: assign(socket, :selected_validation_request, validation_request)

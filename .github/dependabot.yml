@@ -8,6 +8,8 @@ updates:
   # Enable version updates for hex
   - package-ecosystem: "mix"
     directory: "/"
+    cooldown:
+      default-days: 5
     schedule:
       interval: "daily"
     groups:
@@ -17,6 +19,8 @@ updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
     directory: "/assets"
+    cooldown:
+      default-days: 5
     schedule:
       interval: "weekly"
     groups:
@@ -26,11 +30,15 @@ updates:
   # Enable version updates for Docker
   - package-ecosystem: "docker"
     directory: "/"
+    cooldown:
+      default-days: 5
     schedule:
       interval: "weekly"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
+    cooldown:
+      default-days: 5
     schedule:
       interval: "weekly"
