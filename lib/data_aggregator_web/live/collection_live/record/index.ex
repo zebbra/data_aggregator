@@ -70,7 +70,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign_async(
       socket,
       [
-        :records_count_validation_unknown,
+        :records_count_not_validated,
         :records_count_not_encoded,
         :records_count_not_published
       ],
@@ -87,14 +87,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Ash.Query.filter(expr(not_published == true))
           |> Ash.count!()
 
-        count_validation_unknown =
+        count_not_validated =
           Record
           |> Ash.Query.set_tenant(collection)
-          |> Ash.Query.filter(expr(validation_unknown == true))
+          |> Ash.Query.filter(expr(not_validated == true))
           |> Ash.count!()
 
         stats = %{
-          records_count_validation_unknown: count_validation_unknown,
+          records_count_not_validated: count_not_validated,
           records_count_not_encoded: count_not_encoded,
           records_count_not_published: count_not_published
         }
@@ -268,27 +268,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
 
           <.placeholder_stat
-            :if={@records_count_validation_unknown.loading}
+            :if={@records_count_not_validated.loading}
             title={~t"Not validated"m}
           />
           <.scope_stat
-            :if={@records_count_validation_unknown.ok?}
-            href={path_helper(@collection, @layer, @meta.result, %{status: :unknown})}
-            title={~t"Validation unknown"m}
+            :if={@records_count_not_validated.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :not_validated})}
+            title={~t"Not validated"m}
             value={
-              if @records_count_validation_unknown.result == 0,
+              if @records_count_not_validated.result == 0,
                 do: 0,
-                else: @records_count_validation_unknown.result / @collection.records_count
+                else: @records_count_not_validated.result / @collection.records_count
             }
             desc={
-              mgettext("%{records_count_validation_unknown} of %{records_count} Records",
-                records_count_validation_unknown:
-                  format_number(@records_count_validation_unknown.result),
+              mgettext("%{records_count_not_validated} of %{records_count} Records",
+                records_count_not_validated: format_number(@records_count_not_validated.result),
                 records_count: format_number(@collection.records_count)
               )
             }
             active={
-              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :unknown})
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_validated})
             }
           />
         </div>
