@@ -14,12 +14,15 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
-      correct_record = record_fixture_for_encoding()
+      correct_record = record_fixture_for_encoding(%{loc_country_code: "CH"})
+
+      out_of_scope_record = record_fixture_for_encoding(%{loc_country_code: "DE"})
 
       invalid_record = record_fixture_for_encoding_swiss_species_invalid()
 
       [
         correct_record: correct_record,
+        out_of_scope_record: out_of_scope_record,
         invalid_record: invalid_record
       ]
     end
@@ -54,6 +57,28 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert encoded_record.state === :encoded
     end
 
+    test "encode/2 for :swiss_species catalog which returns out of scope", %{
+      out_of_scope_record: out_of_scope_record
+    } do
+      expect_correct_swiss_species_api_call()
+
+      {:ok, encoded_record} =
+        Record.encode(out_of_scope_record, :swiss_species, tenant: out_of_scope_record.collection_id)
+
+      assert encoded_record !== nil
+
+      lookedup_encoded_record =
+        EncodedRecord.get_by_record!(encoded_record.id, tenant: encoded_record.collection_id)
+
+      assert lookedup_encoded_record !== nil
+      assert lookedup_encoded_record.tax_taxon_id_ch === 15_311
+
+      assert lookedup_encoded_record.oth_swiss_species_center === "Out of Scope"
+      assert lookedup_encoded_record.oth_swiss_species_registered == true
+      assert lookedup_encoded_record.oth_swiss_species_registered_at
+      assert encoded_record.state === :encoded
+    end
+
     test "encode/2 for :swiss_species catalog which returns ok but no matching record",
          %{invalid_record: invalid_record} do
       {{:ok, record}, logs} =
@@ -66,9 +91,9 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       lookedup_encoded_record =
         EncodedRecord.get_by_record!(record.id, tenant: record.collection_id)
 
-      assert lookedup_encoded_record.oth_swiss_species_center === nil
+      assert lookedup_encoded_record.oth_swiss_species_center === "Not Registered"
       assert lookedup_encoded_record.oth_swiss_species_registered == false
-      assert lookedup_encoded_record.oth_swiss_species_registered_at
+      assert lookedup_encoded_record.oth_swiss_species_registered_at == nil
       assert lookedup_record.state === :encoded
       assert lookedup_record
       assert logs =~ "no matching encoded_record found for taxon_id: 0"
