@@ -201,6 +201,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   defp swiss_species_color(nil, _center), do: "gray"
   defp swiss_species_color(false, _center), do: "blue"
+  defp swiss_species_color(true, "Out of Scope"), do: "blue"
   defp swiss_species_color(true, _center), do: "green"
 
   defp swiss_species_icon_name(nil, _center), do: "hero-question-mark-circle-solid"
@@ -213,6 +214,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   defp swiss_species_tooltip(false, _center),
     do: ~t"This species has not been registered by any Swiss species data center"m
+
+  defp swiss_species_tooltip(true, "Out of Scope"),
+    do: ~t"This species is registered but out of scope (countryCode not in CH)"m
 
   defp swiss_species_tooltip(true, center),
     do: mgettext("This species has been registered by the Swiss species data center %{center}", center: center)

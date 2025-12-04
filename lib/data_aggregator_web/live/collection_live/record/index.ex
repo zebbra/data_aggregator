@@ -490,30 +490,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :oth_swiss_species_center)}
-          field={:oth_swiss_species_center}
-          label={~t"Swiss Registry"m}
-          class="text-center"
-        >
-          <.swiss_species_center_badge
-            registered={record.encoded_record.oth_swiss_species_registered}
-            center={record.encoded_record.oth_swiss_species_center}
-          />
-        </:col>
-        <:col
-          :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :validation_status)}
-          field={:validation_status}
-          label={~t"Validation status"m}
-          class="text-center"
-        >
-          <.validation_state_badge
-            state={record.validation_status}
-            annotation={record.validation_annotation}
-          />
-        </:col>
-        <:col
-          :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
           label={~t"MIDS Level"m}
           class="text-center"
@@ -604,6 +580,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <.swiss_species_center_badge
                   registered={@selected_record.encoded_record.oth_swiss_species_registered}
                   center={@selected_record.encoded_record.oth_swiss_species_center}
+                />
+              </:item>
+              <:item
+                :if={
+                  @selected_record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
+                    @selected_record.encoded_record.oth_swiss_species_registered == true &&
+                    @selected_record.state == :encoded
+                }
+                title={~t"Validation Status"m}
+              >
+                <.validation_state_badge
+                  state={@selected_record.validation_status}
+                  annotation={@selected_record.validation_annotation}
                 />
               </:item>
               <:item :if={@selected_record.validation_annotation} title={~t"Info Species Feedback"m}>
@@ -1102,7 +1091,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :loc_decimal_longitude,
         :state,
         :publication_status,
-        :validation_status,
         :validation_annotation,
         :updated_at
       ]
