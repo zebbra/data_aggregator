@@ -91,7 +91,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       lookedup_encoded_record =
         EncodedRecord.get_by_record!(record.id, tenant: record.collection_id)
 
-      assert lookedup_encoded_record.oth_swiss_species_center === "Not Registered"
+      assert lookedup_encoded_record.oth_swiss_species_center === nil
       assert lookedup_encoded_record.oth_swiss_species_registered == false
       assert lookedup_encoded_record.oth_swiss_species_registered_at == nil
       assert lookedup_record.state === :encoded

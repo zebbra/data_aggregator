@@ -95,7 +95,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
     encoded_record =
       Strategy.update_encoded_record(
-        %{registered: false, center: "Not Registered"},
+        %{registered: false},
         encoded_record,
         @output_attributes,
         ctx
