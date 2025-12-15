@@ -65,7 +65,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     end
   end
 
-  defp country_check(%{loc_country_code: country_code} = _encoded_record, _result) when country_code in ["CH", "ch"] do
+  defp country_check(%{loc_country_code: country_code} = _encoded_record, _result)
+       when country_code in ["CH", "ch", "CHE", "che"] do
     {:ok, :valid}
   end
 
