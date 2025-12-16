@@ -828,12 +828,6 @@ defmodule DataAggregator.WorkflowTest do
         encoded: "CH",
         category_name: "loc"
       },
-      tax_accepted_name_usage_id: %{
-        name: "acceptedNameUsageID",
-        imported: "-",
-        encoded: "1669856",
-        category_name: "tax"
-      },
       eve_event_date: %{
         name: "eventDate",
         imported: "2025-01-01/2025-01-20",

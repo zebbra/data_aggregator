@@ -46,10 +46,6 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert lookedup_encoded_record.tax_accepted_name_usage ===
                "Enantiulus dentigerus (Verhoeff, 1901)"
 
-      assert lookedup_encoded_record.tax_scientific_name ===
-               "Enantiulus dentigerus (Verhoeff, 1901)"
-
-      assert lookedup_encoded_record.tax_accepted_name_usage_id === "1669856"
       assert lookedup_encoded_record.tax_taxon_rank === "SPECIES"
       assert lookedup_encoded_record.oth_swiss_species_center === "infofauna"
       assert lookedup_encoded_record.oth_swiss_species_registered == true
@@ -96,7 +92,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert lookedup_encoded_record.oth_swiss_species_registered_at == nil
       assert lookedup_record.state === :encoded
       assert lookedup_record
-      assert logs =~ "no matching encoded_record found for taxon_id: 0"
+      assert logs =~ "no matching entry found for scientific_name:"
     end
 
     test "encode/2 for :swiss_species catalog which returns an error", %{
@@ -132,21 +128,6 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert record.encoded == false
 
       assert logs =~ "no encoding strategy found for catalog: :unknown"
-    end
-
-    @tag capture_log: true
-    test "encode/2 for :swiss_species catalog fails if taxon_id is not provided", %{
-      correct_record: record
-    } do
-      record = update_record_fixtures!(record, %{tax_taxon_id: nil})
-      Record.encode(record, :swiss_species, tenant: record.collection_id)
-
-      {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(record, :swiss_species, tenant: record.collection_id) end)
-
-      assert record.state === :failed
-
-      assert logs =~ "taxon_id is empty"
     end
   end
 end

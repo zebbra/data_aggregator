@@ -16,6 +16,7 @@ defmodule DataAggregator.Taxonomy do
 
   resources do
     resource DataAggregator.Taxonomy.Catalogs.SwissSpecies
+    resource DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
   end
 
   json_api do

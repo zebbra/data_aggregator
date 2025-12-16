@@ -1,6 +1,17 @@
 defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   @moduledoc """
-    Encode Records with the gbif swiss species registry catalog
+  Encode Records with the Swiss Species Registry catalog.
+
+  Uses `tax_scientific_name` to lookup in the SwissSpeciesRegistry table.
+  The lookup is based on scientific name rather than GBIF taxon ID.
+
+  ## Encoding Results
+
+  - **Match found**: Populates taxon_id_ch, accepted_name_usage, center, rank,
+    registered_at, and registered fields
+  - **No match**: Sets registered to false
+  - **Duplicate in registry**: Returns error "Found duplicate in Swiss Species Registry."
+  - **Out of scope (non-CH country)**: Sets center to "Out of Scope", registered to true
   """
 
   alias Ash.Resource.Actions.Implementation.Context
@@ -8,11 +19,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
   require Logger
 
-  # the input attributes are the attributes that will be used to query the catalog, so far we only use the tax_taxon_id
+  # Input: use tax_scientific_name for lookup
   @input_attribute hd(Catalog.get_input_dwc_attributes(:swiss_species))
 
   # the output attributes are the attributes that will be updated on the encoded record.
@@ -21,7 +32,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   @output_attributes Catalog.get_output_attributes(:swiss_species)
 
   @doc """
-    lookup the swiss species registry and return the encoded record
+  Lookup the Swiss Species Registry and return the encoded record.
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record, ctx) do
@@ -31,15 +42,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
       {:error, error, encoded_record} ->
         handle_error(encoded_record.id, error)
-
         {:error, error, encoded_record}
     end
   end
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    with {:ok, taxon_id} <- get_taxon_id(encoded_record),
-         {:ok, result} <- SwissSpecies.get_by_usage_key(taxon_id),
+    with {:ok, scientific_name} <- get_scientific_name(encoded_record),
+         {:ok, result} <- SwissSpeciesRegistry.get_by_scientific_name(scientific_name),
          {:ok, :valid} <- country_check(encoded_record, result) do
       encoded_record =
         result
@@ -65,8 +75,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     end
   end
 
-  defp country_check(%{loc_country_code: country_code} = _encoded_record, _result)
-       when country_code in ["CH", "ch", "CHE", "che"] do
+  @spec get_scientific_name(EncodedRecord.t()) :: {:ok, String.t()} | {:error, String.t()}
+  defp get_scientific_name(encoded_record) do
+    case Map.get(encoded_record, @input_attribute) do
+      nil -> {:error, "scientific_name is empty"}
+      "" -> {:error, "scientific_name is empty"}
+      scientific_name -> {:ok, scientific_name}
+    end
+  end
+
+  defp country_check(%{loc_country_code: country_code}, _result) when country_code in ["CH", "ch", "CHE", "che"] do
     {:ok, :valid}
   end
 
@@ -92,7 +110,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   end
 
   defp handle_not_found_or_invalid(encoded_record, ctx) do
-    Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+    Logger.warning("[swiss_species] no matching entry found for scientific_name: #{encoded_record.tax_scientific_name}")
 
     encoded_record =
       Strategy.update_encoded_record(
@@ -103,14 +121,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
       )
 
     {:ok, encoded_record}
-  end
-
-  @spec get_taxon_id(map()) :: {:ok, integer()} | {:error, String.t()}
-  defp get_taxon_id(encoded_record) do
-    case Map.get(encoded_record, @input_attribute) do
-      nil -> {:error, "taxon_id is empty"}
-      taxon_id -> {:ok, taxon_id}
-    end
   end
 
   @spec handle_error(String.t(), map()) :: :ok
@@ -128,46 +138,24 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   end
 
   @doc """
-    Convert values to string if necessary. Implement function convert_to_string/1 for each attribute of the encoded datastructure
+  Convert values to string if necessary.
 
-    %{
-      id: "spc_02vSBcLj4G1ReRVJNXDLVo",
-      calculations: %{},
-      aggregates: %{},
-      __lateral_join_source__: nil,
-      __meta__: #Ecto.Schema.Metadata<:built, "swiss_species">,
-      __metadata__: %{},
-      __order__: nil,
-      center: nil,
-      rank: "SPECIES",
-      inserted_at: nil,
-      updated_at: nil,
-      scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
-      taxon_id_ch: 15311,
-      accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
-      accepted_usage_key: "1669856",
-      usage_key: 2435194
-    }
+  ## Examples
 
-    ## Example
+      iex> convert_to_string({:foo, nil})
+      nil
 
-    iex> convert_to_string({:foo, nil})
-    nil
+      iex> convert_to_string({:center, :infofauna})
+      "infofauna"
 
-    iex> convert_to_string({:accepted_usage_key, "12345"})
-    "12345"
-
-    iex> convert_to_string({:accepted_usage_key, 12345})
-    "12345"
-
-    iex> convert_to_string({:foo, "bar"})
-    "bar"
+      iex> convert_to_string({:foo, "bar"})
+      "bar"
   """
   @spec convert_to_string({atom(), any()}) :: String.t() | nil
   def convert_to_string(key_value)
 
   def convert_to_string({_, nil}), do: nil
   def convert_to_string({_, value}) when is_binary(value), do: value
-  def convert_to_string({:accepted_usage_key, value}), do: Integer.to_string(value)
+  def convert_to_string({:center, value}) when is_atom(value), do: Atom.to_string(value)
   def convert_to_string({_, value}), do: value
 end
