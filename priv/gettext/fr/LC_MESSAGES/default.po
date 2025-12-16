@@ -1354,7 +1354,7 @@ msgstr ""
 msgid "Import started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:106
+#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:116
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "Cancel"
@@ -1366,7 +1366,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "Export records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:122
+#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:132
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "Export started in background"
@@ -1384,13 +1384,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "Select your data headers"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:103
+#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:113
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "Start export"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:97
+#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "required to choose an option"
@@ -2994,7 +2994,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import data"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:129
+#: lib/data_aggregator_web/live/collection_live/export/form_component.ex:139
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "An export for this dataset is already in process"
