@@ -99,7 +99,10 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
         }
         |> ValidationRequest.create!(tenant: collection)
         |> ValidationRequest.update_attachment!(
-          Attachment.import_from_path!("test/support/fixtures/files/validation_dwca.zip")
+          Attachment.import_from_path!(
+            "test/support/fixtures/files/validation_dwca.zip",
+            collection
+          )
         )
 
       [

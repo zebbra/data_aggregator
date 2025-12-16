@@ -4,11 +4,14 @@ defmodule DataAggregator.Files.Attachment.Calculations.CachedFileTest do
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.RecordsFixtures
 
   @example "test/support/fixtures/files/museum-dataset-import-example.csv"
 
   test "load calculation" do
-    {:ok, attachment} = Attachment.import_from_path(@example)
+    collection = RecordsFixtures.collection_fixture()
+
+    {:ok, attachment} = Attachment.import_from_path(@example, collection)
     {:ok, attachment} = Ash.load(attachment, :cached_file)
 
     assert String.ends_with?(attachment.cached_file, "museum-dataset-import-example.csv")

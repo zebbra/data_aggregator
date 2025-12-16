@@ -319,7 +319,7 @@ defmodule DataAggregator.Records.Import do
 
     references do
       reference :collection,
-        on_delete: :nothing,
+        on_delete: :delete,
         on_update: :update,
         index?: true,
         deferrable: true
