@@ -39,7 +39,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
     with {:ok, taxon_id} <- get_taxon_id(encoded_record),
-         {:ok, result} <- SwissSpecies.get_by_usage_key(taxon_id) do
+         {:ok, result} <- SwissSpecies.get_by_usage_key(taxon_id),
+         {:ok, :valid} <- country_check(encoded_record, result) do
       encoded_record =
         result
         |> Map.from_struct()
@@ -56,9 +57,38 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
       {:error, %Ash.Error.Invalid{}} ->
         handle_not_found_or_invalid(encoded_record, ctx)
 
+      {:out_of_scope, result} ->
+        handle_out_of_scope(encoded_record, result, ctx)
+
       {:error, error} ->
         {:error, error, encoded_record}
     end
+  end
+
+  defp country_check(%{loc_country_code: country_code} = _encoded_record, _result)
+       when country_code in ["CH", "ch", "CHE", "che"] do
+    {:ok, :valid}
+  end
+
+  defp country_check(_, result) do
+    {:out_of_scope, result}
+  end
+
+  defp handle_out_of_scope(encoded_record, result, ctx) do
+    Logger.info(
+      "[swiss_species] encoded_record #{encoded_record.id} is out of scope due to country_code: #{encoded_record.loc_country_code}"
+    )
+
+    encoded_record =
+      result
+      |> Map.from_struct()
+      |> maybe_convert_values()
+      |> Map.put(:registered_at, DateTime.utc_now())
+      |> Map.put(:registered, true)
+      |> Map.put(:center, "Out of Scope")
+      |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
+
+    {:ok, encoded_record}
   end
 
   defp handle_not_found_or_invalid(encoded_record, ctx) do
@@ -66,7 +96,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
     encoded_record =
       Strategy.update_encoded_record(
-        %{registered: false, registered_at: DateTime.utc_now()},
+        %{registered: false},
         encoded_record,
         @output_attributes,
         ctx
