@@ -385,7 +385,7 @@ defmodule DataAggregator.Records.Collection do
       authorize_if always()
     end
 
-    policy action(:cancel_action) do
+    policy action([:cancel_action, :destroy]) do
       forbid_unless with_role("admin")
     end
 
@@ -396,7 +396,7 @@ defmodule DataAggregator.Records.Collection do
     end
 
     policy_group with_role("collection_administrator") do
-      policy action_type([:create, :update, :destroy]) do
+      policy action_type([:create, :update]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
