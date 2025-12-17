@@ -22,8 +22,6 @@ defmodule DataAggregator.Records.Collection.Changes.BulkSoftDeleteAttachments do
       |> Ash.Query.filter(collection_id == ^collection_id)
       |> Ash.bulk_destroy!(:destroy, %{},
         strategy: :atomic_batches,
-        return_errors?: true,
-        return_records?: true,
         actor: actor
       )
 

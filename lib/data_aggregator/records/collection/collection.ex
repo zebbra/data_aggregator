@@ -288,12 +288,6 @@ defmodule DataAggregator.Records.Collection do
       require_atomic? false
       change Changes.SetDeleting
 
-      # change cascade_destroy(:imports, after_action?: false)
-      # change cascade_destroy(:exports, after_action?: false)
-      # change cascade_destroy(:image_uploads, after_action?: false)
-      # change cascade_destroy(:validation_requests, after_action?: false)
-      # change cascade_destroy(:publications, after_action?: false)
-
       change Changes.BulkSoftDeleteAttachments
     end
 

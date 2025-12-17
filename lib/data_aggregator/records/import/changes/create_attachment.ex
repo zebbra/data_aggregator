@@ -11,7 +11,6 @@ defmodule DataAggregator.Records.Import.Changes.CreateAttachment do
   @impl true
   def change(%Changeset{} = changeset, _opts, %{tenant: collection}) do
     collection = maybe_collection_from_id(collection)
-
     path = Changeset.get_argument(changeset, :path)
     filename = Changeset.get_argument(changeset, :filename)
 
