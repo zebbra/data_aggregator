@@ -66,7 +66,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
         {:ok, {row, false}}, {valid, invalid} -> {valid, [row | invalid]}
       end)
 
-    if length(invalid) > 0 do
+    if Enum.empty?(invalid) do
       Logger.warning("#{length(invalid)} invalid row(s) dropped from chunk!")
     end
 
