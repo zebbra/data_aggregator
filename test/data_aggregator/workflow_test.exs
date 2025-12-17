@@ -126,6 +126,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag capture_log: true
     test "import workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -262,6 +263,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag capture_log: true
     test "encoding workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -370,6 +372,7 @@ defmodule DataAggregator.WorkflowTest do
       [publication: publication, actor: actor, records: records]
     end
 
+    @tag capture_log: true
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
@@ -495,6 +498,7 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
+    @tag capture_log: true
     test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,
