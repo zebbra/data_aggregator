@@ -29,9 +29,10 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
           count: to_string(count),
           file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
           institution: institution_name,
-          date: get_date_time_now(),
+          date: get_date_time(),
           owner: institution_name,
-          center: validation_request.center
+          center: validation_request.center,
+          collection_code: validation_request.collection.code
         }
 
       notify_infospecies(query, notification)
@@ -62,15 +63,13 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   end
 
   defp get_message_body(notification) do
-    "institution: " <>
-      notification.institution <>
-      "owner: " <>
-      notification.owner <>
-      ", date: " <>
-      notification.date <>
-      ", count: " <>
-      notification.count <>
-      ", link: " <> notification.file_link
+    "This automatic email is reaching the #{notification.center} centre either because there are new records available for validation or because the original data has been updated for the dataset #{notification.collection_code} of the #{notification.institution}. \n\n" <>
+      "Number of records in the requested validation: #{notification.count} \n" <>
+      "Time stamp of the requested validation: #{notification.date} \n\n" <>
+      "Link to download the dataset: #{notification.file_link} \n\n" <>
+      "Please follow the conventions established with GBIF.ch to ensure smooth data flow.\n\n" <>
+      "Regards,\n" <>
+      "The GBIF.ch team"
   end
 
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
@@ -82,7 +81,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
     case new()
          |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
          |> to(to_mails)
-         |> subject("New records available for validation")
+         |> subject("DAGI: New requested validation for #{notification.collection_code}")
          |> text_body(get_message_body(notification))
          |> Mailer.deliver() do
       {:ok, result} ->
@@ -111,7 +110,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
     |> Enum.each(&Record.update_last_validation_started_at!(&1))
   end
 
-  defp get_date_time_now do
+  defp get_date_time do
     DateTime.utc_now()
     |> DateTime.shift_zone!("Europe/Zurich")
     |> Cldr.DateTime.to_string!(format: :short)

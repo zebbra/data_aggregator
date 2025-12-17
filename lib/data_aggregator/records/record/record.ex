@@ -57,8 +57,8 @@ defmodule DataAggregator.Records.Record do
           filter: %{publication_status: %{not_equals: :published}}
         },
         %{
-          name: :validation_unknown,
-          filter: %{validation_status: %{equals: :unknown}}
+          name: :not_validated,
+          filter: %{validation_status: %{equals: :not_validated}}
         }
       ]
     },
@@ -126,17 +126,18 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
       public? true
-      filter expr(collection_id == parent(collection_id))
     end
 
     has_one :published_record, PublishedRecord do
       public? true
-      filter expr(collection_id == parent(collection_id))
     end
 
     has_one :validation_request_record, ValidationRequestRecord do
       public? true
-      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :validated_record, DataAggregator.Records.ValidationResponse.ValidatedRecord do
+      public? true
     end
   end
 
@@ -227,9 +228,9 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               expr(publication_status != :published)
 
-    calculate :validation_unknown,
+    calculate :not_validated,
               :boolean,
-              expr(validation_status == :unknown)
+              expr(validation_status == :not_validated)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false

@@ -246,6 +246,33 @@ defmodule DataAggregator.ExportTest do
         mte_verbatim_label: nil
       })
 
+      exportable_record_with_encoded_record(
+        collection,
+        %{
+          extra_data: %{"Custom Attribute" => "Value 3"},
+          mte_verbatim_label: "foo\nbar"
+        },
+        %{
+          tax_scientific_name: "Encoded Name",
+          tax_family: "Encoded Family",
+          mte_verbatim_label: "encoded verbatim label"
+        }
+      )
+
+      exportable_record_with_validated_record(
+        collection,
+        %{
+          extra_data: %{"Custom Attribute" => "Value 4"},
+          mte_verbatim_label: "raw label",
+          tax_scientific_name: "Raw Name"
+        },
+        %{
+          tax_scientific_name: "Validated Name",
+          tax_family: "Validated Family",
+          mte_verbatim_label: nil
+        }
+      )
+
       # this one should not be exported
       unexportable_record(collection_other)
 
@@ -286,7 +313,7 @@ defmodule DataAggregator.ExportTest do
     } do
       assert export.mapping == @default_mapping
       assert DataFrame.n_columns(data_frame) == Enum.count(Map.keys(@default_mapping))
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: @valid_custom_mapping
@@ -298,7 +325,7 @@ defmodule DataAggregator.ExportTest do
     } do
       assert export.mapping == @valid_custom_mapping
       assert DataFrame.n_columns(data_frame) == 2
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
 
       assert_lists_equal(DataFrame.names(data_frame), [
         "Famille",
@@ -326,14 +353,14 @@ defmodule DataAggregator.ExportTest do
       assert "Custom Attribute" in columns
 
       assert DataFrame.n_columns(data_frame) == 3
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
 
       custom_attribute_values =
         data_frame
         |> DataFrame.to_rows()
         |> Enum.map(&Map.get(&1, "Custom Attribute"))
 
-      assert custom_attribute_values == ["Value 1", "Value 2"]
+      assert custom_attribute_values == ["Value 1", "Value 2", "Value 3", "Value 4"]
     end
 
     @tag mapping: nil
@@ -346,6 +373,8 @@ defmodule DataAggregator.ExportTest do
         Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
 
       expected = [
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000}
       ]
@@ -364,7 +393,9 @@ defmodule DataAggregator.ExportTest do
 
       expected = [
         %{"verbatimLabel" => "foo bar"},
-        %{"verbatimLabel" => nil}
+        %{"verbatimLabel" => nil},
+        %{"verbatimLabel" => "foo bar"},
+        %{"verbatimLabel" => "raw label"}
       ]
 
       assert expected == transformed_attributes
@@ -390,6 +421,22 @@ defmodule DataAggregator.ExportTest do
         )
 
       expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
+        },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
           "collectionCode" => "Z",
@@ -454,6 +501,22 @@ defmodule DataAggregator.ExportTest do
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
           "gbifDOI" => "10.21373/dmvukj"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
         }
       ]
 
@@ -481,7 +544,7 @@ defmodule DataAggregator.ExportTest do
       assert "Custom Attribute" in columns
 
       assert DataFrame.n_columns(data_frame) == 3
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: nil
@@ -496,7 +559,7 @@ defmodule DataAggregator.ExportTest do
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
       assert DataFrame.n_columns(data_frame) == 303
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: nil
@@ -510,8 +573,104 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
+      encoded_attribute_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.take(&1, ["verbatimLabel", "scientificName", "family"]))
+
+      assert encoded_attribute_values == [
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => "foo bar"
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => nil
+               },
+               %{
+                 "family" => "Encoded Family",
+                 "scientificName" => "Encoded Name",
+                 "verbatimLabel" => "encoded verbatim label"
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Raw Name",
+                 "verbatimLabel" => "raw label"
+               }
+             ]
+
       assert DataFrame.n_columns(data_frame) == 303
-      assert DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :validated
+    @tag header_source: :collection_mapping
+    test "export records with datalayer :validated, header_source :collection_mapping", %{
+      export: export,
+      data_frame: data_frame
+    } do
+      # ensure custom mapping is also exported
+      assert export.mapping == %{
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection",
+               "Custom Attribute" => "Custom Attribute"
+             }
+
+      assert columns = DataFrame.names(data_frame)
+
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
+
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 4
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :validated
+    @tag header_source: :dwc_attributes
+    test "export records with datalayer :validated, header_source :dwc_attributes", %{
+      export: export,
+      data_frame: data_frame
+    } do
+      assert export.mapping == expected_dwc_attribute_mapping()
+
+      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
+
+      validated_attribute_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.take(&1, ["verbatimLabel", "scientificName", "family"]))
+
+      # only export validated values, fallback to raw or encoded does not happen here -> verbatimLabel is nil
+      assert validated_attribute_values == [
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => "foo bar"
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => nil
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => "foo bar"
+               },
+               %{
+                 "family" => "Validated Family",
+                 "scientificName" => "Validated Name",
+                 "verbatimLabel" => nil
+               }
+             ]
+
+      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_rows(data_frame) == 4
     end
   end
 end
