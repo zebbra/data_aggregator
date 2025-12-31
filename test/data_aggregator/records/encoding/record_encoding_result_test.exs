@@ -9,6 +9,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
+  alias DataAggregator.IUCN
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   describe "record_encoding_results" do
@@ -18,6 +19,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       []
     end
@@ -98,7 +100,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
       update_attrs =
         Map.merge(get_default_attrs(), %{
-          catalog: :gbif_taxonomy,
+          catalog: :col_taxonomy,
           state: :error,
           input: %{tax_taxon_id: 9876},
           output: %{tax_kingdom: "Fungi"}
@@ -113,7 +115,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert updated_record_encoding_result.output == %{"tax_kingdom" => "Fungi"}
       assert updated_record_encoding_result.input == %{"tax_taxon_id" => 9876}
       assert updated_record_encoding_result.state == :error
-      assert updated_record_encoding_result.catalog == :gbif_taxonomy
+      assert updated_record_encoding_result.catalog == :col_taxonomy
     end
 
     test "update/2 with invalid data returns error changeset" do

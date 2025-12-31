@@ -147,11 +147,11 @@ The encoding module standardizes and enriches raw imported `Record` data using a
 
 The encoding process sequentially applies the following strategies, controlled by `DataAggregator.Taxonomy.Catalog.get_catalogs()` and dispatched via `DataAggregator.Records.Encoding.Strategy`:
 
-1.  **`:gbif_taxonomy`**: Looks up taxonomic names against the GBIF Backbone Taxonomy. _Crucially, this first step also initializes/resets the `EncodedRecord` based on the source `Record` data before applying its specific logic._
+1.  **`:col_taxonomy`**: Looks up taxonomic names against the GBIF Backbone Taxonomy. _Crucially, this first step also initializes/resets the `EncodedRecord` based on the source `Record` data before applying its specific logic._
 2.  **`:swiss_species`**: Looks up taxonomic information in the integrated Swiss Species catalog.
 3.  **`:geo_reverse`**: Performs reverse geocoding (coordinates to administrative levels like country, canton) using an external service (likely OpenCage).
 4.  **`:geo_forward`**: Performs forward geocoding (place names to coordinates) using an external service (likely OpenCage).
-5.  **`:gbif_iucn_redlist`**: Determines the IUCN Red List conservation status, likely querying GBIF.
+5.  **`:iucn_redlist`**: Determines the IUCN Red List conservation status, likely querying GBIF.
 6.  **`:relate_images`**: Associates URLs of linked `Image` attachments with the `EncodedRecord`.
 7.  **`:convert_dates`**: Parses various date/time formats found in eventDate, dateIdentified, etc., into standardized formats.
 
@@ -169,7 +169,7 @@ The encoding process sequentially applies the following strategies, controlled b
 
    - Records are processed through each strategy in order:
 
-     1. **GBIF Taxonomy** (`:gbif_taxonomy`):
+     1. **CoL Taxonomy** (`:col_taxonomy`):
 
         - Initializes/resets EncodedRecord from source Record
         - Queries GBIF Backbone Taxonomy API
@@ -194,7 +194,7 @@ The encoding process sequentially applies the following strategies, controlled b
         - Updates coordinate information
         - Uses external geocoding service
 
-     5. **IUCN Red List** (`:gbif_iucn_redlist`):
+     5. **IUCN Red List** (`:iucn_redlist`):
 
         - Queries GBIF for conservation status
         - Updates IUCN category information
@@ -626,8 +626,8 @@ The Global Biodiversity Information Facility (GBIF) is the primary target for da
 
 - **Dataset Publication:** The core publication workflow generates Darwin Core Archives (DwC-A) and submits them to the GBIF registry endpoint associated with a Collection's registered `gbif_dataset_key`.
 - **Dataset Registration:** Provides functionality (`Collection.register_at_gbif` action) to register the dataset entity with GBIF.
-- **Taxonomic Resolution:** Uses the GBIF Backbone Taxonomy during the Encoding process (`:gbif_taxonomy` strategy) to standardize scientific names and classifications.
-- **IUCN Status:** Queries GBIF during encoding (`:gbif_iucn_redlist` strategy) to enrich records with IUCN Red List conservation status.
+- **Taxonomic Resolution:** Uses the GBIF Backbone Taxonomy during the Encoding process (`:col_taxonomy` strategy) to standardize scientific names and classifications.
+- **IUCN Status:** Queries GBIF during encoding (`:iucn_redlist` strategy) to enrich records with IUCN Red List conservation status.
 - **GrSciColl Data Source:** Leverages GBIF's API to retrieve information about institutions and collections registered in the Global Registry of Scientific Collections (GrSciColl).
 - **Publication Verification:** Includes a background job (`PublicationVerifier`) to periodically check via the GBIF API if records marked as published are actually discoverable on the GBIF portal.
 

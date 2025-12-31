@@ -11,6 +11,7 @@ defmodule DataAggregator.HelpersTest do
   import DataAggregator.ValidationResponseFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.IUCN
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -21,7 +22,7 @@ defmodule DataAggregator.HelpersTest do
   doctest DataAggregator.Records.ImageUpload.Helpers, import: true
   doctest DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy, import: true
   doctest DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers, import: true
-  doctest DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy, import: true
+  doctest DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy, import: true
   doctest DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter, import: true
   doctest DataAggregator.Misc.FlatFileUtils, import: true
   doctest DataAggregator.Records.Record.ExtractAttributesHelpers, import: true
@@ -31,6 +32,7 @@ defmodule DataAggregator.HelpersTest do
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+    stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
     collection = collection_fixture()
     record = record_fixture(%{collection: collection})

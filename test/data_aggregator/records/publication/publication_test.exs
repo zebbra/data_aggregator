@@ -103,7 +103,7 @@ defmodule DataAggregator.PublicationTest do
       encoded_record_fixture(%{record: record4})
       encoded_record_fixture(%{record: record5})
       encoded_record_append_1 = encoded_record_fixture(%{record: record_append_1})
-      encoded_record_append_1 |> Ash.update!(%{tax_taxon_id: 4762}) |> Map.get(:tax_taxon_id)
+      encoded_record_append_1 |> Ash.update!(%{tax_taxon_id: "4762"}) |> Map.get(:tax_taxon_id)
       encoded_record_fixture(%{record: record_append_2})
       encoded_record_fixture(%{record: record_append_3})
 
@@ -339,7 +339,7 @@ defmodule DataAggregator.PublicationTest do
       assert length(published_records) == 1
 
       # default publication is on layer 'validation' so the value saved in published_records are encoded_record values
-      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == "4762"
       rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
@@ -376,7 +376,7 @@ defmodule DataAggregator.PublicationTest do
       assert length(published_records) == 3
 
       # the record published first should still use the value from encoded record
-      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == "4762"
       rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
@@ -437,27 +437,27 @@ defmodule DataAggregator.PublicationTest do
       expect_correct_swiss_species_api_call(3)
 
       update_record_fixtures!(Enum.at(records, 0), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_decimal_latitude: 48.27606815,
         loc_decimal_longitude: 10.408043484
       })
 
       update_record_fixtures!(Enum.at(records, 1), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.585812203,
         loc_decimal_longitude: 9.166888228
       })
 
       update_record_fixtures!(Enum.at(records, 2), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.585812401,
         loc_decimal_longitude: 9.166874938
       })
 
       update_record_fixtures!(Enum.at(records, 3), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.27606815,
         loc_decimal_longitude: 9.408043484

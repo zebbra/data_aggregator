@@ -2277,6 +2277,42 @@
       "references": null,
       "scale": null,
       "size": null,
+      "source": "tax_subclass",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "tax_subkingdom",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "tax_domain",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
       "source": "tax_taxon_remarks",
       "type": "text"
     },
@@ -2770,7 +2806,7 @@
       "scale": null,
       "size": null,
       "source": "tax_taxon_id",
-      "type": "bigint"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -3722,6 +3758,18 @@
     },
     {
       "allow_nil?": false,
+      "default": "\"imported\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -3750,18 +3798,6 @@
       "size": null,
       "source": "collection_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"imported\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "state",
-      "type": "text"
     }
   ],
   "base_filter": null,
@@ -3804,7 +3840,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "8B9617D59743D8DE6665FC8B236F40B278E03D0988B1E0CD54C44CD19BB31EF0",
+  "hash": "2B9E9FCE817CA9223070C6F4F06C8391E84BDC2C8343EAFD36103CC8D9CFD684",
   "identities": [
     {
       "all_tenants?": false,

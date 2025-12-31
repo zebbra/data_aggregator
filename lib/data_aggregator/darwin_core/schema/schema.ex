@@ -468,7 +468,7 @@ tax_attributes = [
     dwc_field: "taxonID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/taxonID",
     dwca_file: :core,
-    attribute: %Attribute{name: :taxon_id, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :taxon_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "identifier",
@@ -715,6 +715,24 @@ tax_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/taxonRemarks",
     dwca_file: :core,
     attribute: %Attribute{name: :taxon_remarks, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "domain",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :domain, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "subkingdom",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :subkingdom, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "subclass",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :subclass, type: :string, allow_nil?: true}
   }
 ]
 

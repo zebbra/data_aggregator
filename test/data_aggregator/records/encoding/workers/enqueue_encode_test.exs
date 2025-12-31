@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.IUCN
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
@@ -14,9 +15,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
   describe "DataAggregator.Records.Record.enqueue_encode/2" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()
-      invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
+      invalid_record = record_fixture_for_encoding_col_taxonomy_invalid()
 
       [
         correct_record: correct_record,

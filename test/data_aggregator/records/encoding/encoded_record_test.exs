@@ -9,6 +9,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
+  alias DataAggregator.IUCN
   alias DataAggregator.Records.EncodedRecord
 
   describe "encoded_records" do
@@ -19,6 +20,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       []
     end
@@ -103,7 +105,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
     test "update_return_minimal_fields/1 returns only minimal data" do
       original_encoded_record =
-        encoded_record_fixture(%{tax_family: "Oenantheae", tax_kingdom: "Plantae"})
+        encoded_record_fixture(%{tax_family: "Anergates atratulus", tax_kingdom: "Animalia"})
 
       encoded_record =
         EncodedRecord.update_return_minimal_fields!(original_encoded_record, %{

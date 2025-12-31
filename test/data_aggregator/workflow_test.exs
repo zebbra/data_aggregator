@@ -10,6 +10,7 @@ defmodule DataAggregator.WorkflowTest do
     only: [expect_correct_swiss_species_api_call: 0, expect_correct_swiss_species_api_call: 1]
 
   alias DataAggregator.Gbif
+  alias DataAggregator.IUCN
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -88,6 +89,7 @@ defmodule DataAggregator.WorkflowTest do
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+    stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
     collection =
       Collection.create!(%{
@@ -756,108 +758,61 @@ defmodule DataAggregator.WorkflowTest do
       end)
 
     expected = [
-      tax_taxon_id: %{
-        name: "taxonID",
-        imported: "-",
-        encoded: 2_435_194,
-        category_name: "tax"
-      },
-      tax_scientific_name: %{
-        name: "scientificName",
-        imported: "Anergates atratulus (Schenck, 1852)",
-        encoded: "Oenanthe Vieillot, 1816",
-        category_name: "tax"
-      },
-      tax_family: %{
-        name: "family",
-        imported: "-",
-        encoded: "Muscicapidae",
-        category_name: "tax"
-      },
-      tax_genus: %{
-        name: "genus",
-        imported: "Anergates",
-        encoded: "Oenanthe",
-        category_name: "tax"
-      },
-      tax_order: %{
-        name: "order",
-        imported: "-",
-        encoded: "Passeriformes",
-        category_name: "tax"
-      },
-      loc_continent: %{
-        name: "continent",
-        imported: "-",
-        encoded: "Europe",
-        category_name: "loc"
-      },
-      tax_accepted_name_usage: %{
-        name: "acceptedNameUsage",
-        imported: "-",
-        encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
-        category_name: "tax"
-      },
-      tax_class: %{
-        name: "class",
-        imported: "-",
-        encoded: "Aves",
-        category_name: "tax"
-      },
-      tax_phylum: %{
-        name: "phylum",
-        imported: "-",
-        encoded: "Chordata",
-        category_name: "tax"
-      },
-      tax_taxon_id_ch: %{
-        name: "taxonIdCH",
-        imported: "-",
-        encoded: 15_311,
-        category_name: "tax"
-      },
-      iucn_redlist_category: %{
-        name: :iucn_redlist_category,
-        imported: "-",
-        encoded: "EX",
-        category_name: "iucn"
-      },
-      loc_country_code: %{
-        name: "countryCode",
-        imported: "ch",
-        encoded: "CH",
-        category_name: "loc"
-      },
-      tax_accepted_name_usage_id: %{
-        name: "acceptedNameUsageID",
-        imported: "-",
-        encoded: "1669856",
-        category_name: "tax"
-      },
-      eve_event_date: %{
-        name: "eventDate",
-        imported: "2025-01-01/2025-01-20",
-        encoded: "1907-06-06",
-        category_name: "eve"
-      },
-      oth_swiss_species_center: %{
-        name: "swissSpeciesCenter",
-        imported: "-",
-        encoded: "infofauna",
-        category_name: "oth"
-      },
-      oth_swiss_species_registered: %{
-        name: "swissSpeciesRegistered",
-        imported: "-",
-        encoded: true,
-        category_name: "oth"
-      },
-      oth_swiss_species_registered_at: %{
-        name: "swissSpeciesRegisteredAt",
-        imported: "-",
-        encoded: "test",
-        category_name: "oth"
-      }
+      {:tax_taxon_rank, %{category_name: "tax", encoded: "species", imported: "SPECIES", name: "taxonRank"}},
+      {:tax_taxon_id, %{category_name: "tax", encoded: "DY5M", imported: "-", name: "taxonID"}},
+      {:tax_specific_epithet,
+       %{
+         category_name: "tax",
+         encoded: "atratulus",
+         imported: "atratulum",
+         name: "specificEpithet"
+       }},
+      {:tax_scientific_name_authorship,
+       %{
+         category_name: "tax",
+         encoded: "(Schenck, 1852)",
+         imported: "Schenck",
+         name: "scientificNameAuthorship"
+       }},
+      {:tax_scientific_name,
+       %{
+         category_name: "tax",
+         encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
+         imported: "Anergates atratulus (Schenck, 1852)",
+         name: "scientificName"
+       }},
+      {:tax_phylum, %{category_name: "tax", encoded: "Arthropoda", imported: "-", name: "phylum"}},
+      {:tax_order, %{category_name: "tax", encoded: "Hymenoptera", imported: "-", name: "order"}},
+      {:tax_genus, %{name: "genus", imported: "Anergates", encoded: "Tetramorium", category_name: "tax"}},
+      {:tax_family, %{name: "family", imported: "-", encoded: "Formicidae", category_name: "tax"}},
+      {:tax_domain, %{name: "domain", imported: "-", encoded: "Eukaryota", category_name: "tax"}},
+      {:tax_class, %{name: "class", imported: "-", encoded: "Insecta", category_name: "tax"}},
+      {:tax_taxon_id_ch, %{name: "taxonIdCH", imported: "-", encoded: 15_311, category_name: "tax"}},
+      {:tax_accepted_name_usage_id,
+       %{name: "acceptedNameUsageID", imported: "-", encoded: "1669856", category_name: "tax"}},
+      {:tax_accepted_name_usage,
+       %{
+         name: "acceptedNameUsage",
+         imported: "-",
+         encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
+         category_name: "tax"
+       }},
+      {:oth_swiss_species_registered_at,
+       %{name: "swissSpeciesRegisteredAt", imported: "-", encoded: "test", category_name: "oth"}},
+      {:oth_swiss_species_registered,
+       %{name: "swissSpeciesRegistered", imported: "-", encoded: true, category_name: "oth"}},
+      {:oth_swiss_species_center,
+       %{name: "swissSpeciesCenter", imported: "-", encoded: "infofauna", category_name: "oth"}},
+      {:loc_country_code, %{name: "countryCode", imported: "ch", encoded: "CH", category_name: "loc"}},
+      {:loc_continent, %{name: "continent", imported: "-", encoded: "Europe", category_name: "loc"}},
+      {:eve_event_date,
+       %{
+         name: "eventDate",
+         imported: "2025-01-01/2025-01-20",
+         encoded: "1907-06-06",
+         category_name: "eve"
+       }},
+      {:iucn_redlist_category, %{name: :iucn_redlist_category, imported: "-", encoded: "VU", category_name: "iucn"}}
     ]
 
     assert_lists_equal(expected, changes)
