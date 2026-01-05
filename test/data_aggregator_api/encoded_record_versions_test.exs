@@ -69,7 +69,7 @@ defmodule DataAggregatorApi.EncodedRecordVersionsTest do
 
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
-      assert length(data) > 0
+      refute Enum.empty?(data)
 
       # Get the first record version
       version = Enum.at(data, 0)
