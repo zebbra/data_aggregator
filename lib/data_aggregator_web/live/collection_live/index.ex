@@ -145,6 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             />
           </div>
           <.table_action_button
+            :if={Collection.can_destroy?(@current_user, collection)}
             phx-click={JS.push("collection:delete", value: %{id: collection.id})}
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}

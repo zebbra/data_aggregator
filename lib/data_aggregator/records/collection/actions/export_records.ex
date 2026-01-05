@@ -63,7 +63,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
       |> Counter.count_each(counter)
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
-      |> FlatFileUtils.store_on_s3!()
+      |> FlatFileUtils.store_on_s3!(export.collection)
 
     Counter.stop(counter)
 

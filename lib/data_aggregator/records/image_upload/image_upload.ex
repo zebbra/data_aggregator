@@ -309,7 +309,6 @@ defmodule DataAggregator.Records.ImageUpload do
       primary? true
       require_atomic? false
 
-      change Changes.DeleteAllMedia
       change cascade_destroy(:attachment)
       change cascade_destroy(:upload_log)
     end
@@ -364,7 +363,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
     references do
       reference :collection,
-        on_delete: :nothing,
+        on_delete: :delete,
         on_update: :update,
         index?: true,
         deferrable: true

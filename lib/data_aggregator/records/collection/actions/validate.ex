@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
-    validation_request = input.arguments.validation_request
+    validation_request = Ash.load!(input.arguments.validation_request, [:collection])
 
     {:ok, total_counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
@@ -71,7 +71,10 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     Counter.stop(total_counter)
     Counter.stop(sent_counter)
 
-    attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
+    attachment =
+      path
+      |> FlatFileUtils.create_zip!()
+      |> FlatFileUtils.store_on_s3!(validation_request.collection)
 
     row_count =
       validation_file.path
