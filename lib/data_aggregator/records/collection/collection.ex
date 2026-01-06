@@ -288,12 +288,7 @@ defmodule DataAggregator.Records.Collection do
       require_atomic? false
       change Changes.SetDeleting
 
-      change cascade_destroy(:imports, after_action?: false)
-      change cascade_destroy(:exports, after_action?: false)
-      change cascade_destroy(:image_uploads, after_action?: false)
-      change cascade_destroy(:validation_requests, after_action?: false)
-      change cascade_destroy(:records, after_action?: false)
-      change cascade_destroy(:publications, after_action?: false)
+      change Changes.BulkSoftDeleteAttachments
     end
 
     action :create_endpoint, :map do
@@ -390,7 +385,7 @@ defmodule DataAggregator.Records.Collection do
       authorize_if always()
     end
 
-    policy action(:cancel_action) do
+    policy action([:cancel_action, :destroy]) do
       forbid_unless with_role("admin")
     end
 
@@ -401,7 +396,7 @@ defmodule DataAggregator.Records.Collection do
     end
 
     policy_group with_role("collection_administrator") do
-      policy action_type([:create, :update, :destroy]) do
+      policy action_type([:create, :update]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 

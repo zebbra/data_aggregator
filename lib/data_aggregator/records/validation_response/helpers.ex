@@ -274,7 +274,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @spec upload_error_log_file!(String.t(), ValidationResponse.t()) :: ValidationResponse.t()
   def upload_error_log_file!(path, validation_response) do
     upload_fn = fn ->
-      attachment = FlatFileUtils.store_on_s3!(path)
+      attachment = FlatFileUtils.store_on_s3!(path, nil)
 
       case Explorer.DataFrame.from_csv(path, infer_schema_length: 0) do
         {:ok, df} ->

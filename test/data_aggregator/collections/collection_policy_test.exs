@@ -256,7 +256,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       actor: actor,
       collection_same: collection_same
     } do
-      assert Collection.can_destroy?(actor, collection_same)
+      refute Collection.can_destroy?(actor, collection_same)
     end
 
     test "cannot destroy collection with other institution", %{
@@ -536,7 +536,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
 
     test "can destroy same collection", %{actor: actor, collection_same: collection_same} do
-      assert Collection.can_destroy?(actor, collection_same)
+      refute Collection.can_destroy?(actor, collection_same)
     end
 
     test "cannot destroy other collection", %{actor: actor, collection_other: collection_other} do

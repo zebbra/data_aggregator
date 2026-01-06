@@ -14,11 +14,8 @@ alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
 alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter
 
-Enum.map(
-  # delete catalog before importing from csv
-  SwissSpecies.read_all!(),
-  &SwissSpecies.destroy!/1
-)
+# delete catalog before importing from csv
+DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species")
 
 "initialize/catalogs/swiss_species_registry.csv"
 |> Path.expand(DataAggregator.priv_dir())
