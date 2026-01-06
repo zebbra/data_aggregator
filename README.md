@@ -1,6 +1,7 @@
 # Data Aggregator
 
 <!-- MDOC -->
+
 [![CI/CD](https://github.com/zebbra/data_aggregator/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/zebbra/data_aggregator/actions/workflows/cicd.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
@@ -33,16 +34,19 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
 - Erlang (see `.tool-versions` for the recommended version)
 - PostgreSQL
 - Node.js and npm
+- Git Large File Storage ([git-lfs](https://git-lfs.com/))
 
 ### Installation
 
 1. Clone the repository
+
    ```bash
    git clone https://github.com/yourusername/data_aggregator.git
    cd data_aggregator
    ```
 
 2. Install dependencies
+
    ```bash
    mix deps.get
    ```
@@ -50,14 +54,16 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
 3. Copy `.env.example` to `.env` and update settings according to your needs)
 
 4. Create and migrate your database and build assets
+
    ```bash
    mix setup
    ```
 
 5. create test user
-  ```bash
-  mix users.create
-  ```
+
+```bash
+mix users.create
+```
 
 6. Start the Phoenix server
    ```bash
@@ -82,6 +88,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 ### API Documentation
 
 When running the application, you can access:
+
 - [Swagger UI](http://localhost:4000/api/json/swagger) (local development)
 - [ReDoc](http://localhost:4000/api/json/redoc) (local development)
 - [HexDocs](http://localhost:4000/docs/index.html) (local development)
@@ -111,6 +118,7 @@ For information about our security policy and how to report security vulnerabili
 This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
 We provide additional documentation to help you understand and comply with the AGPLv3:
+
 - [License Implications](LICENSE-IMPLICATIONS.md) - Understanding what AGPLv3 means for your use case
 - [AGPLv3 Compliance Guide](docs/agpl_compliance.md) - Practical guide to compliance
 
