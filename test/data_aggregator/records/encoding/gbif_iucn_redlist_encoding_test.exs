@@ -7,14 +7,12 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "encoding of records with " do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       extincted_record = record_fixture_for_encoding_iucn_redlist_extinct()
       not_evaluated_record = record_fixture_for_encoding_iucn_redlist_not_evaluated()
@@ -71,8 +69,6 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
     test "encode/2 for :iucn_redlist catalog fails if taxon_id is not provided", %{
       not_evaluated_record: record
     } do
-      record = update_record_fixtures!(record, %{tax_genus: nil, tax_specific_epithet: nil})
-
       {{:ok, record}, logs} =
         with_log(fn ->
           Record.encode(record, :iucn_redlist, tenant: record.collection_id)
@@ -81,7 +77,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
       assert record.state === :failed
 
       assert logs =~
-               "tax_genus and tax_specific_epithet are required to fetch IUCN Red List category"
+               "Taxon not found in the Gbif V2 IUCN Redlist database"
     end
   end
 end

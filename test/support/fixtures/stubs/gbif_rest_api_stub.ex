@@ -1486,64 +1486,80 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
-  def get_iucn_redlist_category("2496298") do
+  @spec get_species_by_scientific_name(String.t()) :: Api.response()
+  def get_species_by_scientific_name("something_unknown") do
     {:ok,
      %Req.Response{
        status: 200,
-       headers: %{
-         "accept-ranges" => ["bytes"],
-         "age" => ["0"],
-         "cache-control" => ["public, max-age=3601"],
-         "connection" => ["keep-alive"],
-         "content-type" => ["application/json"],
-         "date" => ["Thu, 12 Sep 2024 19:05:03 GMT"],
-         "expires" => ["0"],
-         "pragma" => ["no-cache"],
-         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
-         "via" => ["1.1 varnish (Varnish/6.6)"],
-         "x-content-type-options" => ["nosniff"],
-         "x-frame-options" => ["DENY"],
-         "x-varnish" => ["383780524"],
-         "x-xss-protection" => ["1; mode=block"]
-       },
+       headers: %{},
        body: %{
-         "category" => "NOT_EVALUATED",
-         "code" => "NE",
-         "scientificName" => "Coccyzus cinereus Vieillot, 1817",
-         "taxonomicStatus" => "ACCEPTED"
-       },
-       trailers: %{},
-       private: %{}
+         "diagnostics" => %{
+           "matchType" => "NONE",
+           "issues" => [],
+           "confidence" => 100,
+           "timeTaken" => 0,
+           "timings" => %{
+             "sciNameMatch" => 1
+           }
+         }
+       }
      }}
   end
 
-  def get_iucn_redlist_category(_) do
+  def get_species_by_scientific_name(_scientific_name) do
     {:ok,
      %Req.Response{
        status: 200,
-       headers: %{
-         "accept-ranges" => ["bytes"],
-         "age" => ["0"],
-         "cache-control" => ["public, max-age=3601"],
-         "connection" => ["keep-alive"],
-         "content-type" => ["application/json"],
-         "date" => ["Fri, 07 Jun 2024 13:53:39 GMT"],
-         "expires" => ["0"],
-         "pragma" => ["no-cache"],
-         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
-         "via" => ["1.1 varnish (Varnish/6.0)"],
-         "x-content-type-options" => ["nosniff"],
-         "x-frame-options" => ["DENY"],
-         "x-varnish" => ["113873540"],
-         "x-xss-protection" => ["1; mode=block"]
-       },
+       headers: %{},
        body: %{
-         "category" => "EXTINCT",
-         "code" => "EX",
-         "iucnTaxonID" => "22690059",
-         "scientificName" => "Raphus cucullatus (Linnaeus, 1758)",
-         "taxonomicStatus" => "ACCEPTED",
-         "usageKey" => 176_619_915
+         "additionalStatus" => [
+           %{
+             "clbDatasetKey" => "53131",
+             "datasetAlias" => "IUCN",
+             "datasetKey" => "19491596-35ae-4a91-9a98-85cf505f1bd3",
+             "sourceId" => "1285",
+             "status" => "VULNERABLE",
+             "statusCode" => "VU"
+           }
+         ],
+         "classification" => [
+           %{"key" => "1", "name" => "Animalia", "rank" => "KINGDOM"},
+           %{"key" => "54", "name" => "Arthropoda", "rank" => "PHYLUM"},
+           %{"key" => "216", "name" => "Insecta", "rank" => "CLASS"},
+           %{"key" => "1457", "name" => "Hymenoptera", "rank" => "ORDER"},
+           %{"key" => "4342", "name" => "Formicidae", "rank" => "FAMILY"},
+           %{"key" => "1314823", "name" => "Anergates", "rank" => "GENUS"},
+           %{
+             "key" => "1314824",
+             "name" => "Anergates atratulus",
+             "rank" => "SPECIES"
+           }
+         ],
+         "diagnostics" => %{
+           "confidence" => 99,
+           "matchType" => "EXACT",
+           "timeTaken" => 6,
+           "timings" => %{
+             "luceneMatch" => 6,
+             "nameNRank" => 0,
+             "nameParse" => 0,
+             "sciNameMatch" => 6
+           }
+         },
+         "synonym" => false,
+         "usage" => %{
+           "authorship" => "(Schenck, 1852)",
+           "canonicalName" => "Anergates atratulus",
+           "code" => "ZOOLOGICAL",
+           "formattedName" => "<i>Anergates</i> <i>atratulus</i> (Schenck, 1852)",
+           "genericName" => "Anergates",
+           "key" => "1314824",
+           "name" => "Anergates atratulus (Schenck, 1852)",
+           "rank" => "SPECIES",
+           "specificEpithet" => "atratulus",
+           "status" => "ACCEPTED",
+           "type" => "SCIENTIFIC"
+         }
        },
        trailers: %{},
        private: %{}

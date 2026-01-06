@@ -203,6 +203,14 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get a species from the GBIF V2 API by a given scientific_name
+  """
+  @spec get_species_by_scientific_name(String.t()) :: Api.response()
+  def get_species_by_scientific_name(scientific_name) do
+    get_matching_species(scientificName: scientific_name)
+  end
+
+  @doc """
   Get one collection from the GrSciColl API, according to its key
   """
   @spec get_one_collection(String.t()) :: Api.response_body()

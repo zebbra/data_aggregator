@@ -9,7 +9,6 @@ defmodule DataAggregator.EncodedRecordTest do
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Records.EncodedRecord
 
   describe "encoded_records" do
@@ -20,7 +19,6 @@ defmodule DataAggregator.EncodedRecordTest do
 
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       []
     end

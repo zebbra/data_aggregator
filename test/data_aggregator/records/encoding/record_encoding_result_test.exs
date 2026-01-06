@@ -9,7 +9,6 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   describe "record_encoding_results" do
@@ -19,7 +18,6 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       []
     end

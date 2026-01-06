@@ -9,7 +9,6 @@ defmodule DataAggregator.Collections.CancelActionTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
@@ -44,7 +43,6 @@ defmodule DataAggregator.Collections.CancelActionTest do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
       stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
       []
     end

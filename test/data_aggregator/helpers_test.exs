@@ -11,7 +11,6 @@ defmodule DataAggregator.HelpersTest do
   import DataAggregator.ValidationResponseFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -32,7 +31,6 @@ defmodule DataAggregator.HelpersTest do
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
-    stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
     collection = collection_fixture()
     record = record_fixture(%{collection: collection})

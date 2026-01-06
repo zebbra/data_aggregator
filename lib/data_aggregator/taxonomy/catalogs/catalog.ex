@@ -42,8 +42,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :iucn_redlist ->
         [
-          {:tax_genus, nil},
-          {:tax_specific_epithet, nil}
+          {:tax_scientific_name, nil}
         ]
 
       :swiss_species ->

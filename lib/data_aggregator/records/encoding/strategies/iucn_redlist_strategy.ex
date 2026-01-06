@@ -4,7 +4,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   """
 
   alias Ash.Resource.Actions.Implementation.Context
-  alias DataAggregator.IUCN
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
@@ -38,8 +38,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    with {:ok, genus, specific_epithet} <- ensure_params(encoded_record),
-         {:ok, response} <- IUCN.RestAPI.get_iucn_redlist_category(genus, specific_epithet),
+    with {:ok, scientific_name} <- ensure_params(encoded_record),
+         {:ok, response} <-
+           Gbif.RestAPI.get_species_by_scientific_name(scientific_name),
          {:ok, category} <- validate(response) do
       {:ok,
        Strategy.update_encoded_record(
@@ -55,17 +56,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   end
 
   defp ensure_params(encoded_record) do
-    %{tax_genus: genus, tax_specific_epithet: specific_epithet} =
+    %{tax_scientific_name: scientific_name} =
       Map.take(encoded_record, @input_attributes)
 
-    with {:ok, genus} <- ensure_param(genus),
-         {:ok, specific_epithet} <- ensure_param(specific_epithet) do
-      {:ok, genus, specific_epithet}
-    end
+    ensure_param(scientific_name)
   end
 
   defp ensure_param(param) when is_nil(param) or is_binary(param) == false or param == "",
-    do: {:error, "tax_genus and tax_specific_epithet are required to fetch IUCN Red List category"}
+    do: {:error, "tax_scientific_name is required to fetch IUCN Red List category"}
 
   defp ensure_param(param) do
     {:ok, param}
@@ -98,35 +96,35 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   defp validate({:body, %Req.Response{body: nil} = response}),
     do: {:error, "Failed to validate response body. Body was: nil. Response was: #{inspect(response)}"}
 
+  defp validate({:body, %Req.Response{status: 200, body: %{"diagnostics" => %{"matchType" => "NONE"}}}}),
+    do: {:error, "Taxon not found in the Gbif V2 IUCN Redlist database"}
+
   defp validate({:body, %Req.Response{status: 200} = response}), do: {:ok, response.body}
 
-  defp validate({:body, %Req.Response{status: 404, body: %{"error" => "Not found"}}}),
-    do: {:error, "Taxon not found in the IUCN Redlist database"}
-
   defp validate({:body, response}),
-    do: {:error, "Unexpected response from IUCN Redlist API. Response was: #{inspect(response)}"}
+    do: {:error, "Unexpected response from Gbif V2 IUCN Redlist API. Response was: #{inspect(response)}"}
 
   defp validate({:iucn_category, body}) do
-    assessments = get_in(body, ["assessments"])
+    additional_status = get_in(body, ["additionalStatus"])
 
-    with false <- is_nil(assessments),
-         true <- is_list(assessments),
-         false <- Enum.empty?(assessments),
-         assessment = get_correct_assessment(assessments),
-         true <- is_map(assessment),
-         category = Map.get(assessment, "red_list_category_code"),
+    with false <- is_nil(additional_status),
+         true <- is_list(additional_status),
+         false <- Enum.empty?(additional_status),
+         status = get_correct_status(additional_status),
+         true <- is_map(status),
+         category = get_in(status, ["statusCode"]),
          true <- is_binary(category) do
       {:ok, category}
     else
       value ->
         {:error,
-         "Failed to validate IUCN category. Value was: #{inspect(value)}. Assessments were: #{inspect(assessments)}"}
+         "Failed to validate IUCN category. Value was: #{inspect(value)}. additionalStatus were: #{inspect(additional_status)}"}
     end
   end
 
-  defp get_correct_assessment(assessments) do
-    assessments
-    |> Enum.filter(&(&1["latest"] === true))
+  defp get_correct_status(additional_status) do
+    additional_status
+    |> Enum.filter(&(&1["datasetAlias"] === "IUCN"))
     |> hd()
   end
 

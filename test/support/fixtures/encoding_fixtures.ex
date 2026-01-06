@@ -94,8 +94,7 @@ defmodule DataAggregator.EncodingFixtures do
       @encoded_record_defaults
       |> Map.merge(attrs)
       |> Map.put(:tax_taxon_id, "2_496_298")
-      |> Map.put(:tax_specific_epithet, "something_unknown")
-      |> Map.put(:tax_genus, "something_unknown")
+      |> Map.put(:tax_scientific_name, "something_unknown")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)

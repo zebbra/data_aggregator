@@ -10,7 +10,6 @@ defmodule DataAggregator.WorkflowTest do
     only: [expect_correct_swiss_species_api_call: 0, expect_correct_swiss_species_api_call: 1]
 
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -89,7 +88,6 @@ defmodule DataAggregator.WorkflowTest do
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
-    stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
 
     collection =
       Collection.create!(%{

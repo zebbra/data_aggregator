@@ -8,14 +8,12 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
   alias DataAggregator.CatalogOfLife, as: CoL
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "encoding of records with " do
     setup do
       stub_with(CoL.RestAPI, CoL.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       correct_record =

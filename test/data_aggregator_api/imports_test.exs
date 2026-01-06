@@ -104,7 +104,6 @@ defmodule DataAggregatorApi.ImportsTest do
       assert data["id"] == import_1.id
     end
 
-    @tag run: true
     test "create import succeeded", %{
       conn: conn,
       collection: collection

@@ -7,7 +7,6 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.IUCN
   alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -16,7 +15,6 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-      stub_with(IUCN.RestAPI, IUCN.RestAPIStub)
       stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()
