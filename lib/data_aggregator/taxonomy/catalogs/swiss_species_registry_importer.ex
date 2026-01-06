@@ -40,11 +40,6 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter do
 
   @doc """
   Import Swiss Species Registry from a JSON file.
-
-  ## Examples
-
-      iex> import_from_json("/path/to/swiss_species_registry.json")
-      :ok
   """
   @spec import_from_json(String.t()) :: :ok
   def import_from_json(path) do
@@ -105,8 +100,24 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter do
       iex> parse_id("infofauna:10000")
       {:infofauna, "10000"}
 
-      iex> parse_id("nism:12345")
-      {:swissbryophytes, "12345"}
+      iex> parse_id("infoflora:12345")
+      {:infoflora, "12345"}
+
+      iex> parse_id("nism:67890")
+      {:swissbryophytes, "67890"}
+
+      iex> parse_id("swissfungi:11111")
+      {:swissfungi, "11111"}
+
+      iex> parse_id("swisslichens:22222")
+      {:swisslichens, "22222"}
+
+      iex> parse_id("vogelwarte:33333")
+      {:vogelwarte, "33333"}
+
+      iex> parse_id("INFOFAUNA:10000")
+      {:infofauna, "10000"}
+
   """
   @spec parse_id(String.t()) :: {atom(), String.t()}
   def parse_id(id) do
@@ -120,14 +131,19 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter do
 
   For accepted taxa, returns usage.label.
   For synonyms, returns usage.accepted.name.label.
+  For unknown statuses, returns nil.
 
   ## Examples
 
-      iex> get_accepted_name_usage(%{"status" => "accepted", "label" => "Species name"}, "accepted")
+      iex> get_accepted_name_usage(%{"label" => "Species name"}, "accepted")
       "Species name"
 
-      iex> get_accepted_name_usage(%{"status" => "synonym", "accepted" => %{"name" => %{"label" => "Accepted name"}}}, "synonym")
-      "Accepted name"
+      iex> get_accepted_name_usage(%{"label" => "Synonym name", "accepted" => %{"name" => %{"label" => "Accepted species name"}}}, "synonym")
+      "Accepted species name"
+
+      iex> get_accepted_name_usage(%{"label" => "Some name"}, "unknown")
+      nil
+
   """
   @spec get_accepted_name_usage(map(), String.t()) :: String.t() | nil
   def get_accepted_name_usage(usage, "accepted"), do: usage["label"]

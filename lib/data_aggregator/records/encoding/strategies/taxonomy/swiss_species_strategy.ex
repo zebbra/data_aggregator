@@ -50,6 +50,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   defp process_encoded_record(encoded_record, ctx) do
     with {:ok, scientific_name} <- get_scientific_name(encoded_record),
          {:ok, result} <- SwissSpeciesRegistry.get_by_scientific_name(scientific_name),
+         {:ok, _} <- verify_result(result),
          {:ok, :valid} <- country_check(encoded_record, result) do
       encoded_record =
         result
@@ -72,6 +73,29 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
       {:error, error} ->
         {:error, error, encoded_record}
+    end
+  end
+
+  defp verify_result(result) when is_list(result) and length(result) > 1 do
+    {:error, "Found duplicate in Swiss Species Registry."}
+  end
+
+  defp verify_result(result) do
+    case result do
+      %{
+        taxon_id_ch: taxon_id_ch,
+        accepted_name_usage: accepted_name_usage,
+        rank: rank,
+        center: center
+      }
+      when not is_nil(taxon_id_ch) and
+             not is_nil(accepted_name_usage) and
+             not is_nil(rank) and
+             not is_nil(center) ->
+        {:ok, result}
+
+      _ ->
+        {:error, "Swiss Species Registry entry is missing required information."}
     end
   end
 

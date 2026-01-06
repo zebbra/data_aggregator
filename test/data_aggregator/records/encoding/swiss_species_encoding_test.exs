@@ -53,6 +53,31 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert encoded_record.state === :encoded
     end
 
+    test "encode/2 for :swiss_species catalog fails because of missing information", %{
+      correct_record: correct_record
+    } do
+      generate_missing_information_swiss_species_api_call()
+
+      {{:ok, encoded_record}, logs} =
+        with_log(fn ->
+          Record.encode(correct_record, :swiss_species, tenant: correct_record.collection_id)
+        end)
+
+      encoded_record =
+        Record.get_by_id!(encoded_record.id,
+          load: [:encoded],
+          tenant: correct_record.collection_id
+        )
+
+      assert encoded_record !== nil
+      assert encoded_record.state === :failed
+
+      assert encoded_record.encoded == false
+      assert logs =~ "Error while encoding the encoded_record"
+      assert logs =~ "with the swiss species catalog: "
+      assert logs =~ "Swiss Species Registry entry is missing required information."
+    end
+
     test "encode/2 for :swiss_species catalog which returns out of scope", %{
       out_of_scope_record: out_of_scope_record
     } do

@@ -145,6 +145,21 @@ defmodule DataAggregator.EncodingFixtures do
     end)
   end
 
+  def generate_missing_information_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpeciesRegistry, :get_by_scientific_name, number, fn _scientific_name ->
+      {:ok,
+       %SwissSpeciesRegistry{
+         id: "ssr_02vSBcLj4G1ReRVJNXDLVo",
+         taxon_id_ch: 15_311,
+         accepted_name_usage: "Enantiulus dentigerus (Verhoeff, 1901)",
+         scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+         rank: "SPECIES",
+         center: nil,
+         status: "accepted"
+       }}
+    end)
+  end
+
   #### Geo Encoding API ####
 
   @doc """
