@@ -256,6 +256,18 @@ defmodule DataAggregator.Records.ValidationResponse do
     table "validation_responses"
 
     repo DataAggregator.Repo
+
+    references do
+      reference :attachment,
+        on_delete: :nilify,
+        on_update: :update,
+        deferrable: true
+
+      reference :error_log,
+        on_delete: :nilify,
+        on_update: :update,
+        deferrable: true
+    end
   end
 
   json_api do

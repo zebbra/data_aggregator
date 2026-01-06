@@ -121,13 +121,25 @@
       "type": "utc_datetime_usec"
     },
     {
+      "allow_nil?": false,
+      "default": "\"pending\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
+    },
+    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
@@ -140,8 +152,8 @@
           "strategy": null
         },
         "name": "validation_responses_attachment_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "on_delete": "nilify",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
         "table": "file_attachments"
@@ -158,7 +170,7 @@
       "precision": null,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
@@ -171,8 +183,8 @@
           "strategy": null
         },
         "name": "validation_responses_error_log_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "on_delete": "nilify",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
         "table": "file_attachments"
@@ -243,18 +255,6 @@
       "size": null,
       "source": "started_by_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"pending\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "state",
-      "type": "text"
     }
   ],
   "base_filter": null,
@@ -262,7 +262,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "174892DD5F964B0EBED3ED911FA72E81C26EB54D6B8E7024610A6FB91CCA318D",
+  "hash": "531A356089F21ADC39B6AF2112896736759BBF96D6EDDAD9C118CCE952051676",
   "identities": [],
   "multitenancy": {
     "attribute": null,
