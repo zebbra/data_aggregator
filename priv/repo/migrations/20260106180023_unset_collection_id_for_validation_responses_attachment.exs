@@ -2,11 +2,11 @@ defmodule DataAggregator.Repo.Migrations.UnsetCollectionIdForValidationResponses
   use Ecto.Migration
 
   def up do
-    # unset collection_id on all attachments of validation responses, to avoid having them deleted
+    # unset collection_id and deleted_at on all attachments of validation responses, to avoid having them deleted
     # when cleaning up deleted collection medias
     execute("""
     UPDATE file_attachments fa
-    SET collection_id = NULL
+    SET collection_id = NULL, deleted_at = NULL
     FROM validation_responses vr
     JOIN validation_response_2_collections vrc ON vr.id = vrc.validation_response_id
     WHERE fa.id = vr.attachment_id
@@ -14,12 +14,6 @@ defmodule DataAggregator.Repo.Migrations.UnsetCollectionIdForValidationResponses
   end
 
   def down do
-    execute("""
-      UPDATE file_attachments fa
-      SET collection_id = vrc.collection_id
-      FROM validation_responses vr
-      JOIN validation_response_2_collections vrc ON vr.id = vrc.validation_response_id
-      WHERE fa.id = vr.attachment_id
-    """)
+    # data might have changed, no rollback is possible. do it manually.
   end
 end
