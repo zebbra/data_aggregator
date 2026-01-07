@@ -76,9 +76,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     end
   end
 
-  defp verify_result(result) when is_list(result) and length(result) > 1 do
-    {:error, "Found duplicate in Swiss Species Registry."}
-  end
+  # TODO: this can not happen right now, uncomment once we get result from api instead of database
+  # defp verify_result(result) when is_list(result) and length(result) > 1 do
+  #   {:error, "Found duplicate in Swiss Species Registry."}
+  # end
 
   defp verify_result(result) do
     case result do
