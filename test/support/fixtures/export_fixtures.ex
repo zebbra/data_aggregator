@@ -6,8 +6,10 @@ defmodule DataAggregator.ExportFixtures do
 
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   @export_defaults %{
     name: "gbif.org - Export",
@@ -53,6 +55,42 @@ defmodule DataAggregator.ExportFixtures do
       |> Map.delete(:tax_kingdom)
 
     Record.create!(params, tenant: params.collection)
+  end
+
+  def exportable_record_with_encoded_record(collection, attrs \\ %{}, encoded_record_attrs \\ %{}) do
+    record =
+      exportable_record(collection, attrs)
+
+    params =
+      exportable_record_attrs()
+      |> Map.merge(encoded_record_attrs)
+      |> Map.put(:record, record)
+
+    encoded_record =
+      EncodedRecord.create!(
+        params,
+        tenant: collection,
+        load: [:collection, :record]
+      )
+
+    EncodedRecord.update(encoded_record, encoded_record_attrs)
+  end
+
+  def exportable_record_with_validated_record(collection, attrs \\ %{}, validated_record_attrs \\ %{}) do
+    record =
+      exportable_record(collection, attrs)
+
+    validated_record_params =
+      exportable_record_attrs()
+      |> Map.merge(validated_record_attrs)
+      |> Map.put(:record, record)
+      |> Map.put(:collection, collection)
+
+    ValidatedRecord.validate!(
+      validated_record_params,
+      tenant: collection,
+      load: [:collection, :record]
+    )
   end
 
   def exportable_record_attrs do

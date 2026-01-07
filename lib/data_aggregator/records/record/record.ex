@@ -126,17 +126,18 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
       public? true
-      filter expr(collection_id == parent(collection_id))
     end
 
     has_one :published_record, PublishedRecord do
       public? true
-      filter expr(collection_id == parent(collection_id))
     end
 
     has_one :validation_request_record, ValidationRequestRecord do
       public? true
-      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :validated_record, DataAggregator.Records.ValidationResponse.ValidatedRecord do
+      public? true
     end
   end
 

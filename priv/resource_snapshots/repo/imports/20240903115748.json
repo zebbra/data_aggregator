@@ -137,6 +137,18 @@
     },
     {
       "allow_nil?": false,
+      "default": "\"pending\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -155,7 +167,7 @@
           "strategy": null
         },
         "name": "imports_collection_id_fkey",
-        "on_delete": "nothing",
+        "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
@@ -289,18 +301,6 @@
       "size": null,
       "source": "error_log_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"pending\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "state",
-      "type": "text"
     }
   ],
   "base_filter": null,
@@ -308,7 +308,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "083A4850312E9C4E938807AE771A0F2ABD84E88E3ECF8056C0193EA944A4143A",
+  "hash": "2C20292B46EB512040C768E45343A2705A9B93BCCFC2DB335404CF9B2887E2A0",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

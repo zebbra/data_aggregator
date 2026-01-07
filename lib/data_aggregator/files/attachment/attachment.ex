@@ -14,6 +14,7 @@ defmodule DataAggregator.Files.Attachment do
     primary_read_warning?: false
 
   alias __MODULE__
+  alias DataAggregator.Records.Collection
 
   @type t :: %Attachment{}
 
@@ -34,12 +35,17 @@ defmodule DataAggregator.Files.Attachment do
       trigger :cleanup do
         action :hard_destroy
         read_action :read_deleted
-        scheduler_cron "*/5 * * * *"
+        scheduler_cron "*/1 * * * *"
         queue :attachment_deletion
+        record_limit 10_000
         worker_module_name Attachment.AshOban.Worker.Cleanup
         scheduler_module_name Attachment.AshOban.Scheduler.Cleanup
       end
     end
+  end
+
+  relationships do
+    belongs_to :collection, Collection, allow_nil?: true
   end
 
   calculations do
@@ -79,6 +85,9 @@ defmodule DataAggregator.Files.Attachment do
       primary? true
       accept [:filename]
       argument :path, :string, allow_nil?: false
+      argument :collection, :struct, allow_nil?: true
+
+      change manage_relationship(:collection, type: :append)
       change Attachment.Changes.StoreFile
     end
 
@@ -86,7 +95,7 @@ defmodule DataAggregator.Files.Attachment do
       primary? true
       soft? true
 
-      change set_attribute(:deleted_at, DateTime.utc_now())
+      change set_attribute(:deleted_at, DateTime.utc_now(:microsecond))
     end
 
     destroy :hard_destroy do
@@ -98,7 +107,7 @@ defmodule DataAggregator.Files.Attachment do
   code_interface do
     define :read
     define :get_by_id, action: :read, get_by: :id
-    define :import_from_path, args: [:path]
+    define :import_from_path, args: [:path, :collection]
     define :destroy
     define :hard_destroy
     define :read_deleted
@@ -107,5 +116,9 @@ defmodule DataAggregator.Files.Attachment do
   postgres do
     table "file_attachments"
     repo DataAggregator.Repo
+
+    references do
+      reference :collection, on_delete: :nilify, deferrable: true, index?: true
+    end
   end
 end

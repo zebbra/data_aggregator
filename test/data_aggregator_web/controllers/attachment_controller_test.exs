@@ -5,12 +5,17 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Files.Attachment.Helpers
+  alias DataAggregator.RecordsFixtures
 
   @example_file "test/support/fixtures/files/gbifch_swiss-species-registry-small.csv"
 
   setup do
-    {:ok, attachment} = Attachment.import_from_path(@example_file)
-    %{attachment: attachment}
+    collection = RecordsFixtures.collection_fixture()
+
+    {:ok, collection: collection}
+    {:ok, attachment} = Attachment.import_from_path(@example_file, collection)
+
+    %{attachment: attachment, collection: collection}
   end
 
   describe "show/2" do
@@ -73,12 +78,12 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
   end
 
   describe "content type detection" do
-    test "detects correct content type for pdf files" do
+    test "detects correct content type for pdf files", %{collection: collection} do
       # Create a temporary PDF file
       temp_path = Path.join(System.tmp_dir!(), "test.pdf")
       File.write!(temp_path, "%PDF-1.4 test content")
 
-      {:ok, attachment} = Attachment.import_from_path(temp_path)
+      {:ok, attachment} = Attachment.import_from_path(temp_path, collection)
       conn = get(build_conn(), ~p"/attachments/#{attachment.id}")
 
       [content_type] = get_resp_header(conn, "content-type")
@@ -89,12 +94,12 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
       Attachment.destroy(attachment)
     end
 
-    test "detects correct content type for json files" do
+    test "detects correct content type for json files", %{collection: collection} do
       # Create a temporary JSON file with actual JSON content
       temp_path = Path.join(System.tmp_dir!(), "test.json")
       File.write!(temp_path, ~s({"test": "content"}))
 
-      {:ok, attachment} = Attachment.import_from_path(temp_path)
+      {:ok, attachment} = Attachment.import_from_path(temp_path, collection)
       conn = get(build_conn(), ~p"/attachments/#{attachment.id}")
 
       [content_type] = get_resp_header(conn, "content-type")
@@ -105,12 +110,12 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
       Attachment.destroy(attachment)
     end
 
-    test "detects correct content type for unknown extensions" do
+    test "detects correct content type for unknown extensions", %{collection: collection} do
       # Create a temporary file with unknown extension
       temp_path = Path.join(System.tmp_dir!(), "test.unknown")
       File.write!(temp_path, "some unknown content")
 
-      {:ok, attachment} = Attachment.import_from_path(temp_path)
+      {:ok, attachment} = Attachment.import_from_path(temp_path, collection)
       conn = get(build_conn(), ~p"/attachments/#{attachment.id}")
 
       [content_type] = get_resp_header(conn, "content-type")
@@ -123,13 +128,13 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
   end
 
   describe "filename sanitization" do
-    test "sanitizes unsafe characters in filename for download" do
+    test "sanitizes unsafe characters in filename for download", %{collection: collection} do
       # Create a file with unsafe characters in the name
       unsafe_filename = "test file with spaces & special chars!.txt"
       temp_path = Path.join(System.tmp_dir!(), unsafe_filename)
       File.write!(temp_path, "test content")
 
-      {:ok, attachment} = Attachment.import_from_path(temp_path)
+      {:ok, attachment} = Attachment.import_from_path(temp_path, collection)
       conn = get(build_conn(), ~p"/attachments/#{attachment.id}/download")
 
       [disposition] = get_resp_header(conn, "content-disposition")

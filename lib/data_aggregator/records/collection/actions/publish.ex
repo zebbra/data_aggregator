@@ -100,7 +100,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     Counter.stop(counter)
 
-    attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
+    attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!(collection)
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
 

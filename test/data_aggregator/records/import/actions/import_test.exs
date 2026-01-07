@@ -43,6 +43,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
   describe "DataAggregator.Records.Import.import/1" do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
+    @tag capture_log: true
     test "succeeds with a valid file", %{import: import, collection: collection} do
       assert import.rows_count == 18
 
@@ -66,6 +67,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
+    @tag capture_log: true
     test "updates collections.records_count after import", %{
       collection: collection,
       import: import
@@ -156,6 +158,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag capture_log: true
     test "imports columns with same order as provided by the import file", %{
       import: import,
       path: path

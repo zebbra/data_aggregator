@@ -3,6 +3,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   Utility functions for working with CSV files
   """
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.Collection
 
   @doc """
   gives you a map of all relevant header fields and the record values
@@ -235,9 +236,9 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the file on the given path on S3 and returns the attachment resource
   """
-  @spec store_on_s3!(String.t()) :: Attachment.t()
-  def store_on_s3!(path) do
-    Attachment.import_from_path!(path)
+  @spec store_on_s3!(String.t(), Collection.t() | nil) :: Attachment.t()
+  def store_on_s3!(path, collection) do
+    Attachment.import_from_path!(path, collection)
   end
 
   @doc """

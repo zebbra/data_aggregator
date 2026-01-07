@@ -26,14 +26,14 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
     {path, log_file} = open_log_file(image_upload)
 
     image_upload
-    |> Ash.load!([:mapped_images, :unmapped_images], lazy?: true)
+    |> Ash.load!([:mapped_images, :unmapped_images, :collection], lazy?: true)
     |> prepare_log_entries()
     |> write_log_entries_to_file(log_file)
     |> Stream.run()
 
     FlatFileUtils.close_file(log_file)
 
-    image_upload = save_log_to_image_upload!(image_upload, path)
+    image_upload = save_log_to_image_upload!(image_upload, path, image_upload.collection)
 
     {:ok, image_upload, path}
   end
@@ -97,8 +97,8 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
      ])}
   end
 
-  defp save_log_to_image_upload!(image_upload, path) do
-    upload_log_attachment = FlatFileUtils.store_on_s3!(path)
+  defp save_log_to_image_upload!(image_upload, path, collection) do
+    upload_log_attachment = FlatFileUtils.store_on_s3!(path, collection)
 
     ImageUpload.update_upload_log!(image_upload, upload_log_attachment)
   end
