@@ -36,6 +36,8 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
 - Node.js and npm
 - Git Large File Storage ([git-lfs](https://git-lfs.com/))
 
+> **Warning:** Git LFS uploads files via a pre-push hook. Using `git push --no-verify` will skip this hook and your LFS files won't be uploaded to the remote. This is only a problem if your commits contain new or changed LFS-tracked files.
+
 ### Installation
 
 1. Clone the repository
