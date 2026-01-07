@@ -242,7 +242,11 @@ defmodule DataAggregator.Records.ValidationRequest do
         authorize_if always()
       end
 
-      policy action_type(:destroy) do
+      policy action_type([:create]) do
+        authorize_if with_role("data_digitizer")
+      end
+
+      policy action_type([:destroy]) do
         authorize_if with_role("collection_administrator")
       end
     end
