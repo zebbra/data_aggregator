@@ -1,6 +1,4 @@
-alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter
-alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
 # Script for populating the database. You can run it as:
 #
@@ -27,11 +25,7 @@ DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species")
 |> Enum.each(&SwissSpeciesImporter.import_swiss_species_catalog_from_csv/1)
 
 # New JSON import for SwissSpeciesRegistry
-Enum.map(
-  # delete catalog before importing from json
-  SwissSpeciesRegistry.read_all!(),
-  &SwissSpeciesRegistry.destroy!/1
-)
+DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species_registry")
 
 "initialize/catalogs/swiss_species_registry.json"
 |> Path.expand(DataAggregator.priv_dir())
