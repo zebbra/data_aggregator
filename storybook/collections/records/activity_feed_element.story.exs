@@ -99,7 +99,7 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
       :update ->
         activity
         |> Map.put(:content, %{tax_taxon_id: "1231231"})
-        |> Map.put(:source, "OL Taxonomy")
+        |> Map.put(:source, "CoL Taxonomy")
 
       _ ->
         activity
