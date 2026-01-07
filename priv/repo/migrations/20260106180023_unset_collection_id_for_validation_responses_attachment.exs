@@ -11,15 +11,6 @@ defmodule DataAggregator.Repo.Migrations.UnsetCollectionIdForValidationResponses
     JOIN validation_response_2_collections vrc ON vr.id = vrc.validation_response_id
     WHERE fa.id = vr.attachment_id OR fa.id = vr.error_log_id
     """)
-
-    # same for error logs (they are attachments too)
-    execute("""
-    UPDATE file_attachments fa
-    SET collection_id = NULL, deleted_at = NULL
-    FROM validation_responses vr
-    JOIN validation_response_2_collections vrc ON vr.id = vrc.validation_response_id
-    WHERE fa.id = vr.error_log_id
-    """)
   end
 
   def down do
