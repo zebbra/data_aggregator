@@ -1,8 +1,8 @@
 catalogs = [
   :gbif_taxonomy,
-  :swiss_species,
   :geo_reverse,
   :geo_forward,
+  :swiss_species,
   :gbif_iucn_redlist,
   :relate_images,
   :convert_dates
@@ -25,9 +25,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
   def translate_catalog(catalog) do
     case catalog do
       :gbif_taxonomy -> "GBIF Taxonomy"
-      :swiss_species -> "Swiss Species"
       :geo_reverse -> "Geo Reverse"
       :geo_forward -> "Geo Forward"
+      :swiss_species -> "Swiss Species"
       :gbif_iucn_redlist -> "GBIF IUCN Redlist"
       :relate_images -> "Relate Images"
       :convert_dates -> "Date Conversion"
@@ -47,17 +47,17 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_family, :family}
         ]
 
-      :gbif_iucn_redlist ->
-        [{:tax_taxon_id, nil}]
-
-      :swiss_species ->
-        [{:tax_scientific_name, :tax_scientific_name}]
-
       :geo_reverse ->
         []
 
       :geo_forward ->
         []
+
+      :swiss_species ->
+        [{:tax_scientific_name, :tax_scientific_name}]
+
+      :gbif_iucn_redlist ->
+        [{:tax_taxon_id, nil}]
 
       :relate_images ->
         []
@@ -97,21 +97,6 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_taxon_id, :acceptedUsageKey}
         ]
 
-      :gbif_iucn_redlist ->
-        [
-          {:iucn_redlist_category, "code"}
-        ]
-
-      :swiss_species ->
-        [
-          {:tax_taxon_id_ch, :taxon_id_ch},
-          {:tax_accepted_name_usage, :accepted_name_usage},
-          {:tax_taxon_rank, :rank},
-          {:oth_swiss_species_center, :center},
-          {:oth_swiss_species_registered_at, :registered_at},
-          {:oth_swiss_species_registered, :registered}
-        ]
-
       :geo_reverse ->
         [
           {:loc_municipality, "city"},
@@ -133,6 +118,21 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"}
+        ]
+
+      :swiss_species ->
+        [
+          {:tax_taxon_id_ch, :taxon_id_ch},
+          {:tax_accepted_name_usage, :accepted_name_usage},
+          {:tax_taxon_rank, :rank},
+          {:oth_swiss_species_center, :center},
+          {:oth_swiss_species_registered_at, :registered_at},
+          {:oth_swiss_species_registered, :registered}
+        ]
+
+      :gbif_iucn_redlist ->
+        [
+          {:iucn_redlist_category, "code"}
         ]
 
       :relate_images ->
