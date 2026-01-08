@@ -1,8 +1,8 @@
 catalogs = [
   :col_taxonomy,
-  :swiss_species,
   :geo_reverse,
   :geo_forward,
+  :swiss_species,
   :iucn_redlist,
   :relate_images,
   :convert_dates
@@ -25,9 +25,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
   def translate_catalog(catalog) do
     case catalog do
       :col_taxonomy -> "CoL Taxonomy"
-      :swiss_species -> "Swiss Species"
       :geo_reverse -> "Geo Reverse"
       :geo_forward -> "Geo Forward"
+      :swiss_species -> "Swiss Species"
       :iucn_redlist -> "IUCN Redlist"
       :relate_images -> "Relate Images"
       :convert_dates -> "Date Conversion"
@@ -38,21 +38,26 @@ defmodule DataAggregator.Taxonomy.Catalog do
   def get_input_attributes(catalog) do
     case catalog do
       :col_taxonomy ->
-        [{:tax_scientific_name, :tax_scientific_name}]
-
-      :iucn_redlist ->
         [
-          {:tax_scientific_name, nil}
+          {:tax_scientific_name, :name},
+          {:tax_kingdom, :kingdom},
+          {:tax_phylum, :phylum},
+          {:tax_class, :class},
+          {:tax_order, :order},
+          {:tax_family, :family}
         ]
-
-      :swiss_species ->
-        [{:tax_scientific_name, :tax_scientific_name}]
 
       :geo_reverse ->
         []
 
       :geo_forward ->
         []
+
+      :swiss_species ->
+        [{:tax_scientific_name, :tax_scientific_name}]
+
+      :iucn_redlist ->
+        [{:tax_scientific_name, nil}]
 
       :relate_images ->
         []
@@ -101,21 +106,6 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_genus, :tax_genus}
         ]
 
-      :iucn_redlist ->
-        [
-          {:iucn_redlist_category, :iucn_redlist_category}
-        ]
-
-      :swiss_species ->
-        [
-          {:tax_taxon_id_ch, :taxon_id_ch},
-          {:tax_accepted_name_usage, :accepted_name_usage},
-          {:tax_taxon_rank, :rank},
-          {:oth_swiss_species_center, :center},
-          {:oth_swiss_species_registered_at, :registered_at},
-          {:oth_swiss_species_registered, :registered}
-        ]
-
       :geo_reverse ->
         [
           {:loc_municipality, "city"},
@@ -137,6 +127,21 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"}
+        ]
+
+      :swiss_species ->
+        [
+          {:tax_taxon_id_ch, :taxon_id_ch},
+          {:tax_accepted_name_usage, :accepted_name_usage},
+          {:tax_taxon_rank, :rank},
+          {:oth_swiss_species_center, :center},
+          {:oth_swiss_species_registered_at, :registered_at},
+          {:oth_swiss_species_registered, :registered}
+        ]
+
+      :iucn_redlist ->
+        [
+          {:iucn_redlist_category, :iucn_redlist_category}
         ]
 
       :relate_images ->

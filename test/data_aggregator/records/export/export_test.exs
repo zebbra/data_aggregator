@@ -626,7 +626,7 @@ defmodule DataAggregator.ExportTest do
       assert "Custom Attribute" in columns
 
       assert DataFrame.n_columns(data_frame) == 3
-      assert DataFrame.n_rows(data_frame) == 4
+      assert DataFrame.n_rows(data_frame) == 1
     end
 
     @tag mapping: nil
@@ -648,21 +648,6 @@ defmodule DataAggregator.ExportTest do
       # only export validated values, fallback to raw or encoded does not happen here -> verbatimLabel is nil
       assert validated_attribute_values == [
                %{
-                 "family" => "Bradypodidae",
-                 "scientificName" => "Bradyphus Burmeister, 1866",
-                 "verbatimLabel" => "foo bar"
-               },
-               %{
-                 "family" => "Bradypodidae",
-                 "scientificName" => "Bradyphus Burmeister, 1866",
-                 "verbatimLabel" => nil
-               },
-               %{
-                 "family" => "Bradypodidae",
-                 "scientificName" => "Bradyphus Burmeister, 1866",
-                 "verbatimLabel" => "foo bar"
-               },
-               %{
                  "family" => "Validated Family",
                  "scientificName" => "Validated Name",
                  "verbatimLabel" => nil
@@ -670,7 +655,7 @@ defmodule DataAggregator.ExportTest do
              ]
 
       assert DataFrame.n_columns(data_frame) == 306
-      assert DataFrame.n_rows(data_frame) == 4
+      assert DataFrame.n_rows(data_frame) == 1
     end
   end
 end

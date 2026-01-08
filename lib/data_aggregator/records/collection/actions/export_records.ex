@@ -48,18 +48,11 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
       query
       |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: load)
       |> Task.async_stream(
-        fn record ->
-          record
-          |> map_record(mapping, data_layer)
-          |> DwcaFile.use_data_from_collection(export.collection)
-          |> FlatFileUtils.map_data_to_headers(
-            header_labels,
-            Schema.dwc_transformers()
-          )
-        end,
+        &transform_record(&1, mapping, data_layer, export.collection, header_labels),
         timeout: to_timeout(second: 30)
       )
       |> Stream.map(fn {:ok, record} -> record end)
+      |> Stream.reject(&is_nil/1)
       |> Counter.count_each(counter)
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
@@ -81,6 +74,28 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     FlatFileUtils.store_on_disk!(records, file_path, headers)
 
     directory
+  end
+
+  # transform a record for export based on the data layer
+  @spec transform_record(Record.t(), map(), atom(), any(), list()) :: map()
+  defp transform_record(record, mapping, :validated, _collection, header_labels) do
+    case record.validated_record do
+      nil ->
+        Logger.info("Record with id #{record.id} has no validated record, don't return data")
+        nil
+
+      _ ->
+        record
+        |> map_record(mapping, :validated)
+        |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+    end
+  end
+
+  defp transform_record(record, mapping, data_layer, collection, header_labels) do
+    record
+    |> map_record(mapping, data_layer)
+    |> DwcaFile.use_data_from_collection(collection)
+    |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
   end
 
   # map the record to the given mapping
@@ -105,12 +120,6 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
       record.encoded_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
 
     Map.merge(raw_layer, encoded_layer)
-  end
-
-  defp map_record(record, mapping, :validated) when record.validated_record == nil do
-    Logger.info("Record with id #{record.id} has no validated record. Raw Data will be used.")
-
-    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
   defp map_record(record, mapping, :validated) do

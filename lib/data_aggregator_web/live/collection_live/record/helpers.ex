@@ -117,6 +117,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     |> by_category()
   end
 
+  def show_validation_badge?(record) do
+    record.validation_status == :validated ||
+      (record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
+         record.encoded_record.oth_swiss_species_registered == true &&
+         record.state == :encoded)
+  end
+
   defp should_show_attribute?(key, record, output_dwc_fields) do
     cond do
       key in @fields_not_shown_in_ui ->
