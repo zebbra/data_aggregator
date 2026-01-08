@@ -57,6 +57,7 @@ config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 
 # Configure Oban job queues
 config :data_aggregator, Oban,
+  notifier: Oban.Notifiers.PG,
   repo: DataAggregator.Repo,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},
@@ -113,7 +114,8 @@ config :data_aggregator,
 config :esbuild,
   version: "0.25.1",
   data_aggregator: [
-    args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    args:
+      ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

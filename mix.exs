@@ -198,6 +198,7 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:oban_web, "~> 2.0"},
       {:ash_oban, "~> 0.6"},
       {:usage_rules, "~> 0.1", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
