@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
   require Ash.Query
   require Logger
@@ -187,9 +187,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     )
   end
 
-  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = record)
-       when not is_nil(taxon_id) do
-    case SwissSpecies.get_by_usage_key(taxon_id) do
+  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_scientific_name: scientific_name} = record)
+       when not is_nil(scientific_name) do
+    case SwissSpeciesRegistry.get_by_scientific_name(scientific_name) do
       {:ok, _result} ->
         Logger.debug("This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places")
 
@@ -207,7 +207,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         record
 
       {:error, error} ->
-        Logger.warning("SwissSpecies.get_by_usage_key failed: #{inspect(error)}")
+        Logger.warning("SwissSpeciesRegistry.get_by_scientific_name failed: #{inspect(error)}")
         record
     end
   end

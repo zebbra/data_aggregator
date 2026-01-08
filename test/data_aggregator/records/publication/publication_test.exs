@@ -437,12 +437,14 @@ defmodule DataAggregator.PublicationTest do
       expect_correct_swiss_species_api_call(3)
 
       update_record_fixtures!(Enum.at(records, 0), %{
+        tax_scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
         tax_taxon_id: 4762,
         loc_decimal_latitude: 48.27606815,
         loc_decimal_longitude: 10.408043484
       })
 
       update_record_fixtures!(Enum.at(records, 1), %{
+        tax_scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
         tax_taxon_id: 4762,
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.585812203,
@@ -450,6 +452,7 @@ defmodule DataAggregator.PublicationTest do
       })
 
       update_record_fixtures!(Enum.at(records, 2), %{
+        tax_scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
         tax_taxon_id: 4762,
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.585812401,
@@ -457,6 +460,7 @@ defmodule DataAggregator.PublicationTest do
       })
 
       update_record_fixtures!(Enum.at(records, 3), %{
+        tax_scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
         tax_taxon_id: 4762,
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.27606815,

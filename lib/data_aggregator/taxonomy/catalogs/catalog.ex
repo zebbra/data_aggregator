@@ -51,7 +51,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
         [{:tax_taxon_id, nil}]
 
       :swiss_species ->
-        [{:tax_taxon_id, :tax_taxon_id}]
+        [{:tax_scientific_name, :tax_scientific_name}]
 
       :geo_reverse ->
         []
@@ -105,9 +105,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :swiss_species ->
         [
           {:tax_taxon_id_ch, :taxon_id_ch},
-          {:tax_accepted_name_usage, :accepted_name},
-          {:tax_accepted_name_usage_id, :accepted_usage_key},
-          {:tax_scientific_name, :scientific_name},
+          {:tax_accepted_name_usage, :accepted_name_usage},
           {:tax_taxon_rank, :rank},
           {:oth_swiss_species_center, :center},
           {:oth_swiss_species_registered_at, :registered_at},

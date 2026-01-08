@@ -1,4 +1,4 @@
-alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter
 
 # Script for populating the database. You can run it as:
 #
@@ -12,7 +12,9 @@ alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter
+alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter
+
+# Legacy CSV import for SwissSpecies (kept for backward compatibility)
 
 # delete catalog before importing from csv
 DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species")
@@ -21,3 +23,10 @@ DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species")
 |> Path.expand(DataAggregator.priv_dir())
 |> Path.wildcard()
 |> Enum.each(&SwissSpeciesImporter.import_swiss_species_catalog_from_csv/1)
+
+# New JSON import for SwissSpeciesRegistry
+DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species_registry")
+
+"initialize/catalogs/swiss_species_registry.ndjson"
+|> Path.expand(DataAggregator.priv_dir())
+|> SwissSpeciesRegistryImporter.import_from_json()
