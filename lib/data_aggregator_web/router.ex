@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.Router do
   use AshAuthentication.Phoenix.Router
 
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+  import Oban.Web.Router
   import PhoenixStorybook.Router
 
   alias AshAuthentication.Phoenix.Overrides.Default
@@ -203,6 +204,12 @@ defmodule DataAggregatorWeb.Router do
         ]
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+
+    scope "/" do
+      pipe_through [:locale, :browser]
+
+      oban_dashboard("/oban")
     end
   end
 end
