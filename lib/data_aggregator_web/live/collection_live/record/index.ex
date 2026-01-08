@@ -538,7 +538,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.publication_status} tooltip={false} />
-              <%= if @selected_record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
+              <%= if @selected_record.validation_status == :validated ||
+                    @selected_record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
                     @selected_record.encoded_record.oth_swiss_species_registered == true &&
                     @selected_record.state == :encoded do %>
                 <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
@@ -585,9 +586,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </:item>
               <:item
                 :if={
-                  @selected_record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
-                    @selected_record.encoded_record.oth_swiss_species_registered == true &&
-                    @selected_record.state == :encoded
+                  @selected_record.validation_status == :validated ||
+                    (@selected_record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
+                       @selected_record.encoded_record.oth_swiss_species_registered == true &&
+                       @selected_record.state == :encoded)
                 }
                 title={~t"Validation Status"m}
               >
