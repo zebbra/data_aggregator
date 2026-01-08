@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.UnsetCollectionIdForValidationResponses do
+defmodule DataAggregator.Repo.Migrations.UnsetCollectionIdForValidationResponsesAttachment do
   use Ecto.Migration
 
   def up do
