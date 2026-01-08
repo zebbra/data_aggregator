@@ -102,7 +102,7 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
       conn: conn
     } do
       # Generate a unique usage_key for this test
-      usage_key = :rand.uniform(1_000_000)
+      usage_key = "#{:rand.uniform(1_000_000)}"
 
       # Make the request
       conn =

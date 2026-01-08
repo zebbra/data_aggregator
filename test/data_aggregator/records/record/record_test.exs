@@ -478,7 +478,7 @@ defmodule DataAggregator.Records.RecordTest do
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         mte_part_of_organism: "bla",
-        tax_taxon_id: 42
+        tax_taxon_id: "42"
       }
 
       record = record |> update_record_fixtures!(params) |> Ash.load!(:mids_level)
@@ -491,7 +491,7 @@ defmodule DataAggregator.Records.RecordTest do
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         mte_part_of_organism: "bla",
-        tax_taxon_id: 42,
+        tax_taxon_id: "42",
         eve_event_date: "2001-1-1",
         mte_recorded_by: "bla",
         idf_type_status: "bla",
@@ -520,7 +520,7 @@ defmodule DataAggregator.Records.RecordTest do
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         mte_part_of_organism: "bla",
-        tax_taxon_id: 42,
+        tax_taxon_id: "42",
         eve_event_date: "2001-1-1",
         mte_recorded_by: "bla",
         idf_type_status: "bla",

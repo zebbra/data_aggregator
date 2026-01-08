@@ -103,7 +103,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
     test "update_return_minimal_fields/1 returns only minimal data" do
       original_encoded_record =
-        encoded_record_fixture(%{tax_family: "Oenantheae", tax_kingdom: "Plantae"})
+        encoded_record_fixture(%{tax_family: "Anergates atratulus", tax_kingdom: "Animalia"})
 
       encoded_record =
         EncodedRecord.update_return_minimal_fields!(original_encoded_record, %{

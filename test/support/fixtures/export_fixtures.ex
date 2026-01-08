@@ -101,7 +101,7 @@ defmodule DataAggregator.ExportFixtures do
       tax_family: "Bradypodidae",
       tax_genus: "Bradypus",
       tax_kingdom: "Animalia",
-      tax_taxon_id: 2_435_194,
+      tax_taxon_id: "2_435_194",
       loc_decimal_latitude: 46.8182,
       loc_decimal_longitude: 640_000.0,
       ext_assertions: %{"1": 1}
@@ -423,7 +423,10 @@ defmodule DataAggregator.ExportFixtures do
       "individualCount",
       "associatedOrganisms",
       "associatedReferences",
-      "disposition"
+      "disposition",
+      "subclass",
+      "domain",
+      "subkingdom"
     ]
   end
 
@@ -731,7 +734,10 @@ defmodule DataAggregator.ExportFixtures do
       "occ_individual_count" => "individualCount",
       "occ_occurrence_remarks" => "occurrenceRemarks",
       "occ_vitality" => "vitality",
-      "org_associated_organisms" => "associatedOrganisms"
+      "org_associated_organisms" => "associatedOrganisms",
+      "tax_domain" => "domain",
+      "tax_subclass" => "subclass",
+      "tax_subkingdom" => "subkingdom"
     }
   end
 end

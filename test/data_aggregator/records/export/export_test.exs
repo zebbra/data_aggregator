@@ -558,7 +558,7 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_columns(data_frame) == 306
       assert DataFrame.n_rows(data_frame) == 4
     end
 
@@ -601,7 +601,7 @@ defmodule DataAggregator.ExportTest do
                }
              ]
 
-      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_columns(data_frame) == 306
       assert DataFrame.n_rows(data_frame) == 4
     end
 
@@ -654,7 +654,7 @@ defmodule DataAggregator.ExportTest do
                }
              ]
 
-      assert DataFrame.n_columns(data_frame) == 303
+      assert DataFrame.n_columns(data_frame) == 306
       assert DataFrame.n_rows(data_frame) == 1
     end
   end
