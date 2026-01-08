@@ -1,18 +1,19 @@
 defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter do
   @moduledoc """
-  Import Swiss Species Registry catalog from JSON file.
+  Import Swiss Species Registry catalog from NDJSON file.
 
-  The JSON structure is:
+  Each line in the NDJSON file has the structure:
   ```json
   {
-    "Scientific Name": {
+    "key": "Scientific Name",
+    "value": {
       "result": [{
         "id": "center:id",
         "usage": {
           "status": "accepted" | "synonym",
           "label": "...",
           "name": { "rank": "..." },
-          "accepted": { "name": { "label": "..." } }  # only for synonyms
+          "accepted": { "name": { "label": "..." } }  // only for synonyms
         }
       }]
     }
@@ -38,59 +39,114 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistryImporter do
     "vogelwarte" => :vogelwarte
   }
 
+  @batch_size 1000
+  @initial_counts %{created: 0, no_results: 0, duplicate_entries: 0, bulk_create_errors: 0}
+
   @doc """
   Import Swiss Species Registry from a JSON file.
   """
-  @spec import_from_json(String.t()) :: :ok
+  @spec import_from_json(String.t()) :: map()
   def import_from_json(path) do
     Logger.info("[swiss_species_registry_importer] Starting import from #{path}")
 
+    {time_ms, counts} = :timer.tc(fn -> do_import(path) end, :millisecond)
+
+    log_summary(counts, time_ms)
+    counts
+  end
+
+  defp do_import(path) do
     path
-    |> Path.expand()
-    |> File.read!()
-    |> Jason.decode!()
-    |> Enum.each(&import_entry/1)
-
-    Logger.info("[swiss_species_registry_importer] Import completed")
-    :ok
+    |> File.stream!(:line)
+    |> Stream.map(&Jason.decode!/1)
+    |> Stream.map(&parse_entry/1)
+    |> Stream.chunk_every(@batch_size)
+    |> Enum.reduce(@initial_counts, &process_batch/2)
   end
 
-  defp import_entry({name, %{"result" => []}}) do
-    Logger.warning("[swiss_species_registry_importer] No results found for #{name} in Swiss Species Registry.")
-  end
+  # Entry parsing - converts JSON to {:ok, attrs} or {:error, reason}
 
-  defp import_entry({name, %{"result" => results}}) when length(results) > 1 do
-    Logger.error("[swiss_species_registry_importer] Duplicate entries found for #{name} in Swiss Species Registry.")
-  end
+  defp parse_entry(%{"value" => %{"result" => []}}), do: {:error, :no_results}
 
-  defp import_entry({name, %{"result" => [result]}}) do
-    parsed_attrs = parse_attrs(result)
+  defp parse_entry(%{"value" => %{"result" => result}}) when length(result) > 1, do: {:error, :duplicate_entries}
 
-    Logger.info("importing swiss species registry entry: #{inspect(parsed_attrs)}")
-    SwissSpeciesRegistry.create!(parsed_attrs)
-  rescue
-    error ->
-      Logger.error("could not import swiss species registry entry: #{inspect(name)}, reason was: #{inspect(error)}")
+  defp parse_entry(%{"value" => %{"result" => [result]}}), do: {:ok, build_attrs(result)}
 
-      throw(error)
-  end
-
-  defp parse_attrs(%{"id" => id, "usage" => usage}) do
+  defp build_attrs(%{"id" => id, "usage" => usage}) do
     {center, taxon_id_ch} = parse_id(id)
-    scientific_name = usage["label"]
     status = usage["status"]
-    rank = get_in(usage, ["name", "rank"])
-    accepted_name_usage = get_accepted_name_usage(usage, status)
 
     %{
-      scientific_name: scientific_name,
+      scientific_name: usage["label"],
       taxon_id_ch: taxon_id_ch,
-      accepted_name_usage: accepted_name_usage,
+      accepted_name_usage: get_accepted_name_usage(usage, status),
       center: center,
-      rank: rank,
+      rank: get_in(usage, ["name", "rank"]),
       status: status
     }
   end
+
+  # Batch processing
+
+  defp process_batch(batch, counts) do
+    {valid_entries, error_counts} = partition_batch(batch)
+    counts = merge_counts(counts, error_counts)
+
+    case valid_entries do
+      [] -> counts
+      entries -> bulk_create(entries, counts)
+    end
+  end
+
+  defp partition_batch(batch) do
+    Enum.reduce(batch, {[], @initial_counts}, fn
+      {:ok, attrs}, {valid, errors} -> {[attrs | valid], errors}
+      {:error, reason}, {valid, errors} -> {valid, increment(errors, reason)}
+    end)
+  end
+
+  defp bulk_create(entries, counts) do
+    entries
+    |> Ash.bulk_create(SwissSpeciesRegistry, :create,
+      return_errors?: true,
+      stop_on_error?: false,
+      return_records?: true
+    )
+    |> update_counts_from_result(counts, length(entries))
+  end
+
+  defp update_counts_from_result(%Ash.BulkResult{status: :success}, counts, batch_size) do
+    increment(counts, :created, batch_size)
+  end
+
+  defp update_counts_from_result(%Ash.BulkResult{status: :error, errors: errors}, counts, _) do
+    increment(counts, :bulk_create_errors, safe_length(errors))
+  end
+
+  defp update_counts_from_result(%Ash.BulkResult{records: records, errors: errors}, counts, _) do
+    counts
+    |> increment(:created, safe_length(records))
+    |> increment(:bulk_create_errors, safe_length(errors))
+  end
+
+  # Count helpers
+
+  defp increment(counts, key, amount \\ 1), do: Map.update!(counts, key, &(&1 + amount))
+  defp merge_counts(c1, c2), do: Map.merge(c1, c2, fn _k, v1, v2 -> v1 + v2 end)
+  defp safe_length(list) when is_list(list), do: length(list)
+  defp safe_length(_), do: 0
+
+  defp log_summary(counts, time_ms) do
+    Logger.info("""
+    [swiss_species_registry_importer] Import completed in #{time_ms} ms
+      Created: #{counts.created}
+      Skipped (no results): #{counts.no_results}
+      Skipped (duplicate entries): #{counts.duplicate_entries}
+      Failed (bulk create errors): #{counts.bulk_create_errors}
+    """)
+  end
+
+  # Public helpers with doctests
 
   @doc """
   Parse the ID field to extract center and taxon ID.

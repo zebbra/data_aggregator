@@ -27,6 +27,6 @@ DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species")
 # New JSON import for SwissSpeciesRegistry
 DataAggregator.Repo.query!("TRUNCATE TABLE swiss_species_registry")
 
-"initialize/catalogs/swiss_species_registry.json"
+"initialize/catalogs/swiss_species_registry.ndjson"
 |> Path.expand(DataAggregator.priv_dir())
 |> SwissSpeciesRegistryImporter.import_from_json()
