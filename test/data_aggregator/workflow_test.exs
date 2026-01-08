@@ -776,13 +776,6 @@ defmodule DataAggregator.WorkflowTest do
          imported: "Schenck",
          name: "scientificNameAuthorship"
        }},
-      {:tax_scientific_name,
-       %{
-         category_name: "tax",
-         encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
-         imported: "Anergates atratulus (Schenck, 1852)",
-         name: "scientificName"
-       }},
       {:tax_phylum, %{category_name: "tax", encoded: "Arthropoda", imported: "-", name: "phylum"}},
       {:tax_order, %{category_name: "tax", encoded: "Hymenoptera", imported: "-", name: "order"}},
       {:tax_genus, %{name: "genus", imported: "Anergates", encoded: "Tetramorium", category_name: "tax"}},
@@ -790,8 +783,6 @@ defmodule DataAggregator.WorkflowTest do
       {:tax_domain, %{name: "domain", imported: "-", encoded: "Eukaryota", category_name: "tax"}},
       {:tax_class, %{name: "class", imported: "-", encoded: "Insecta", category_name: "tax"}},
       {:tax_taxon_id_ch, %{name: "taxonIdCH", imported: "-", encoded: 15_311, category_name: "tax"}},
-      {:tax_accepted_name_usage_id,
-       %{name: "acceptedNameUsageID", imported: "-", encoded: "1669856", category_name: "tax"}},
       {:tax_accepted_name_usage,
        %{
          name: "acceptedNameUsage",

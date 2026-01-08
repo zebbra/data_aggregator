@@ -57,6 +57,7 @@ config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 
 # Configure Oban job queues
 config :data_aggregator, Oban,
+  notifier: Oban.Notifiers.PG,
   repo: DataAggregator.Repo,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},

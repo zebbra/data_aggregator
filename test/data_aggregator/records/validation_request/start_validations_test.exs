@@ -6,7 +6,7 @@ defmodule DataAggregator.StartValidationsTest do
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
-  import DataAggregator.SwissSpeciesFixtures
+  import DataAggregator.SwissSpeciesRegistryFixtures
 
   alias DataAggregator.AccountsFixtures
   alias DataAggregator.Gbif
@@ -18,21 +18,13 @@ defmodule DataAggregator.StartValidationsTest do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
-      swiss_species_fixture(%{
-        taxon_id_ch: 10_001,
-        usage_key: "9368",
+      swiss_species_registry_fixture(%{
         scientific_name: "Scientific Name 1",
-        accepted_name: "Accepted Name 1",
-        rank: "species",
         center: :infofauna
       })
 
-      swiss_species_fixture(%{
-        taxon_id_ch: 10_002,
-        usage_key: "5_497_504",
-        scientific_name: "Scientific Name 1",
-        accepted_name: "Accepted Name 1",
-        rank: "species",
+      swiss_species_registry_fixture(%{
+        scientific_name: "Scientific Name 2",
         center: :swissfungi
       })
 
@@ -47,6 +39,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       record1 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -57,6 +50,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       record2 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -67,6 +61,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       record3 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -77,6 +72,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       record4 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 2",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -120,19 +116,17 @@ defmodule DataAggregator.StartValidationsTest do
       collection: collection,
       actor: actor
     } do
-      # TODO: adjusted this, until new swiss catalog registry is implemented
       assert_start_validations_result_equal(collection, actor,
-        infofauna: 0,
+        infofauna: 3,
         vogelwarte: 0,
         infoflora: 0,
         swissbryophytes: 0,
         swisslichens: 0,
-        swissfungi: 0
+        swissfungi: 1
       )
 
       jobs = all_enqueued()
-      # TODO: adjusted this, until new swiss catalog registry is implemented
-      assert jobs == []
+      assert length(jobs) == 2
 
       Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
 
@@ -141,23 +135,19 @@ defmodule DataAggregator.StartValidationsTest do
       assert collection.state == :idle
       {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
 
-      # TODO: adjusted this, until new swiss catalog registry is implemented
-      assert validation_requests == []
-
       Enum.each(validation_requests, fn vr ->
         assert vr
         assert vr.attachment_id
         assert vr.state == :done
       end)
 
-      # TODO: adjusted this, until new swiss catalog registry is implemented
-      # infofauna_request = Enum.find(validation_requests, &(&1.center == :infofauna))
-      # swissfungi_request = Enum.find(validation_requests, &(&1.center == :swissfungi))
+      infofauna_request = Enum.find(validation_requests, &(&1.center == :infofauna))
+      swissfungi_request = Enum.find(validation_requests, &(&1.center == :swissfungi))
 
-      # assert infofauna_request.total_rows_count == 3
-      # assert infofauna_request.processed_rows_count == 3
-      # assert swissfungi_request.total_rows_count == 1
-      # assert swissfungi_request.processed_rows_count == 1
+      assert infofauna_request.total_rows_count == 3
+      assert infofauna_request.processed_rows_count == 3
+      assert swissfungi_request.total_rows_count == 1
+      assert swissfungi_request.processed_rows_count == 1
     end
 
     test "start_validations does not create validation for oth_swiss_species_registered false or oth_basis_of_record FossilSpecimen",
@@ -165,19 +155,19 @@ defmodule DataAggregator.StartValidationsTest do
            collection: collection,
            actor: actor
          } do
-      # TODO: adjusted this, until new swiss catalog registry is implemented
       assert_start_validations_result_equal(collection, actor,
-        infofauna: 0,
+        infofauna: 3,
         vogelwarte: 0,
         infoflora: 0,
         swissbryophytes: 0,
         swisslichens: 0,
-        swissfungi: 0
+        swissfungi: 1
       )
 
       # add a record that will be included
       record =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -188,20 +178,20 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record})
 
-      # TODO: adjusted this, until new swiss catalog registry is implemented
       assert_start_validations_result_equal(collection, actor,
-        infofauna: 0,
+        infofauna: 4,
         vogelwarte: 0,
         infoflora: 0,
         swissbryophytes: 0,
         swisslichens: 0,
-        swissfungi: 0
+        swissfungi: 1
       )
 
       # add a record that will be excluded because oth_swiss_species_registered is false
 
       record_excluded_1 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -212,19 +202,19 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record_excluded_1})
 
-      # TODO: adjusted this, until new swiss catalog registry is implemented
       assert_start_validations_result_equal(collection, actor,
-        infofauna: 0,
+        infofauna: 4,
         vogelwarte: 0,
         infoflora: 0,
         swissbryophytes: 0,
         swisslichens: 0,
-        swissfungi: 0
+        swissfungi: 1
       )
 
       # add a record that will be excluded because oth_basis_of_record is FossilSpecimen
       record_excluded_2 =
         record_fixture(%{
+          tax_scientific_name: "Scientific Name 1",
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
@@ -236,14 +226,13 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record_excluded_2})
 
-      # TODO: adjusted this, until new swiss catalog registry is implemented
       assert_start_validations_result_equal(collection, actor,
-        infofauna: 0,
+        infofauna: 4,
         vogelwarte: 0,
         infoflora: 0,
         swissbryophytes: 0,
         swisslichens: 0,
-        swissfungi: 0
+        swissfungi: 1
       )
     end
   end
