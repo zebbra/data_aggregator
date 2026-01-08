@@ -15,7 +15,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
 
     attribute :taxon_id_ch, :integer, allow_nil?: true, public?: true
     attribute :accepted_name, :string, allow_nil?: true, public?: true
-    attribute :usage_key, :integer, primary_key?: true, allow_nil?: false, public?: true
+    attribute :usage_key, :string, primary_key?: true, allow_nil?: false, public?: true
     attribute :accepted_usage_key, :integer, allow_nil?: true, public?: true
     attribute :scientific_name, :string, allow_nil?: true, public?: true
     attribute :rank, :string, allow_nil?: true, public?: true

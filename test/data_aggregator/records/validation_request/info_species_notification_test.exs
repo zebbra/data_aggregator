@@ -27,7 +27,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record2 =
@@ -38,7 +38,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record3 =
@@ -49,7 +49,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record4 =
@@ -60,7 +60,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record5 =
@@ -71,7 +71,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       encoded_record_fixture(%{record: record1})

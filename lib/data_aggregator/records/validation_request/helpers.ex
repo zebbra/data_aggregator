@@ -4,7 +4,7 @@ defmodule DataAggregator.Records.ValidationRequest.Helpers do
   @spec center_specific_filter(atom()) :: map()
   def center_specific_filter(center) do
     %{
-      encoded_record: %{swiss_species: %{center: %{eq: center}}}
+      encoded_record: %{swiss_species_registry: %{center: %{eq: center}}}
     }
   end
 end

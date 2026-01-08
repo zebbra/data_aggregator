@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     implement the encode/2 function with the corresponding `when` statement
 
     to keep this module clean, the actual encoding logic is delegated to a
-    strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy`
+    strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy`
     or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
 
@@ -20,9 +20,9 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy
   alias DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy
   alias DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy
-  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
   alias DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy
   alias DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy
   alias DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy
@@ -34,13 +34,13 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   @doc """
   Attention! For the first catalog we reset the encoded_record to the record's value.
-  As of now, the first catalog is the gbif_taxonomy catalog. If this changes, the
+  As of now, the first catalog is the col_taxonomy catalog. If this changes, the
   first catalog must be updated here as well.
   """
   @spec encode(Record.t() | EncodedRecord.t(), atom(), Context.t()) :: EncodingResult.t()
   def encode(record_or_encoded_record, catalog, ctx)
 
-  def encode(%Record{} = record, :gbif_taxonomy, %{tenant: tenant} = ctx) do
+  def encode(%Record{} = record, :col_taxonomy, %{tenant: tenant} = ctx) do
     attributes =
       [
         :extra_data,
@@ -54,7 +54,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       |> Map.put(:record, record)
       |> EncodedRecord.create!(tenant: tenant)
 
-    encode(encoded_record, :gbif_taxonomy, ctx)
+    encode(encoded_record, :col_taxonomy, ctx)
   end
 
   def encode(%Record{} = record, catalog, %{tenant: tenant} = ctx) do
@@ -62,11 +62,11 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encode(encoded_record, catalog, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, :gbif_taxonomy, ctx) do
+  def encode(%EncodedRecord{} = encoded_record, :col_taxonomy, ctx) do
     encoded_record
-    |> GbifTaxonomyStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :gbif_taxonomy)
-    |> handle_encoding_result(encoded_record, :gbif_taxonomy, ctx)
+    |> CoLTaxonomyStrategy.apply_strategy(ctx)
+    |> check_for_changes(encoded_record, :col_taxonomy)
+    |> handle_encoding_result(encoded_record, :col_taxonomy, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, :swiss_species, ctx) do
@@ -90,11 +90,11 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> handle_encoding_result(encoded_record, :geo_forward, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, :gbif_iucn_redlist, ctx) do
+  def encode(%EncodedRecord{} = encoded_record, :iucn_redlist, ctx) do
     encoded_record
     |> IUCNRedlistStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :gbif_iucn_redlist)
-    |> handle_encoding_result(encoded_record, :gbif_iucn_redlist, ctx)
+    |> check_for_changes(encoded_record, :iucn_redlist)
+    |> handle_encoding_result(encoded_record, :iucn_redlist, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, :relate_images, ctx) do
@@ -228,6 +228,10 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list(), Context.t()) ::
           EncodedRecord.t()
+  def update_encoded_record(updated_values, record, [], %{actor: actor}) do
+    EncodedRecord.update!(record, updated_values, actor: actor, authorize?: false)
+  end
+
   def update_encoded_record(updated_values, record, output_attributes, %{actor: actor}) do
     updated_attributes =
       output_attributes

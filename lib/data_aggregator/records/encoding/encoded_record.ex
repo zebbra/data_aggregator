@@ -24,6 +24,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
   @type t :: %EncodedRecord{}
 
@@ -52,6 +53,12 @@ defmodule DataAggregator.Records.EncodedRecord do
     has_many :swiss_species, SwissSpecies do
       source_attribute :tax_taxon_id
       destination_attribute :usage_key
+      public? true
+    end
+
+    has_one :swiss_species_registry, SwissSpeciesRegistry do
+      source_attribute :tax_scientific_name
+      destination_attribute :scientific_name
       public? true
     end
 

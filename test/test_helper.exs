@@ -1,3 +1,4 @@
+alias DataAggregator.CatalogOfLife
 alias DataAggregator.Gbif
 alias DataAggregator.Opencage
 alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -8,6 +9,7 @@ ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter], exclude: [pe
 Mimic.copy(SwissSpecies)
 Mimic.copy(SwissSpeciesRegistry)
 Mimic.copy(Gbif.RestAPI)
+Mimic.copy(CatalogOfLife.RestAPI)
 Mimic.copy(Opencage.RestAPI)
 
 ExUnit.start()

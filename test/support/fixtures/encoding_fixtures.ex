@@ -16,9 +16,9 @@ defmodule DataAggregator.EncodingFixtures do
 
   @encoded_record_defaults %{
     mte_catalog_number: "encoded_record1",
-    tax_scientific_name: "Oenanthea Pallas",
+    tax_scientific_name: "Anergates atratulus",
     tax_kingdom: "Animalia",
-    tax_taxon_id: 2_435_194
+    tax_taxon_id: "2_435_194"
   }
 
   @doc """
@@ -50,12 +50,12 @@ defmodule DataAggregator.EncodingFixtures do
     Record.create!(params, tenant: params.collection)
   end
 
-  #### GBIF Taxonomy API Encoding ####
+  #### CoL Taxonomy API Encoding ####
 
   @doc """
-    Generate a record for gbif_taxonomy encoding, which will lead to an invalid match type
+    Generate a record for col_taxonomy encoding, which will lead to an invalid match type
   """
-  def record_fixture_for_encoding_gbif_taxonomy_invalid(attrs \\ %{}) do
+  def record_fixture_for_encoding_col_taxonomy_invalid(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
@@ -67,16 +67,18 @@ defmodule DataAggregator.EncodingFixtures do
     Record.create!(params, tenant: params.collection)
   end
 
-  #### GBIF Taxonomy API Encoding ####
+  #### CoL Taxonomy API Encoding ####
 
   @doc """
-    Generate a record for gbif_iucn_redlist encoding with an extincted species
+    Generate a record for iucn_redlist encoding with an extincted species
   """
-  def record_fixture_for_encoding_gbif_iucn_redlist_extinct(attrs \\ %{}) do
+  def record_fixture_for_encoding_iucn_redlist_extinct(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:tax_taxon_id, 2_496_198)
+      |> Map.put(:tax_taxon_id, "2_496_198")
+      |> Map.put(:tax_specific_epithet, "atratulus")
+      |> Map.put(:tax_genus, "Anergates")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
@@ -85,13 +87,14 @@ defmodule DataAggregator.EncodingFixtures do
   end
 
   @doc """
-    Generate a record for gbif_iucn_redlist encoding with an not evaluated species
+    Generate a record for iucn_redlist encoding with an not evaluated species
   """
-  def record_fixture_for_encoding_gbif_iucn_redlist_not_evaluated(attrs \\ %{}) do
+  def record_fixture_for_encoding_iucn_redlist_not_evaluated(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:tax_taxon_id, 2_496_298)
+      |> Map.put(:tax_taxon_id, "2_496_298")
+      |> Map.put(:tax_scientific_name, "something_unknown")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
@@ -108,6 +111,7 @@ defmodule DataAggregator.EncodingFixtures do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
+      |> Map.put(:tax_taxon_id, "0")
       |> Map.put(:tax_scientific_name, "NonExistent Species Name")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
