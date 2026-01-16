@@ -108,7 +108,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     additional_status = get_in(body, ["additionalStatus"])
 
     if is_nil(additional_status) do
-      {:ok, "NE"}
+      {:ok, nil}
     else
       with false <- is_nil(additional_status),
            true <- is_list(additional_status),
