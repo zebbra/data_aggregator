@@ -107,18 +107,22 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   defp validate({:iucn_category, body}) do
     additional_status = get_in(body, ["additionalStatus"])
 
-    with false <- is_nil(additional_status),
-         true <- is_list(additional_status),
-         false <- Enum.empty?(additional_status),
-         status = get_correct_status(additional_status),
-         true <- is_map(status),
-         category = get_in(status, ["statusCode"]),
-         true <- is_binary(category) do
-      {:ok, category}
+    if is_nil(additional_status) do
+      {:ok, nil}
     else
-      value ->
-        {:error,
-         "Failed to validate IUCN category. Value was: #{inspect(value)}. additionalStatus were: #{inspect(additional_status)}"}
+      with false <- is_nil(additional_status),
+           true <- is_list(additional_status),
+           false <- Enum.empty?(additional_status),
+           status = get_correct_status(additional_status),
+           true <- is_map(status),
+           category = get_in(status, ["statusCode"]),
+           true <- is_binary(category) do
+        {:ok, category}
+      else
+        value ->
+          {:error,
+           "Failed to validate IUCN category. Value was: #{inspect(value)}. additionalStatus were: #{inspect(additional_status)}"}
+      end
     end
   end
 

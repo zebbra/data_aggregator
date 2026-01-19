@@ -75,7 +75,7 @@ jobs:
 
       - run: mix deps.clean --all
       - run: mix deps.get
-      - run: mix compile
+      - run: mix compile --warnings-as-errors
       - run: rm -rf priv/plts
       - run: mix dialyzer --plt
 
@@ -91,7 +91,6 @@ jobs:
 
       - run: mix assets.setup
       - run: mix assets.build
-      - run: mix compile --warnings-as-errors
       - run: mix lint
       - run: mix test
 
