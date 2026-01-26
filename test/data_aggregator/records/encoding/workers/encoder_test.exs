@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
 
   import DataAggregator.EncodingFixtures
 
+  alias DataAggregator.CatalogOfLife, as: CoL
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
@@ -15,6 +16,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(CoL.RestAPI, CoL.RestAPIStub)
       stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()

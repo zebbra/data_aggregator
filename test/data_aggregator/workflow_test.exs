@@ -9,6 +9,7 @@ defmodule DataAggregator.WorkflowTest do
   import DataAggregator.EncodingFixtures,
     only: [expect_correct_swiss_species_api_call: 0, expect_correct_swiss_species_api_call: 1]
 
+  alias DataAggregator.CatalogOfLife, as: CoL
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
@@ -88,6 +89,7 @@ defmodule DataAggregator.WorkflowTest do
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+    stub_with(CoL.RestAPI, CoL.RestAPIStub)
 
     collection =
       Collection.create!(%{

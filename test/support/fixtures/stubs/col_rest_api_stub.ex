@@ -15,7 +15,7 @@ defmodule DataAggregator.CatalogOfLife.RestAPIStub do
   """
 
   @spec parse_name(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
-  def parse_name(_unparsed_scientific_name \\ "Anergates atratulus (Schenck, 1852)") do
+  def parse_name(_unparsed_scientific_name) do
     {:ok,
      %Req.Response{
        status: 200,
@@ -57,7 +57,7 @@ defmodule DataAggregator.CatalogOfLife.RestAPIStub do
   end
 
   @spec lookup_species_by_name(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
-  def lookup_species_by_name(_scientific_name \\ "Anergates atratulus") do
+  def lookup_species_by_name(_scientific_name) do
     {:ok,
      %Req.Response{
        status: 200,
