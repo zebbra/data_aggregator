@@ -88,7 +88,6 @@ defmodule DataAggregator.Taxonomy.Catalog do
         [
           {:tax_taxon_id, :tax_taxon_id},
           {:tax_scientific_name, :tax_scientific_name},
-          {:tax_specific_epithet, :tax_specific_epithet},
           {:tax_taxon_rank, :tax_taxon_rank},
           {:tax_scientific_name_authorship, :tax_scientific_name_authorship},
           {:tax_taxon_id, :tax_taxon_id},

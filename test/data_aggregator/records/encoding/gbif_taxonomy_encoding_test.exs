@@ -50,7 +50,6 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
         tax_family: "Formicidae",
         tax_genus: "Tetramorium",
         tax_taxon_rank: "species",
-        tax_specific_epithet: "atratulus",
         tax_taxon_id: "DY5M"
       })
 

@@ -21,9 +21,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    with {:ok, response} <- parse_scientific_name(encoded_record.tax_scientific_name),
-         {:ok, parsed_scientific_name} <- validate_parsed_name(response),
-         {:ok, species} <- lookup_species_by_name(parsed_scientific_name),
+    with {:ok, species} <- lookup_species_by_name(encoded_record.tax_scientific_name),
          {:ok, encoded_species} <- validate_species(species) do
       encoded_record =
         Strategy.update_encoded_record(encoded_species, encoded_record, [], ctx)
@@ -32,33 +30,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
     else
       {:error, error} ->
         {:error, error, encoded_record}
-    end
-  end
-
-  @spec parse_scientific_name(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
-  defp parse_scientific_name(unparsed_scientific_name) do
-    case CoL.RestAPI.parse_name(unparsed_scientific_name) do
-      {:ok, body} ->
-        {:ok, body}
-
-      {:error, error} ->
-        {:error,
-         "[col_taxonomy] Error while parsing scientific name with CoL taxonomy api: #{inspect(error, limit: :infinity)}"}
-    end
-  end
-
-  @spec validate_parsed_name(Req.Response.t()) :: {:ok, String.t()} | {:error, String.t()}
-  defp validate_parsed_name(response) do
-    with 200 <- response.status,
-         true <- is_map(response.body),
-         true <- get_in(response.body, ["parsed"]),
-         nil <- get_in(response.body, ["issues"]),
-         {:ok, parsed_scientific_name} <- Map.fetch(response.body, "scientificName") do
-      {:ok, parsed_scientific_name}
-    else
-      _ ->
-        {:error,
-         "[col_taxonomy] no valid scientific name found from CoL parse name api: #{inspect(response, limit: :infinity)}"}
     end
   end
 
@@ -83,9 +54,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
       encoded_species = %{
         tax_taxon_id: to_string(get_in(species, ["id"])),
         tax_scientific_name: scientific_name,
-        tax_specific_epithet: get_in(species, ["usage", "name", "specificEpithet"]),
-        tax_taxon_rank: get_in(species, ["usage", "name", "rank"]),
-        tax_scientific_name_authorship: get_in(species, ["usage", "name", "authorship"])
+        tax_taxon_rank: get_in(species, ["usage", "rank"]),
+        tax_scientific_name_authorship: get_in(species, ["usage", "authorship"])
       }
 
       encoded_species = reduce_species(classification, encoded_species)
@@ -109,16 +79,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
 
   defp validate({:body, response_body}) do
     with false <- is_nil(response_body),
-         result = get_in(response_body, ["result"]),
-         true <- is_list(result),
-         false <- Enum.empty?(result),
-         species = hd(result),
-         false <- is_nil(species) do
-      {:ok, species}
+         :ok <- match?(response_body),
+         usage = get_in(response_body, ["usage"]),
+         false <- is_nil(usage) do
+      {:ok, response_body}
     else
+      :not_a_match ->
+        {:error, "No match found in response body: #{inspect(response_body)}"}
+
       value ->
         {:error,
-         "Failed to validate result list. Value was: #{inspect(value)}. Response Body was: #{inspect(response_body)}"}
+         "Failed to validate response body. Value was: #{inspect(value)}. Response Body was: #{inspect(response_body)}"}
     end
   end
 
@@ -135,7 +106,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
   end
 
   defp validate({:classification, species}) do
-    classification = get_in(species, ["classification"])
+    classification = get_in(species, ["usage", "classification"])
 
     case is_list(classification) do
       true ->
@@ -143,6 +114,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
 
       value ->
         {:error, "Failed to validate classification. Value was: #{inspect(value)}. Species was: #{inspect(species)}"}
+    end
+  end
+
+  defp match?(response_body) do
+    match = get_in(response_body, ["match"])
+
+    case match do
+      nil -> :not_a_match
+      false -> :not_a_match
+      _ -> :ok
     end
   end
 
