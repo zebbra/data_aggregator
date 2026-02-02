@@ -114,10 +114,10 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   end
 
   defp cancel_encoding(%Changeset{data: %{id: collection_id}} = changeset) do
-    # This will cancel all workers
+    # This will cancel all workers in the :encoders queue:
     # 1. DataAggregator.Records.Collection.Workers.EncodingStatePoller
-    # 2. DataAggregator.Records.Collection.Workers.RecordsEnqueuer
-    # 3. DataAggregator.Records.Record.Workers.Encoder
+    # 2. DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer
+    # 3. DataAggregator.Records.Record.Workers.BatchEncoder
     cancel_all_jobs(Job.query_to_encodings_by_collection(collection_id))
 
     # Update all records which are in encoding / queued state to failed

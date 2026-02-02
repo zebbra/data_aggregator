@@ -2,6 +2,14 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   @moduledoc """
   `Oban.Worker` to perform `DataAggregator.Records.Record.encode/2` asynchronously.
 
+  > #### Deprecated {: .warning}
+  >
+  > This single-record encoder is deprecated. Use `BatchEncoder` instead for improved
+  > performance through batch processing and bulk database operations.
+  >
+  > The system now uses `BatchRecordsEnqueuer` which creates `BatchEncoder` jobs
+  > that process multiple records at once.
+
   Usually this is not used directly, but rather through `DataAggregator.Records.Record.enqueue_encoder/1`:
 
   ```elixir

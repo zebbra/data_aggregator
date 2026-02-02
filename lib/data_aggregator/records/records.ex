@@ -24,6 +24,8 @@ defmodule DataAggregator.Records do
     validation_request_timeout: to_timeout(day: 1),
     encode_timeout: to_timeout(hour: 1),
     encode_batch_size: 1000,
+    encode_job_batch_size: 100,
+    encode_db_batch_size: 50,
     publication_verification_timeout: to_timeout(minute: 5),
     execute_async: true,
     image_upload_timeout: to_timeout(hour: 12),
@@ -81,8 +83,10 @@ defmodule DataAggregator.Records do
     get_env(:import_max_concurrency, num_cpus)
   end
 
-  def encode_timeout, do: get_env(:import_timeout)
-  def encode_batch_size, do: get_env(:import_batch_size)
+  def encode_timeout, do: get_env(:encode_timeout)
+  def encode_batch_size, do: get_env(:encode_batch_size)
+  def encode_job_batch_size, do: get_env(:encode_job_batch_size)
+  def encode_db_batch_size, do: get_env(:encode_db_batch_size)
 
   def encode_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)

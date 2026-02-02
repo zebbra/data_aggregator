@@ -1,7 +1,10 @@
 defmodule DataAggregator.Records.Collection.Changes.EnqueueRecordsEnqueuer do
   @moduledoc """
-  Enques the task to be processed by the `DataAggregator.Records.Collection.Workers.RecordsEnqueuer` worker.
+  Enqueues the task to be processed by the `DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer` worker.
   This is mandatory so that we can cancel an encoding.
+
+  The worker will create batch encoding jobs, where each job processes multiple records
+  for improved performance over single-record encoding.
   """
 
   use Ash.Resource.Change
@@ -9,7 +12,7 @@ defmodule DataAggregator.Records.Collection.Changes.EnqueueRecordsEnqueuer do
   alias Ash.Changeset
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Collection.Workers.RecordsEnqueuer
+  alias DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer
 
   require Logger
 
@@ -34,13 +37,13 @@ defmodule DataAggregator.Records.Collection.Changes.EnqueueRecordsEnqueuer do
 
   defp insert_job(%Collection{id: id}, %{} = query, %User{id: user_id}) do
     %{id: id, collection_id: id, query: query, user_id: user_id}
-    |> RecordsEnqueuer.new()
+    |> BatchRecordsEnqueuer.new()
     |> Oban.insert()
   end
 
   defp insert_job(%Collection{id: id}, %{} = query, _) do
     %{id: id, collection_id: id, query: query}
-    |> RecordsEnqueuer.new()
+    |> BatchRecordsEnqueuer.new()
     |> Oban.insert()
   end
 end
