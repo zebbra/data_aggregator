@@ -57,6 +57,42 @@ defmodule DataAggregator.CatalogOfLife.RestAPIStub do
   end
 
   @spec lookup_species_by_name(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
+  def lookup_species_by_name("Invalid Species Name") do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       headers: %{
+         "accept-ranges" => ["bytes"],
+         "age" => ["0"],
+         "cache-control" => ["public, max-age=604800, s-maxage=604800"],
+         "content-type" => ["application/json"],
+         "date" => ["Tue, 03 Feb 2026 12:09:33 GMT"],
+         "vary" => ["Cookie, Accept, Accept-Encoding, Accept-Language, User-Agent", "Origin"],
+         "via" => [
+           "HTTP/1.1 git.gammaspectra.live/git/go-away@v0.0.0-20250904213329-95ac08540b8c+dirty",
+           "1.1 varnish (Varnish/7.1)"
+         ],
+         "x-backend" => ["api"],
+         "x-cache" => ["miss_cached"],
+         "x-varnish" => ["136971698"]
+       },
+       body: %{
+         "issues" => %{},
+         "match" => false,
+         "original" => %{
+           "canonical" => true,
+           "label" => "Invalid Species Name",
+           "labelHtml" => "Invalid Species Name",
+           "name" => "Invalid Species Name",
+           "status" => "accepted"
+         },
+         "type" => "none"
+       },
+       trailers: %{},
+       private: %{}
+     }}
+  end
+
   def lookup_species_by_name(_scientific_name) do
     {:ok,
      %Req.Response{

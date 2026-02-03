@@ -19,7 +19,8 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       correct_record =
         record_fixture_for_encoding(%{tax_scientific_name: "Anergates atratulus (Schenck, 1852)"})
 
-      invalid_record = record_fixture_for_encoding_col_taxonomy_invalid()
+      invalid_record =
+        record_fixture_for_encoding(%{tax_scientific_name: "Invalid Species Name"})
 
       [
         correct_record: correct_record,
@@ -54,6 +55,31 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       })
 
       assert encoded_record.state === :encoded
+    end
+
+    test "encode/2 for :col_taxonomy catalog which returns an error for invalid species name", %{
+      invalid_record: invalid_record
+    } do
+      {{:ok, encoded_record}, logs} =
+        with_log(fn ->
+          Record.encode(invalid_record, :col_taxonomy, tenant: invalid_record.collection_id)
+        end)
+
+      encoded_record =
+        Record.get_by_id!(encoded_record.id,
+          load: [:encoded],
+          tenant: invalid_record.collection_id
+        )
+
+      assert encoded_record !== nil
+      assert encoded_record.state === :failed
+
+      assert encoded_record.encoded == false
+
+      assert logs =~ "with catalog: col_taxonomy failed, due to: "
+
+      assert logs =~
+               "[col_taxonomy] Invalid species encoding: \\\"No match found in response body"
     end
   end
 end
