@@ -44,18 +44,12 @@ defmodule DataAggregator.Records.Record.Workers.BatchEncoder do
     batch_size = length(record_ids)
     Logger.debug("Batch encoding #{batch_size} records for Collection #{collection.id}...")
 
-    case BulkEncodeRecords.run(record_ids, collection, actor: actor, tenant: collection) do
-      {:ok, results} ->
-        Logger.debug(
-          "Batch encoding completed: #{length(results.successful)} successful, #{length(results.failed)} failed"
-        )
+    {:ok, results} =
+      BulkEncodeRecords.run(record_ids, collection, actor: actor, tenant: collection)
 
-        :ok
+    Logger.debug("Batch encoding completed: #{length(results.successful)} successful, #{length(results.failed)} failed")
 
-      {:error, error} ->
-        Logger.error("Batch encoding failed: #{inspect(error)}")
-        {:error, error}
-    end
+    :ok
   end
 
   @impl Oban.Worker

@@ -278,6 +278,10 @@ defmodule DataAggregator.Records.Record do
     transitions do
       transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
 
+      transition :set_queued,
+        from: [:imported, :encoded, :failed, :encoding],
+        to: :queued
+
       transition :enqueue_encoder,
         from: [:imported, :encoded, :failed, :encoding],
         to: :queued
@@ -400,6 +404,12 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
+    update :set_queued do
+      require_atomic? false
+
+      change transition_state(:queued)
+    end
+
     update :set_encoding do
       require_atomic? false
 
@@ -488,6 +498,7 @@ defmodule DataAggregator.Records.Record do
     define :get_by_mte_catalog_number, action: :read, get_by: [:mte_catalog_number]
     define :encode, args: [:record, :catalog]
     define :set_imported
+    define :set_queued
     define :set_encoding
     define :set_encoded
     define :set_encoding_failed

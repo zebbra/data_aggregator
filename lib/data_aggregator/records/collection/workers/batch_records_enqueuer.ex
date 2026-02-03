@@ -25,6 +25,7 @@ defmodule DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer do
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.BatchEncoder
 
+  require Ash.Query
   require Logger
 
   @impl Oban.Worker
@@ -56,6 +57,7 @@ defmodule DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer do
       |> Stream.map(& &1.id)
       |> Stream.chunk_every(batch_size)
       |> Enum.reduce({0, 0}, fn record_ids, {jobs, records} ->
+        transition_to_queued(record_ids, collection)
         insert_batch_job(collection, record_ids, actor)
         {jobs + 1, records + length(record_ids)}
       end)
@@ -63,6 +65,18 @@ defmodule DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer do
     Logger.debug("Enqueued #{job_count} batch encoding jobs for #{record_count} records in Collection #{collection.id}")
 
     :ok
+  end
+
+  defp transition_to_queued(record_ids, collection) do
+    Record
+    |> Ash.Query.filter(id in ^record_ids)
+    |> Ash.Query.set_tenant(collection)
+    |> Ash.bulk_update!(:set_queued, %{},
+      tenant: collection,
+      domain: Records,
+      resource: Record,
+      batch_size: Records.encode_db_batch_size()
+    )
   end
 
   defp insert_batch_job(collection, record_ids, %User{id: user_id}) do

@@ -41,19 +41,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record_or_encoded_record, catalog, ctx)
 
   def encode(%Record{} = record, :col_taxonomy, %{tenant: tenant} = ctx) do
-    attributes =
-      [
-        :extra_data,
-        :iucn_redlist_category
-      ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
-
-    encoded_record =
-      record
-      |> Map.from_struct()
-      |> Map.take(attributes)
-      |> Map.put(:record, record)
-      |> EncodedRecord.create!(tenant: tenant)
-
+    encoded_record = ensure_encoded_record_exists(record, tenant)
     encode(encoded_record, :col_taxonomy, ctx)
   end
 
@@ -62,58 +50,62 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encode(encoded_record, catalog, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, :col_taxonomy, ctx) do
-    encoded_record
-    |> CoLTaxonomyStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :col_taxonomy)
-    |> handle_encoding_result(encoded_record, :col_taxonomy, ctx)
+  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) do
+    case apply_catalog_strategy(encoded_record, catalog, ctx) do
+      {:error, _error, _encoded_record} = error ->
+        # Unknown/invalid catalogs have no input/output attributes defined,
+        # so skip audit creation (handle_encoding_result) and return directly
+        error
+
+      result ->
+        result
+        |> check_for_changes(encoded_record, catalog)
+        |> handle_encoding_result(encoded_record, catalog, ctx)
+    end
   end
 
-  def encode(%EncodedRecord{} = encoded_record, :swiss_species, ctx) do
+  @doc """
+  Encodes a record with a catalog strategy without creating audit records.
+
+  Unlike `encode/3`, this function:
+  - Does NOT create `RecordEncodingResult` entries
+  - Preserves the `{:unchanged, _}` return type instead of normalizing to `{:ok, _}`
+
+  Returns `{:ok, encoded_record}`, `{:unchanged, encoded_record}`, or `{:error, error, encoded_record}`.
+  """
+  @spec encode_without_audit(EncodedRecord.t(), atom(), Context.t()) ::
+          {:ok, EncodedRecord.t()}
+          | {:unchanged, EncodedRecord.t()}
+          | {:error, any(), EncodedRecord.t()}
+  def encode_without_audit(%EncodedRecord{} = encoded_record, catalog, ctx) do
     encoded_record
-    |> SwissSpeciesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :swiss_species)
-    |> handle_encoding_result(encoded_record, :swiss_species, ctx)
+    |> apply_catalog_strategy(catalog, ctx)
+    |> check_for_changes(encoded_record, catalog)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, :geo_reverse, ctx) do
-    encoded_record
-    |> ReverseGeoEncodingStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :geo_reverse)
-    |> handle_encoding_result(encoded_record, :geo_reverse, ctx)
-  end
+  defp apply_catalog_strategy(encoded_record, :col_taxonomy, ctx),
+    do: CoLTaxonomyStrategy.apply_strategy(encoded_record, ctx)
 
-  def encode(%EncodedRecord{} = encoded_record, :geo_forward, ctx) do
-    encoded_record
-    |> ForwardGeoEncodingStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :geo_forward)
-    |> handle_encoding_result(encoded_record, :geo_forward, ctx)
-  end
+  defp apply_catalog_strategy(encoded_record, :swiss_species, ctx),
+    do: SwissSpeciesStrategy.apply_strategy(encoded_record, ctx)
 
-  def encode(%EncodedRecord{} = encoded_record, :iucn_redlist, ctx) do
-    encoded_record
-    |> IUCNRedlistStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :iucn_redlist)
-    |> handle_encoding_result(encoded_record, :iucn_redlist, ctx)
-  end
+  defp apply_catalog_strategy(encoded_record, :geo_reverse, ctx),
+    do: ReverseGeoEncodingStrategy.apply_strategy(encoded_record, ctx)
 
-  def encode(%EncodedRecord{} = encoded_record, :relate_images, ctx) do
-    encoded_record
-    |> RelateImagesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :relate_images)
-    |> handle_encoding_result(encoded_record, :relate_images, ctx)
-  end
+  defp apply_catalog_strategy(encoded_record, :geo_forward, ctx),
+    do: ForwardGeoEncodingStrategy.apply_strategy(encoded_record, ctx)
 
-  def encode(%EncodedRecord{} = encoded_record, :convert_dates, ctx) do
-    encoded_record
-    |> ConvertDatesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, :convert_dates)
-    |> handle_encoding_result(encoded_record, :convert_dates, ctx)
-  end
+  defp apply_catalog_strategy(encoded_record, :iucn_redlist, ctx),
+    do: IUCNRedlistStrategy.apply_strategy(encoded_record, ctx)
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, _ctx) do
-    {:error, "no encoding strategy found for catalog: #{inspect(catalog)}", encoded_record}
-  end
+  defp apply_catalog_strategy(encoded_record, :relate_images, ctx),
+    do: RelateImagesStrategy.apply_strategy(encoded_record, ctx)
+
+  defp apply_catalog_strategy(encoded_record, :convert_dates, ctx),
+    do: ConvertDatesStrategy.apply_strategy(encoded_record, ctx)
+
+  defp apply_catalog_strategy(encoded_record, catalog, _ctx),
+    do: {:error, "no encoding strategy found for catalog: #{inspect(catalog)}", encoded_record}
 
   @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom(), Context.t()) ::
           EncodingResult.t()
@@ -174,7 +166,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
     new_record = EncodedRecord.get_by_record!(record.id, tenant: tenant)
 
-    err_msg = get_err_msg(error)
+    err_msg = format_error_message(error)
 
     attrs
     |> put_input_values(catalog, old_encoded_record)
@@ -186,22 +178,39 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> RecordEncodingResult.create!(tenant: tenant)
   end
 
-  defp get_err_msg(error) when is_binary(error) == true, do: error
-  defp get_err_msg(error) when is_binary(error) == false, do: inspect(error)
+  @doc """
+  Creates or upserts an `EncodedRecord` from a `Record`, copying over
+  DarwinCore attributes, extra_data, and iucn_redlist_category.
+  """
+  def ensure_encoded_record_exists(record, tenant) do
+    attributes =
+      [:extra_data, :iucn_redlist_category] ++
+        DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
+
+    record
+    |> Map.from_struct()
+    |> Map.take(attributes)
+    |> Map.put(:record, record)
+    |> EncodedRecord.create!(tenant: tenant)
+  end
+
+  @doc "Formats an error value into a string message."
+  def format_error_message(error) when is_binary(error), do: error
+  def format_error_message(error), do: inspect(error)
 
   defp put_input_values(attrs, catalog, record) do
-    Map.put(attrs, :input, get_values_used_for_encoding(record, catalog))
+    Map.put(attrs, :input, get_input_values(record, catalog))
   end
 
   defp put_output_values(attrs, catalog, record) do
-    Map.put(attrs, :output, get_encoded_values(record, catalog))
+    Map.put(attrs, :output, get_output_values(record, catalog))
   end
 
   defp check_for_changes(encoding_result, original_encoded_record, catalog) do
     case encoding_result do
       {:ok, new_encoded_record} ->
-        new_values = get_encoded_values(new_encoded_record, catalog)
-        old_values = get_encoded_values(original_encoded_record, catalog)
+        new_values = get_output_values(new_encoded_record, catalog)
+        old_values = get_output_values(original_encoded_record, catalog)
 
         if Map.equal?(new_values, old_values) do
           Logger.debug(
@@ -218,11 +227,13 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     end
   end
 
-  defp get_encoded_values(encoded_record, catalog) do
+  @doc "Returns the output DarwinCore attribute values for the given catalog."
+  def get_output_values(encoded_record, catalog) do
     Map.take(encoded_record, Catalog.get_output_dwc_attributes(catalog))
   end
 
-  defp get_values_used_for_encoding(encoded_record, catalog) do
+  @doc "Returns the input DarwinCore attribute values for the given catalog."
+  def get_input_values(encoded_record, catalog) do
     Map.take(encoded_record, Catalog.get_input_dwc_attributes(catalog))
   end
 

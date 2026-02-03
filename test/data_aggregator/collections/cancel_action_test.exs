@@ -12,8 +12,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Collection.Workers.BatchRecordsEnqueuer
   alias DataAggregator.Records.Collection.Workers.EncodingStatePoller
-  alias DataAggregator.Records.Collection.Workers.RecordsEnqueuer
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Workers.Exporter
   alias DataAggregator.Records.ImageUpload
@@ -23,7 +23,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
-  alias DataAggregator.Records.Record.Workers.Encoder
+  alias DataAggregator.Records.Record.Workers.BatchEncoder
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
 
@@ -293,7 +293,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         assert collection.state === :encoding
 
         assert_enqueued(
-          worker: RecordsEnqueuer,
+          worker: BatchRecordsEnqueuer,
           args: %{id: collection.id, collection_id: collection.id, query: query}
         )
 
@@ -307,11 +307,11 @@ defmodule DataAggregator.Collections.CancelActionTest do
           collection.id |> Job.query_to_encodings_by_collection() |> Ash.read_one!()
 
         assert records_enqueuer_job.state === :available
-        perform_job(RecordsEnqueuer, %{id: collection.id, query: query})
+        perform_job(BatchRecordsEnqueuer, %{id: collection.id, query: query})
 
         assert_enqueued(
-          worker: Encoder,
-          args: %{id: correct_record.id, collection_id: collection.id}
+          worker: BatchEncoder,
+          args: %{record_ids: [correct_record.id], collection_id: collection.id}
         )
 
         collection = Collection.get_by_id!(collection.id)
@@ -340,9 +340,9 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         assert collection.state === :encoding
 
-        refute_enqueued(worker: RecordsEnqueuer)
+        refute_enqueued(worker: BatchRecordsEnqueuer)
         refute_enqueued(worker: EncodingStatePoller)
-        refute_enqueued(worker: Encoder)
+        refute_enqueued(worker: BatchEncoder)
 
         Collection.cancel_action!(collection)
 
