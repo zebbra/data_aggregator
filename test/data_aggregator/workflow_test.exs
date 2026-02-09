@@ -764,13 +764,6 @@ defmodule DataAggregator.WorkflowTest do
     expected = [
       {:tax_taxon_rank, %{category_name: "tax", encoded: "species", imported: "SPECIES", name: "taxonRank"}},
       {:tax_taxon_id, %{category_name: "tax", encoded: "DY5M", imported: "-", name: "taxonID"}},
-      {:tax_specific_epithet,
-       %{
-         category_name: "tax",
-         encoded: "atratulus",
-         imported: "atratulum",
-         name: "specificEpithet"
-       }},
       {:tax_scientific_name_authorship,
        %{
          category_name: "tax",

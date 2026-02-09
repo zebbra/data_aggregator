@@ -57,249 +57,308 @@ defmodule DataAggregator.CatalogOfLife.RestAPIStub do
   end
 
   @spec lookup_species_by_name(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
-  def lookup_species_by_name(_scientific_name) do
+  def lookup_species_by_name("Invalid Species Name") do
     {:ok,
      %Req.Response{
        status: 200,
        headers: %{
          "accept-ranges" => ["bytes"],
-         "age" => ["114"],
+         "age" => ["0"],
          "cache-control" => ["public, max-age=604800, s-maxage=604800"],
          "content-type" => ["application/json"],
-         "date" => ["Fri, 19 Dec 2025 10:23:25 GMT"],
+         "date" => ["Tue, 03 Feb 2026 12:09:33 GMT"],
          "vary" => ["Cookie, Accept, Accept-Encoding, Accept-Language, User-Agent", "Origin"],
          "via" => [
            "HTTP/1.1 git.gammaspectra.live/git/go-away@v0.0.0-20250904213329-95ac08540b8c+dirty",
            "1.1 varnish (Varnish/7.1)"
          ],
          "x-backend" => ["api"],
-         "x-cache" => ["hit_cached"],
-         "x-varnish" => ["971000238 977314260"]
+         "x-cache" => ["miss_cached"],
+         "x-varnish" => ["136971698"]
        },
        body: %{
-         "empty" => false,
-         "last" => true,
-         "limit" => 1,
-         "offset" => 0,
-         "result" => [
-           %{
-             "classification" => [
-               %{
-                 "id" => "CS5HF",
-                 "label" => "Eukaryota",
-                 "labelHtml" => "Eukaryota",
-                 "name" => "Eukaryota",
-                 "rank" => "domain"
-               },
-               %{
-                 "id" => "N",
-                 "label" => "Animalia",
-                 "labelHtml" => "Animalia",
-                 "name" => "Animalia",
-                 "rank" => "kingdom"
-               },
-               %{
-                 "id" => "RT",
-                 "label" => "Arthropoda",
-                 "labelHtml" => "Arthropoda",
-                 "name" => "Arthropoda",
-                 "rank" => "phylum"
-               },
-               %{
-                 "id" => "L2655",
-                 "label" => "Hexapoda",
-                 "labelHtml" => "Hexapoda",
-                 "name" => "Hexapoda",
-                 "rank" => "subphylum"
-               },
-               %{
-                 "id" => "H6",
-                 "label" => "Insecta",
-                 "labelHtml" => "Insecta",
-                 "name" => "Insecta",
-                 "rank" => "class"
-               },
-               %{
-                 "id" => "HYM",
-                 "label" => "Hymenoptera",
-                 "labelHtml" => "Hymenoptera",
-                 "name" => "Hymenoptera",
-                 "rank" => "order"
-               },
-               %{
-                 "id" => "KZPW7",
-                 "label" => "Apocrita",
-                 "labelHtml" => "Apocrita",
-                 "name" => "Apocrita",
-                 "rank" => "suborder"
-               },
-               %{
-                 "id" => "KZMNP",
-                 "label" => "Aculeata",
-                 "labelHtml" => "Aculeata",
-                 "name" => "Aculeata",
-                 "rank" => "infraorder"
-               },
-               %{
-                 "id" => "VP",
-                 "label" => "Vespoidea",
-                 "labelHtml" => "Vespoidea",
-                 "name" => "Vespoidea",
-                 "rank" => "superfamily"
-               },
-               %{
-                 "id" => "CLRKP",
-                 "label" => "Formicidae",
-                 "labelHtml" => "Formicidae",
-                 "name" => "Formicidae",
-                 "rank" => "family"
-               },
-               %{
-                 "id" => "CMD7Z",
-                 "label" => "Myrmicinae",
-                 "labelHtml" => "Myrmicinae",
-                 "name" => "Myrmicinae",
-                 "rank" => "subfamily"
-               },
-               %{
-                 "id" => "CLMZ7",
-                 "label" => "Crematogastrini",
-                 "labelHtml" => "Crematogastrini",
-                 "name" => "Crematogastrini",
-                 "rank" => "tribe"
-               },
-               %{
-                 "id" => "63V54",
-                 "label" => "Tetramorium",
-                 "labelHtml" => "<i>Tetramorium</i>",
-                 "name" => "Tetramorium",
-                 "rank" => "genus"
-               },
-               %{
-                 "id" => "CMV7J",
-                 "label" => "Tetramorium atratulum",
-                 "labelHtml" => "<i>Tetramorium atratulum</i>",
-                 "name" => "Tetramorium atratulum",
-                 "rank" => "species"
-               },
-               %{
-                 "id" => "DY5M",
-                 "label" => "Anergates atratulus",
-                 "labelHtml" => "<i>Anergates atratulus</i>",
-                 "name" => "Anergates atratulus",
-                 "rank" => "species"
-               }
-             ],
-             "group" => "hymenoptera",
-             "id" => "DY5M",
-             "sectorDatasetKey" => 54_937,
-             "usage" => %{
-               "accepted" => %{
-                 "created" => "2025-11-10T13:47:46.72509",
-                 "createdBy" => 102,
-                 "datasetKey" => 313_100,
-                 "extinct" => false,
-                 "id" => "CMV7J",
-                 "label" => "Tetramorium atratulum (Schenck, 1852)",
-                 "labelHtml" => "<i>Tetramorium atratulum</i> (Schenck, 1852)",
-                 "link" => "https://antcat.org/catalog/430775",
-                 "merged" => false,
-                 "modified" => "2025-11-10T13:47:46.72509",
-                 "modifiedBy" => 102,
-                 "name" => %{
-                   "authorship" => "(Schenck, 1852)",
-                   "basionymAuthorship" => %{
-                     "authors" => ["Schenck"],
-                     "year" => "1852"
-                   },
-                   "basionymOrCombinationAuthorship" => %{
-                     "authors" => ["Schenck"],
-                     "year" => "1852"
-                   },
-                   "code" => "zoological",
-                   "created" => "2025-11-10T13:47:46.72509",
-                   "createdBy" => 102,
-                   "datasetKey" => 313_100,
-                   "genus" => "Tetramorium",
-                   "id" => "MguwnX5MWvQH2hAy16de-1",
-                   "link" => "https://antcat.org/catalog/430775",
-                   "merged" => false,
-                   "modified" => "2025-11-10T13:47:46.72509",
-                   "modifiedBy" => 102,
-                   "namesIndexId" => 22_231_881,
-                   "namesIndexType" => "exact",
-                   "nomStatus" => "established",
-                   "origin" => "source",
-                   "parsed" => true,
-                   "publishedInId" => "8b6357fd-9ccd-4159-9b37-bb24dd2f9fc7",
-                   "rank" => "species",
-                   "scientificName" => "Tetramorium atratulum",
-                   "sectorKey" => 64_431,
-                   "specificEpithet" => "atratulum",
-                   "type" => "scientific",
-                   "verbatimSourceKey" => 297_102_011
-                 },
-                 "origin" => "source",
-                 "parentId" => "63V54",
-                 "remarks" =>
-                   "Myrmica atratula [Schenck, 1852](https://antcat.org/references/128471) [PDF](https://antcat.org/documents/2672/2544.pdf): 91 (q.m.) GERMANY. Palearctic. Primary type information: Primary type material: syntype queen(s), syntype male(s) (numbers not stated). Primary type locality: Germany: Nassau Distr., NW Frankfurt, 24.vi.(1851?), 1.vii.(1851?) (P.A. Schenck). Primary type depository: SMFM (perhaps also UMPU). Type notes: Schenck’s Hymenoptera specimens originally in UMPU ([Horn & Kahle, 1936](https://antcat.org/references/143791): 242); later transferred to SMFM. [AntCat](https://www.antcat.org/catalog/430775) [AntWiki](https://www.antwiki.org/wiki/Tetramorium_atratulum)Taxonomic history[Also described as new by [Schenck, 1853b](https://antcat.org/references/128477) [PDF](https://antcat.org/documents/2673/2545.pdf): 186.][Misspelled as atrata by [Taschenberg, 1880](https://antcat.org/references/144408): 259, 705][Misspelled as atradulus by [Gösswald, 1932](https://antcat.org/references/125557) [PDF](https://antcat.org/documents/6867/Gösswald__K._1932.pdf): 83.][Wheeler, 1909g](https://antcat.org/references/130041) [PDF](https://antcat.org/documents/3448/10560.pdf): 182 (l.); [Borowiec & Salata, 2025a](https://antcat.org/references/144454) [PDF](https://antcat.org/documents/8758/monograph-of-greek-ants-volume-2-part-1-text_final-after-review-1.pdf): 15 (em.)Combination in [Tetramorium](https://www.antcat.org/catalog/429802): [Mayr, 1855](https://antcat.org/references/127185) [PDF](https://antcat.org/documents/2121/4443.pdf): 429.Combination in [Tomognathus](https://www.antcat.org/catalog/429928): [Mayr, 1863a](https://antcat.org/references/127213) [PDF](https://antcat.org/documents/2141/4446.pdf): 457.Combination in [Anergates](https://www.antcat.org/catalog/429793): [Forel, 1874](https://antcat.org/references/124988) [PDF](https://antcat.org/documents/1303/3910.pdf): 68.Combination in [Tetramorium](https://www.antcat.org/catalog/429802): [Ward et al., 2015](https://antcat.org/references/142630) [10.1111/syen.12090](https://doi.org/10.1111/syen.12090) [PDF](https://antcat.org/documents/6341/ward_et_al_2015_syst_entomol_myrmicine_phylogeny_incl_supp_info.pdf): 76.Junior synonym of [Tetramorium caespitum](https://www.antcat.org/catalog/450200): [Mayr, 1861](https://antcat.org/references/127189) [PDF](https://antcat.org/documents/2123/8104.pdf): 61 (in key); [Mayr, 1865](https://antcat.org/references/127193) [PDF](https://antcat.org/documents/6498/mayr__g-_1865-_formicidae-_in___reise_der_osterreichischen_fregatte_-novara-_um_die_erde_in_den_jahren_1857__1858__1859-_zoologischer_theil-_bd-_ii-_abt-_1.pdf): 89; [Dours, 1873](https://antcat.org/references/124387) [PDF](https://antcat.org/documents/1025/14701.pdf): 168; [André, 1874c](https://antcat.org/references/142477): 203 (in list); [Dalla Torre, 1893](https://antcat.org/references/124002) [PDF](https://antcat.org/documents/838/7602.pdf): 132.Status as species: [Mayr, 1855](https://antcat.org/references/127185) [PDF](https://antcat.org/documents/2121/4443.pdf): 429 (redescription); [Smith, 1858a](https://antcat.org/references/128685) [PDF](https://antcat.org/documents/2734/8127.pdf): 117; [Mayr, 1863a](https://antcat.org/references/127213) [PDF](https://antcat.org/documents/2141/4446.pdf): 457; [Forel, 1874](https://antcat.org/references/124988) [PDF](https://antcat.org/documents/1303/3910.pdf): 93 (redescription); [Emery & Forel, 1879](https://antcat.org/references/124778) [PDF](https://antcat.org/documents/7990/emery_forel_1879_mitt-_sch-_ent-_ges-_catalogue_des_formicides_d-europe.pdf): 457; [André, 1882d](https://antcat.org/references/124525) [PDF](https://antcat.org/documents/6070/andre_1882.pdf): 278 (in key); [Lameere, 1892](https://antcat.org/references/126777): 67; [Dalla Torre, 1893](https://antcat.org/references/124002) [PDF](https://antcat.org/documents/838/7602.pdf): 64; [Wasmann, 1894](https://antcat.org/references/129627): 165; [Wheeler, 1901e](https://antcat.org/references/129964) [PDF](https://antcat.org/documents/3382/10490.pdf): 717; [Ruzsky, 1905b](ht...",
-                 "sectorKey" => 64_431,
-                 "status" => "accepted",
-                 "verbatimSourceKey" => 297_102_011
-               },
-               "created" => "2025-11-10T13:49:16.504784",
-               "createdBy" => 102,
-               "datasetKey" => 313_100,
-               "id" => "DY5M",
-               "identifier" => ["tsn:578332"],
-               "label" => "Anergates atratulus (Schenck, 1852)",
-               "labelHtml" => "<i>Anergates atratulus</i> (Schenck, 1852)",
-               "merged" => false,
-               "modified" => "2025-11-10T13:49:16.504784",
-               "modifiedBy" => 102,
-               "name" => %{
-                 "authorship" => "(Schenck, 1852)",
-                 "basionymAuthorship" => %{
-                   "authors" => ["Schenck"],
-                   "year" => "1852"
-                 },
-                 "basionymOrCombinationAuthorship" => %{
-                   "authors" => ["Schenck"],
-                   "year" => "1852"
-                 },
-                 "code" => "zoological",
-                 "created" => "2025-11-10T13:49:16.504784",
-                 "createdBy" => 102,
-                 "datasetKey" => 313_100,
-                 "genus" => "Anergates",
-                 "id" => "kxJmGjuZ6981DOVV7Ecs02",
-                 "link" => "https://antcat.org/catalog/495878",
-                 "merged" => false,
-                 "modified" => "2025-11-10T13:49:16.504784",
-                 "modifiedBy" => 102,
-                 "nomStatus" => "not established",
-                 "origin" => "source",
-                 "parsed" => true,
-                 "publishedInId" => "8b6357fd-9ccd-4159-9b37-bb24dd2f9fc7",
-                 "rank" => "species",
-                 "remarks" => "not established",
-                 "scientificName" => "Anergates atratulus",
-                 "sectorKey" => 64_431,
-                 "specificEpithet" => "atratulus",
-                 "type" => "scientific",
-                 "verbatimSourceKey" => 297_117_396
-               },
-               "origin" => "source",
-               "parentId" => "CMV7J",
-               "remarks" =>
-                 "obsolete combination. Myrmica atratula [Schenck, 1852](https://antcat.org/references/128471) [PDF](https://antcat.org/documents/2672/2544.pdf): 91 (q.m.) GERMANY. Palearctic. Primary type information: Primary type material: syntype queen(s), syntype male(s) (numbers not stated). Primary type locality: Germany: Nassau Distr., NW Frankfurt, 24.vi.(1851?), 1.vii.(1851?) (P.A. Schenck). Primary type depository: SMFM (perhaps also UMPU). Type notes: Schenck’s Hymenoptera specimens originally in UMPU ([Horn & Kahle, 1936](https://antcat.org/references/143791): 242); later transferred to SMFM. [AntCat](https://www.antcat.org/catalog/495878) [AntWiki](https://www.antwiki.org/wiki/Anergates_atratulus).",
-               "sectorKey" => 64_431,
-               "status" => "synonym",
-               "verbatimSourceKey" => 297_117_396
-             }
-           }
+         "issues" => %{},
+         "match" => false,
+         "original" => %{
+           "canonical" => true,
+           "label" => "Invalid Species Name",
+           "labelHtml" => "Invalid Species Name",
+           "name" => "Invalid Species Name",
+           "status" => "accepted"
+         },
+         "type" => "none"
+       },
+       trailers: %{},
+       private: %{}
+     }}
+  end
+
+  def lookup_species_by_name(_scientific_name) do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       headers: %{
+         "accept-ranges" => ["bytes"],
+         "age" => ["0"],
+         "cache-control" => ["public, max-age=604800, s-maxage=604800"],
+         "content-type" => ["application/json"],
+         "date" => ["Mon, 02 Feb 2026 12:54:38 GMT"],
+         "vary" => ["Cookie, Accept, Accept-Encoding, Accept-Language, User-Agent", "Origin"],
+         "via" => [
+           "HTTP/1.1 git.gammaspectra.live/git/go-away@v0.0.0-20250904213329-95ac08540b8c+dirty",
+           "1.1 varnish (Varnish/7.1)"
          ],
-         "total" => 1
+         "x-backend" => ["api"],
+         "x-cache" => ["miss_cached"],
+         "x-varnish" => ["101661596"]
+       },
+       body: %{
+         "id" => "DY5M",
+         "issues" => %{},
+         "match" => true,
+         "original" => %{
+           "canonical" => true,
+           "label" => "Anergates atratulus (Schenck, 1852)",
+           "labelHtml" => "Anergates atratulus (Schenck, 1852)",
+           "name" => "Anergates atratulus (Schenck, 1852)",
+           "status" => "accepted"
+         },
+         "sectorKey" => 64_431,
+         "type" => "exact",
+         "usage" => %{
+           "authorship" => "(Schenck, 1852)",
+           "canonical" => false,
+           "canonicalId" => 476_310,
+           "classification" => [
+             %{
+               "authorship" => "(Schenck, 1852)",
+               "canonical" => false,
+               "canonicalId" => 22_231_880,
+               "code" => "zoological",
+               "id" => "CMV7J",
+               "label" => "Tetramorium atratulum (Schenck, 1852)",
+               "labelHtml" => "<i>Tetramorium atratulum</i> (Schenck, 1852)",
+               "name" => "Tetramorium atratulum",
+               "namesIndexId" => 22_231_881,
+               "namesIndexMatchType" => "exact",
+               "parent" => "63V54",
+               "parentId" => "63V54",
+               "rank" => "species",
+               "sectorKey" => 64_431,
+               "status" => "accepted"
+             },
+             %{
+               "authorship" => "Mayr, 1855",
+               "canonical" => false,
+               "canonicalId" => 22_229_372,
+               "code" => "zoological",
+               "id" => "63V54",
+               "label" => "Tetramorium Mayr, 1855",
+               "labelHtml" => "<i>Tetramorium</i> Mayr, 1855",
+               "name" => "Tetramorium",
+               "namesIndexId" => 22_229_373,
+               "namesIndexMatchType" => "variant",
+               "parent" => "CLMZ7",
+               "parentId" => "CLMZ7",
+               "rank" => "genus",
+               "sectorKey" => 64_431,
+               "status" => "accepted"
+             },
+             %{
+               "authorship" => "Forel, 1893",
+               "canonical" => false,
+               "canonicalId" => 6_735_990,
+               "code" => "zoological",
+               "id" => "CLMZ7",
+               "label" => "Crematogastrini Forel, 1893",
+               "labelHtml" => "Crematogastrini Forel, 1893",
+               "name" => "Crematogastrini",
+               "namesIndexId" => 6_735_991,
+               "namesIndexMatchType" => "variant",
+               "parent" => "CMD7Z",
+               "parentId" => "CMD7Z",
+               "rank" => "tribe",
+               "sectorKey" => 64_431,
+               "status" => "accepted"
+             },
+             %{
+               "authorship" => "Lepeletier de Saint-Fargeau, 1835",
+               "canonical" => false,
+               "canonicalId" => 15_529_398,
+               "code" => "zoological",
+               "id" => "CMD7Z",
+               "label" => "Myrmicinae Lepeletier de Saint-Fargeau, 1835",
+               "labelHtml" => "Myrmicinae Lepeletier de Saint-Fargeau, 1835",
+               "name" => "Myrmicinae",
+               "namesIndexId" => 15_529_407,
+               "namesIndexMatchType" => "variant",
+               "parent" => "CLRKP",
+               "parentId" => "CLRKP",
+               "rank" => "subfamily",
+               "sectorKey" => 64_431,
+               "status" => "accepted"
+             },
+             %{
+               "authorship" => "Latreille, 1802",
+               "canonical" => false,
+               "canonicalId" => 8_301_485,
+               "code" => "zoological",
+               "id" => "CLRKP",
+               "label" => "Formicidae Latreille, 1802",
+               "labelHtml" => "Formicidae Latreille, 1802",
+               "name" => "Formicidae",
+               "namesIndexId" => 9_882_464,
+               "namesIndexMatchType" => "variant",
+               "parent" => "VP",
+               "parentId" => "VP",
+               "rank" => "family",
+               "sectorKey" => 64_431,
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 24_424_930,
+               "code" => "zoological",
+               "id" => "VP",
+               "label" => "Vespoidea",
+               "labelHtml" => "Vespoidea",
+               "name" => "Vespoidea",
+               "namesIndexId" => 24_424_939,
+               "namesIndexMatchType" => "exact",
+               "parent" => "KZMNP",
+               "parentId" => "KZMNP",
+               "rank" => "superfamily",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 70_400,
+               "code" => "zoological",
+               "id" => "KZMNP",
+               "label" => "Aculeata",
+               "labelHtml" => "Aculeata",
+               "name" => "Aculeata",
+               "namesIndexId" => 70_403,
+               "namesIndexMatchType" => "exact",
+               "parent" => "KZPW7",
+               "parentId" => "KZPW7",
+               "rank" => "infraorder",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 1_184_652,
+               "code" => "zoological",
+               "id" => "KZPW7",
+               "label" => "Apocrita",
+               "labelHtml" => "Apocrita",
+               "name" => "Apocrita",
+               "namesIndexId" => 1_184_677,
+               "namesIndexMatchType" => "exact",
+               "parent" => "HYM",
+               "parentId" => "HYM",
+               "rank" => "suborder",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 8_315_447,
+               "code" => "zoological",
+               "id" => "HYM",
+               "label" => "Hymenoptera",
+               "labelHtml" => "Hymenoptera",
+               "name" => "Hymenoptera",
+               "namesIndexId" => 9_726_273,
+               "namesIndexMatchType" => "exact",
+               "parent" => "H6",
+               "parentId" => "H6",
+               "rank" => "order",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 11_244_002,
+               "id" => "H6",
+               "label" => "Insecta",
+               "labelHtml" => "Insecta",
+               "name" => "Insecta",
+               "namesIndexId" => 11_244_003,
+               "namesIndexMatchType" => "exact",
+               "parent" => "L2655",
+               "parentId" => "L2655",
+               "rank" => "class",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 10_144_387,
+               "code" => "zoological",
+               "id" => "L2655",
+               "label" => "Hexapoda",
+               "labelHtml" => "Hexapoda",
+               "name" => "Hexapoda",
+               "namesIndexId" => 10_144_399,
+               "namesIndexMatchType" => "exact",
+               "parent" => "RT",
+               "parentId" => "RT",
+               "rank" => "subphylum",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 1_325_914,
+               "id" => "RT",
+               "label" => "Arthropoda",
+               "labelHtml" => "Arthropoda",
+               "name" => "Arthropoda",
+               "namesIndexId" => 1_326_121,
+               "namesIndexMatchType" => "exact",
+               "parent" => "N",
+               "parentId" => "N",
+               "rank" => "phylum",
+               "status" => "accepted"
+             },
+             %{
+               "canonical" => false,
+               "canonicalId" => 605_324,
+               "id" => "N",
+               "label" => "Animalia",
+               "labelHtml" => "Animalia",
+               "name" => "Animalia",
+               "namesIndexId" => 605_377,
+               "namesIndexMatchType" => "exact",
+               "parent" => "CS5HF",
+               "parentId" => "CS5HF",
+               "rank" => "kingdom",
+               "status" => "accepted"
+             },
+             %{
+               "authorship" => "(Chatton, 1925) Whittaker & Margulis, 1978",
+               "canonical" => false,
+               "canonicalId" => 9_856_432,
+               "id" => "CS5HF",
+               "label" => "Eukaryota (Chatton, 1925) Whittaker & Margulis, 1978",
+               "labelHtml" => "Eukaryota (Chatton, 1925) Whittaker & Margulis, 1978",
+               "name" => "Eukaryota",
+               "namesIndexId" => 9_856_433,
+               "namesIndexMatchType" => "exact",
+               "rank" => "domain",
+               "status" => "accepted"
+             }
+           ],
+           "code" => "zoological",
+           "id" => "DY5M",
+           "label" => "Anergates atratulus (Schenck, 1852)",
+           "labelHtml" => "<i>Anergates atratulus</i> (Schenck, 1852)",
+           "name" => "Anergates atratulus",
+           "namesIndexId" => 476_311,
+           "namesIndexMatchType" => "variant",
+           "parent" => "CMV7J",
+           "parentId" => "CMV7J",
+           "rank" => "species",
+           "sectorKey" => 64_431,
+           "status" => "synonym"
+         }
        },
        trailers: %{},
        private: %{}
