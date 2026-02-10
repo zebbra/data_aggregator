@@ -110,8 +110,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     if is_nil(additional_status) do
       {:ok, nil}
     else
-      with false <- is_nil(additional_status),
-           true <- is_list(additional_status),
+      with true <- is_list(additional_status),
            false <- Enum.empty?(additional_status),
            status = get_correct_status(additional_status),
            true <- is_map(status),
@@ -126,7 +125,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     end
   end
 
-  defp get_correct_status(additional_status) do
+  @doc """
+  Returns the correct status from the additional_status list.
+
+  Example:
+    iex> get_correct_status([%{"datasetAlias" => "IUCN", "statusCode" => "CR"}])
+    %{"datasetAlias" => "IUCN", "statusCode" => "CR"}
+  """
+  def get_correct_status(additional_status) do
     additional_status
     |> Enum.filter(&(&1["datasetAlias"] === "IUCN"))
     |> hd()
