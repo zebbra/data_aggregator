@@ -567,6 +567,18 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
+      validation_annotation_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.get(&1, "validation_annotation"))
+
+      assert validation_annotation_values == [
+               "Annotation 1",
+               "Annotation 2",
+               "Annotation 3",
+               "Annotation 4"
+             ]
+
       assert DataFrame.n_columns(data_frame) == 307
       assert DataFrame.n_rows(data_frame) == 4
     end
