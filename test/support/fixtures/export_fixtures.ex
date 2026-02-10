@@ -426,7 +426,8 @@ defmodule DataAggregator.ExportFixtures do
       "disposition",
       "subclass",
       "domain",
-      "subkingdom"
+      "subkingdom",
+      "validation_annotation"
     ]
   end
 
@@ -737,7 +738,8 @@ defmodule DataAggregator.ExportFixtures do
       "org_associated_organisms" => "associatedOrganisms",
       "tax_domain" => "domain",
       "tax_subclass" => "subclass",
-      "tax_subkingdom" => "subkingdom"
+      "tax_subkingdom" => "subkingdom",
+      "validation_annotation" => "validation_annotation"
     }
   end
 end

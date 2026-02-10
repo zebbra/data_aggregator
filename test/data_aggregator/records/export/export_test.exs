@@ -13,6 +13,7 @@ defmodule DataAggregator.ExportTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Workers.Exporter
+  alias DataAggregator.Records.Record
   alias Explorer.DataFrame
 
   describe "export crud tests" do
@@ -238,19 +239,22 @@ defmodule DataAggregator.ExportTest do
       # those two should be exported
       exportable_record(collection, %{
         extra_data: %{"Custom Attribute" => "Value 1"},
-        mte_verbatim_label: "foo\nbar"
+        mte_verbatim_label: "foo\nbar",
+        validation_annotation: "Annotation 1"
       })
 
       exportable_record(collection, %{
         extra_data: %{"Custom Attribute" => "Value 2"},
-        mte_verbatim_label: nil
+        mte_verbatim_label: nil,
+        validation_annotation: "Annotation 2"
       })
 
       exportable_record_with_encoded_record(
         collection,
         %{
           extra_data: %{"Custom Attribute" => "Value 3"},
-          mte_verbatim_label: "foo\nbar"
+          mte_verbatim_label: "foo\nbar",
+          validation_annotation: "Annotation 3"
         },
         %{
           tax_scientific_name: "Encoded Name",
@@ -259,19 +263,24 @@ defmodule DataAggregator.ExportTest do
         }
       )
 
-      exportable_record_with_validated_record(
-        collection,
-        %{
-          extra_data: %{"Custom Attribute" => "Value 4"},
-          mte_verbatim_label: "raw label",
-          tax_scientific_name: "Raw Name"
-        },
-        %{
-          tax_scientific_name: "Validated Name",
-          tax_family: "Validated Family",
-          mte_verbatim_label: nil
-        }
-      )
+      validated_record =
+        exportable_record_with_validated_record(
+          collection,
+          %{
+            extra_data: %{"Custom Attribute" => "Value 4"},
+            mte_verbatim_label: "raw label",
+            tax_scientific_name: "Raw Name",
+            validation_annotation: "Annotation 4"
+          },
+          %{
+            tax_scientific_name: "Validated Name",
+            tax_family: "Validated Family",
+            mte_verbatim_label: nil
+          }
+        )
+
+      # The validation logic clears the annotation, so we need to set it again
+      Record.update!(validated_record.record, %{validation_annotation: "Annotation 4"})
 
       # this one should not be exported
       unexportable_record(collection_other)
@@ -558,7 +567,7 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 306
+      assert DataFrame.n_columns(data_frame) == 307
       assert DataFrame.n_rows(data_frame) == 4
     end
 
@@ -569,9 +578,13 @@ defmodule DataAggregator.ExportTest do
       export: export,
       data_frame: data_frame
     } do
-      assert export.mapping == expected_dwc_attribute_mapping()
+      assert export.mapping ==
+               Map.delete(expected_dwc_attribute_mapping(), "validation_annotation")
 
-      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(
+        DataFrame.names(data_frame),
+        expected_dwc_column_headers() -- ["validation_annotation"]
+      )
 
       encoded_attribute_values =
         data_frame
@@ -636,9 +649,13 @@ defmodule DataAggregator.ExportTest do
       export: export,
       data_frame: data_frame
     } do
-      assert export.mapping == expected_dwc_attribute_mapping()
+      assert export.mapping ==
+               Map.delete(expected_dwc_attribute_mapping(), "validation_annotation")
 
-      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(
+        DataFrame.names(data_frame),
+        expected_dwc_column_headers() -- ["validation_annotation"]
+      )
 
       validated_attribute_values =
         data_frame
