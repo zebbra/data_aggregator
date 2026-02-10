@@ -218,8 +218,13 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
 
         value
 
-      {integer, _} ->
+      {integer, ""} ->
         integer
+
+      _ ->
+        Logger.error("Failed to parse integer from binary #{value}")
+
+        value
     end
   end
 
