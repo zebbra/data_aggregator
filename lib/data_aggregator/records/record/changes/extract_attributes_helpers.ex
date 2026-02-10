@@ -214,7 +214,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   def maybe_convert_value({value, :integer}) do
     case Integer.parse(value) do
       :error ->
-        Logger.error("Failed to parse integer from binary #{value}")
+        Logger.warning("Failed to parse integer from binary #{value}")
 
         value
 
@@ -222,7 +222,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
         integer
 
       _ ->
-        Logger.error("Failed to parse integer from binary #{value}")
+        Logger.warning("Failed to parse integer from binary #{value}")
 
         value
     end

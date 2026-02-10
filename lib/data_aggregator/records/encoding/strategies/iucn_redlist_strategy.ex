@@ -127,14 +127,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     end
   end
 
-  @doc """
-  Returns the correct status from the additional_status list.
-
-  Example:
-    iex> get_correct_status([%{"datasetAlias" => "IUCN", "statusCode" => "CR"}])
-    %{"datasetAlias" => "IUCN", "statusCode" => "CR"}
-  """
-  def get_correct_status(additional_status) do
+  defp get_correct_status(additional_status) do
     Enum.find(additional_status, &(&1["datasetAlias"] == "IUCN"))
   end
 
