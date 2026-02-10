@@ -284,7 +284,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     keys =
       changes
       |> Map.keys()
-      |> Enum.map(&String.to_atom/1)
+      |> Enum.map(&String.to_existing_atom/1)
 
     catalogs = Catalog.get_catalogs()
 
