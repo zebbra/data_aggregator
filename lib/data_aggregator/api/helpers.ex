@@ -12,7 +12,7 @@ defmodule DataAggregator.Api.Helpers do
   end
 
   @spec gbif_species_api_base_url() :: String.t()
-  def gbif_species_api_base_url, do: "https://api.gbif.org/v2"
+  def gbif_species_api_base_url, do: System.get_env("GBIF_SPECIES_API_BASE_URL")
 
   @spec gbif_api_base_url() :: String.t()
   def gbif_api_base_url, do: System.get_env("GBIF_API_BASE_URL")
