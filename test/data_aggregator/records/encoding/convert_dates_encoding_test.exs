@@ -133,6 +133,32 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
           eve_end_of_period_year: 2025
         })
 
+      record_fixture_zero_dates =
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "catalogNumber10",
+          eve_event_date: nil,
+          eve_day: 0,
+          eve_month: 0,
+          eve_year: 0,
+          eve_end_of_period_day: 0,
+          eve_end_of_period_month: 0,
+          eve_end_of_period_year: 0
+        })
+
+      record_fixture_invalid_day_month_year =
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "catalogNumber11",
+          eve_event_date: nil,
+          eve_day: 31,
+          eve_month: 2,
+          eve_year: 2025,
+          eve_end_of_period_day: nil,
+          eve_end_of_period_month: nil,
+          eve_end_of_period_year: nil
+        })
+
       [
         collection: collection,
         record_fixture_missing_all_dates: record_fixture_missing_all_dates,
@@ -144,7 +170,9 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
         record_fixture_complete: record_fixture_complete,
         record_fixture_complete_range: record_fixture_complete_range,
         record_fixture_no_event_date_and_no_period: record_fixture_no_event_date_and_no_period,
-        record_fixture_no_event_date_and_no_start: record_fixture_no_event_date_and_no_start
+        record_fixture_no_event_date_and_no_start: record_fixture_no_event_date_and_no_start,
+        record_fixture_zero_dates: record_fixture_zero_dates,
+        record_fixture_invalid_day_month_year: record_fixture_invalid_day_month_year
       ]
     end
 
@@ -340,6 +368,47 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
       assert encoded_record.eve_end_of_period_day == 20
       assert encoded_record.eve_end_of_period_month == 1
       assert encoded_record.eve_end_of_period_year == 2025
+    end
+
+    test "encode/2 for :convert_dates catalog - zero-valued date fields are treated as missing",
+         %{
+           record_fixture_zero_dates: record
+         } do
+      {:ok, record} =
+        Record.encode(record, :convert_dates, tenant: record.collection_id)
+
+      record = Ash.load!(record, :encoded_record)
+      encoded_record = record.encoded_record
+
+      assert encoded_record.eve_event_date == nil
+      assert encoded_record.eve_day == 0
+      assert encoded_record.eve_month == 0
+      assert encoded_record.eve_year == 0
+      assert encoded_record.eve_end_of_period_day == 0
+      assert encoded_record.eve_end_of_period_month == 0
+      assert encoded_record.eve_end_of_period_year == 0
+      assert record.state == :encoded
+    end
+
+    test "encode/2 for :convert_dates catalog - invalid day/month/year values", %{
+      record_fixture_invalid_day_month_year: record
+    } do
+      {{:ok, record}, logs} =
+        with_log(fn -> Record.encode(record, :convert_dates, tenant: record.collection_id) end)
+
+      record = Ash.load!(record, :encoded_record)
+      encoded_record = record.encoded_record
+
+      assert record.state == :failed
+      assert encoded_record.eve_event_date == nil
+      assert encoded_record.eve_day == 31
+      assert encoded_record.eve_month == 2
+      assert encoded_record.eve_year == 2025
+      assert encoded_record.eve_end_of_period_day == nil
+      assert encoded_record.eve_end_of_period_month == nil
+      assert encoded_record.eve_end_of_period_year == nil
+
+      assert logs =~ "Can not populate event_date, invalid day, month or year: '2025-02-31'"
     end
   end
 end

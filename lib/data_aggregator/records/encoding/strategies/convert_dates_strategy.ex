@@ -62,7 +62,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
   defp convert_dates(dates) do
     cond do
       day_month_year_present?(dates) ->
-        populate_event_date(dates)
+        case populate_event_date(dates) do
+          {:ok, dates} ->
+            {:ok, dates}
+
+          {:error, error} ->
+            {:invalid_event_date, error}
+        end
 
       only_event_date_present?(dates) ->
         case populate_day_month_year(dates) do
