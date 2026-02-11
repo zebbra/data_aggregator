@@ -7,7 +7,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   require Logger
 
   # add here the (db) schema types that need to be converted
-  @attributes_to_convert [:boolean, :string]
+  @attributes_to_convert [:boolean, :string, :integer]
                          |> Enum.map(fn type ->
                            Schema.attributes_of_type(type)
                          end)
@@ -123,7 +123,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
       {:eve_mosses_identified, nil}
 
       iex> maybe_convert_values({:tax_taxon_id_ch, "infofauna:100"})
-      {:tax_taxon_id_ch, "100"}
+      {:tax_taxon_id_ch, 100}
   """
   @spec maybe_convert_values({atom(), any()}) :: {atom(), any()}
   def maybe_convert_values(_)
