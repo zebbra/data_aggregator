@@ -54,40 +54,29 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   defp perform_with_actor(record, actor \\ nil) do
     Logger.debug("Encoding for Record #{record.id} in progress...")
 
-    {:ok, _} =
-      Enum.reduce_while(
-        Catalog.get_catalogs(),
-        {:ok, record},
-        fn catalog, {:ok, acc} ->
-          case Record.encode(acc, catalog,
-                 actor: actor,
-                 authorize?: false,
-                 tenant: record.collection
-               ) do
-            {:ok, record} ->
-              {:cont, {:ok, record}}
+    case Enum.reduce_while(
+           Catalog.get_catalogs(),
+           {:ok, record},
+           fn catalog, {:ok, acc} ->
+             encode(catalog, record, acc, actor)
+           end
+         ) do
+      {:ok, _} ->
+        Record.update_validation_status(record, :unknown,
+          actor: actor,
+          authorize?: false,
+          tenant: record.collection
+        )
 
-            {:error, error} ->
-              Logger.error(
-                "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} and catalog #{to_string(catalog)} failed with error #{inspect(error)}"
-              )
-
-              {:halt, {:error, error}}
-          end
-        end
-      )
-
-    Record.update_validation_status(record, :unknown,
-      actor: actor,
-      authorize?: false,
-      tenant: record.collection
-    )
+      {:error, error} ->
+        {:error, error}
+    end
   rescue
     e ->
-      Logger.error(Exception.format(:error, e, __STACKTRACE__))
-
       Logger.error(
-        "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} failed unexpectedly."
+        Exception.format(:error, e, __STACKTRACE__) <>
+          " - " <>
+          "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} failed unexpectedly."
       )
 
       reraise e, __STACKTRACE__
@@ -95,4 +84,22 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
 
   @impl Oban.Worker
   def timeout(_job), do: Records.encode_timeout() + to_timeout(minute: 1)
+
+  defp encode(catalog, record, acc, actor) do
+    case Record.encode(acc, catalog,
+           actor: actor,
+           authorize?: false,
+           tenant: record.collection
+         ) do
+      {:ok, record} ->
+        {:cont, {:ok, record}}
+
+      {:error, error} ->
+        Logger.error(
+          "Encoding for record #{inspect(record)} with catalog #{to_string(catalog)} failed with error #{inspect(error)}"
+        )
+
+        {:halt, {:error, error}}
+    end
+  end
 end

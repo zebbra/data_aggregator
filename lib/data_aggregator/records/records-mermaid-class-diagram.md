@@ -24,7 +24,9 @@ classDiagram
         Export[] exports
         Record[] records
         ImageUpload[] image_uploads
-        Collection[] validation_responses
+        ValidationRequest[] validation_requests
+        Publication[] publications
+        ValidationResponse[] validation_responses
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -240,6 +242,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -281,7 +286,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -362,11 +367,13 @@ classDiagram
         UUID collection_id
         Record record
         SwissSpecies[] swiss_species
+        SwissSpeciesRegistry swiss_species_registry
         Collection collection
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_return_minimal_fields(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {
@@ -402,14 +409,13 @@ classDiagram
         DataLayerType data_layer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -423,6 +429,7 @@ classDiagram
         set_exported()
         update_attachment(Struct attachment)
         cancel_export()
+        destroy()
     }
     class Import {
         UUID id
@@ -436,12 +443,12 @@ classDiagram
         Integer rows_invalid_count
         Integer rows_imported_count
         Integer rows_error_count
+        Atom state
         UUID collection_id
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
         UUID error_log_id
-        Atom state
         Integer records_count
         Collection collection
         User created_by
@@ -450,7 +457,6 @@ classDiagram
         Attachment error_log
         Record[] records
         update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
-        destroy()
         read()
         active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
@@ -465,6 +471,7 @@ classDiagram
         set_imported()
         update_error_log(Struct error_log)
         cancel_import()
+        destroy()
     }
     class Record {
         UUID import_id
@@ -492,12 +499,12 @@ classDiagram
         String error_message
         Integer invalid_files_count
         Atom mapping_identifier
+        Atom state
         UUID collection_id
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
         UUID upload_log_id
-        Atom state
         Float mapping_progress
         Collection collection
         User created_by
@@ -545,15 +552,14 @@ classDiagram
         PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
         update(String name, UtcDatetime published_at, UtcDatetime started_at, UtcDatetime finished_at, ...)
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime published_at, UtcDatetime started_at, ...)
@@ -565,6 +571,7 @@ classDiagram
         set_done()
         update_attachment(Struct attachment)
         cancel_publication()
+        destroy()
     }
     class PublishedRecord {
         Map ext_vernacular_names
@@ -756,6 +763,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -797,7 +807,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -1069,6 +1079,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -1110,7 +1123,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -1189,8 +1202,8 @@ classDiagram
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UUID collection_id
         Atom state
+        UUID collection_id
         Boolean full_text_search
         Float full_text_search_rank
         Tsquery tsquery
@@ -1208,6 +1221,7 @@ classDiagram
         EncodedRecord encoded_record
         PublishedRecord published_record
         ValidationRequestRecord validation_request_record
+        ValidatedRecord validated_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         encoding()
@@ -1224,6 +1238,7 @@ classDiagram
         set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         update_publication_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_validation_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        set_validation_status_not_validated(String annotation, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_last_validation_started_at()
         add_images(Struct[] images, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
@@ -1290,15 +1305,14 @@ classDiagram
         Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
         update(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
@@ -1311,10 +1325,10 @@ classDiagram
         set_done()
         update_attachment(Struct attachment)
         cancel_validation_request()
+        destroy()
     }
     class ValidationResponse {
         UUID id
-        String file_url
         ValidationResponseType type
         Integer rows_count
         Integer rows_invalid_count
@@ -1324,20 +1338,26 @@ classDiagram
         UtcDatetime finished_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID attachment_id
         UUID error_log_id
-        Atom state
+        UUID created_by_id
+        UUID started_by_id
         Attachment attachment
         Attachment error_log
+        User created_by
+        User started_by
         Collection[] affected_collections
-        update(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
-        destroy()
+        update(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         read()
         add_affected_collection(Struct collection)
-        create(String file_url, ValidationResponseType type)
-        enqueue()
+        destroy()
+        create(ValidationResponseType type)
+        create_from_path(String path, String filename, UUID created_by_id, ValidationResponseType type)
+        enqueue(UUID started_by_id)
         set_running()
-        set_failed(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
+        set_failed(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        set_cancelled(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
@@ -1534,6 +1554,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -1575,7 +1598,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -1684,9 +1707,9 @@ classDiagram
         read()
     }
     class ValidationResponseCollection {
-        create()
         destroy()
         read()
+        create(UUID validation_response_id, UUID collection_id)
     }
 
     User -- Version
@@ -1697,6 +1720,7 @@ classDiagram
     User -- Version
     User -- ValidationRequest
     User -- Version
+    User -- ValidationResponse
     Attachment -- Export
     Attachment -- ImageUpload
     Attachment -- Import
@@ -1705,7 +1729,6 @@ classDiagram
     Attachment -- Image
     Attachment -- ValidationRequest
     Attachment -- ValidationResponse
-    Collection -- Collection
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1724,6 +1747,7 @@ classDiagram
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
+    EncodedRecord -- SwissSpeciesRegistry
     RecordEncodingResult -- Record
     ImageUpload -- Image
     Import -- Record

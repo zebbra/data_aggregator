@@ -282,6 +282,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
       record = Enum.find(validated_records, &(&1.mte_catalog_number == "GBIFCH00993760"))
       assert record.tax_taxon_id_ch == 123_456
+      assert record.oth_swiss_species_center == "infofauna"
     end
   end
 

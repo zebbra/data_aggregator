@@ -123,15 +123,22 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
       {:eve_mosses_identified, nil}
 
       iex> maybe_convert_values({:tax_taxon_id_ch, "infofauna:100"})
-      {:tax_taxon_id_ch, 100}
+      [{:oth_swiss_species_center, "infofauna"}, {:tax_taxon_id_ch, 100}]
+
+      iex> maybe_convert_values({:tax_taxon_id_ch, "200"})
+      {:tax_taxon_id_ch, 200}
   """
-  @spec maybe_convert_values({atom(), any()}) :: {atom(), any()}
+  @spec maybe_convert_values({atom(), any()}) :: {atom(), any()} | [{atom(), [any()]}]
   def maybe_convert_values(_)
 
   def maybe_convert_values({:tax_taxon_id_ch, value}) when is_binary(value) do
     if String.contains?(value, ":") do
-      value = value |> String.split(":", trim: true) |> List.last()
-      do_convert_values({:tax_taxon_id_ch, value})
+      [center, taxon_id_ch] = value |> String.trim() |> String.split(":", trim: true)
+
+      [
+        do_convert_values({:oth_swiss_species_center, center}),
+        do_convert_values({:tax_taxon_id_ch, taxon_id_ch})
+      ]
     else
       do_convert_values({:tax_taxon_id_ch, value})
     end
