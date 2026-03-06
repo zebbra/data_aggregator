@@ -284,13 +284,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     keys =
       changes
       |> Map.keys()
-      |> Enum.map(&String.to_existing_atom/1)
+      |> Enum.map(&to_string/1)
 
     catalogs = Catalog.get_catalogs()
 
     catalog_name =
       Enum.reduce_while(catalogs, nil, fn catalog, _ ->
-        catalog_output_dwc_attributes = Catalog.get_output_dwc_attributes(catalog)
+        catalog_output_dwc_attributes =
+          catalog
+          |> Catalog.get_output_dwc_attributes()
+          |> Enum.map(&Atom.to_string/1)
 
         if Enum.all?(keys, &Enum.member?(catalog_output_dwc_attributes, &1)) do
           {:halt, catalog}

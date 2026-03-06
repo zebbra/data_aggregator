@@ -26,11 +26,12 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     header_source = export.header_source
 
     mapping =
-      get_mapping(
-        export.mapping,
+      export.mapping
+      |> get_mapping(
         export.collection.import_mapping,
         header_source
       )
+      |> ensure_validation_annotation(data_layer, header_source)
 
     header_labels = get_header_labels(mapping)
     headers = Enum.map(header_labels, fn {_, v} -> v end)
@@ -126,8 +127,22 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     record.validated_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
+  defp ensure_validation_annotation(mapping, :raw, :dwc_attributes) do
+    label =
+      mapping["validation_annotation"] || mapping[:validation_annotation] ||
+        "validation_annotation"
+
+    mapping
+    |> Map.delete("validation_annotation")
+    |> Map.put(:validation_annotation, label)
+  end
+
+  defp ensure_validation_annotation(mapping, _, _), do: mapping
+
   # returns the mapping according to the given header source and if a collection- or export-mapping is given.
   @spec get_mapping(map(), list(), atom()) :: map()
+  defp get_mapping(export_mapping, collection_mapping, header_source)
+
   defp get_mapping(export_mapping, _collection_mapping, :custom_selection) when export_mapping != nil, do: export_mapping
 
   defp get_mapping(_export_mapping, collection_mapping, :collection_mapping) when collection_mapping != nil,

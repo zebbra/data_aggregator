@@ -110,15 +110,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     if is_nil(additional_status) do
       {:ok, nil}
     else
-      with false <- is_nil(additional_status),
-           true <- is_list(additional_status),
+      with true <- is_list(additional_status),
            false <- Enum.empty?(additional_status),
-           status = get_correct_status(additional_status),
-           true <- is_map(status),
+           status when is_map(status) <- get_correct_status(additional_status),
            category = get_in(status, ["statusCode"]),
            true <- is_binary(category) do
         {:ok, category}
       else
+        nil ->
+          {:ok, nil}
+
         value ->
           {:error,
            "Failed to validate IUCN category. Value was: #{inspect(value)}. additionalStatus were: #{inspect(additional_status)}"}
@@ -127,9 +128,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   end
 
   defp get_correct_status(additional_status) do
-    additional_status
-    |> Enum.filter(&(&1["datasetAlias"] === "IUCN"))
-    |> hd()
+    Enum.find(additional_status, &(&1["datasetAlias"] == "IUCN"))
   end
 
   @spec handle_error(String.t(), any()) :: :ok

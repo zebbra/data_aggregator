@@ -257,6 +257,33 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
         assert record.validation_status == :validated
       end)
     end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 correctly strips prefixes from taxonIdCH",
+         %{
+           collection: collection,
+           actor: actor
+         } do
+      validation_response =
+        validation_response_fixture(
+          %{},
+          "test/support/fixtures/files/validated_with_prefixes.csv"
+        )
+
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert validation_response.state == :done
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      record = Enum.find(validated_records, &(&1.mte_catalog_number == "GBIFCH00993760"))
+      assert record.tax_taxon_id_ch == 123_456
+      assert record.oth_swiss_species_center == "infofauna"
+    end
   end
 
   defp expected_errors do

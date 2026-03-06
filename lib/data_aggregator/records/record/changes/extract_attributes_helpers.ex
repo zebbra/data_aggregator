@@ -4,8 +4,10 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   """
   alias DataAggregator.DarwinCore.Schema
 
+  require Logger
+
   # add here the (db) schema types that need to be converted
-  @attributes_to_convert [:boolean, :string]
+  @attributes_to_convert [:boolean, :string, :integer]
                          |> Enum.map(fn type ->
                            Schema.attributes_of_type(type)
                          end)
@@ -119,13 +121,34 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
 
       iex> maybe_convert_values({:eve_mosses_identified, nil})
       {:eve_mosses_identified, nil}
+
+      iex> maybe_convert_values({:tax_taxon_id_ch, "infofauna:100"})
+      [{:oth_swiss_species_center, "infofauna"}, {:tax_taxon_id_ch, 100}]
+
+      iex> maybe_convert_values({:tax_taxon_id_ch, "200"})
+      {:tax_taxon_id_ch, 200}
   """
-  @spec maybe_convert_values({atom(), any()}) :: {atom(), any()}
+  @spec maybe_convert_values({atom(), any()}) :: {atom(), any()} | [{atom(), [any()]}]
   def maybe_convert_values(_)
 
-  def maybe_convert_values({import_attr, nil}), do: {import_attr, nil}
+  def maybe_convert_values({:tax_taxon_id_ch, value}) when is_binary(value) do
+    if String.contains?(value, ":") do
+      [center, taxon_id_ch] = value |> String.trim() |> String.split(":", trim: true)
 
-  def maybe_convert_values({import_attr, value}) do
+      [
+        do_convert_values({:oth_swiss_species_center, center}),
+        do_convert_values({:tax_taxon_id_ch, taxon_id_ch})
+      ]
+    else
+      do_convert_values({:tax_taxon_id_ch, value})
+    end
+  end
+
+  def maybe_convert_values(val), do: do_convert_values(val)
+
+  defp do_convert_values({import_attr, nil}), do: {import_attr, nil}
+
+  defp do_convert_values({import_attr, value}) do
     @attributes_to_convert
     |> Enum.find(fn {schema_attr, _schema_type} -> schema_attr == import_attr end)
     |> case do
@@ -174,6 +197,12 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
         iex> maybe_convert_value({nil, :boolean})
         nil
 
+        iex> maybe_convert_value({nil, :integer})
+        nil
+
+        iex> maybe_convert_value({"100", :integer})
+        100
+
   """
   @spec maybe_convert_value({any(), any()}) :: any()
   def maybe_convert_value(_)
@@ -186,6 +215,24 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   # Convert value to boolean if it is "truthy"
   def maybe_convert_value({value, :boolean}) do
     String.downcase(value) in ["true", "yes", "1"]
+  end
+
+  # Convert value to integer
+  def maybe_convert_value({value, :integer}) do
+    case Integer.parse(value) do
+      :error ->
+        Logger.warning("Failed to parse integer from binary #{value}")
+
+        value
+
+      {integer, ""} ->
+        integer
+
+      _ ->
+        Logger.warning("Failed to parse integer from binary #{value}")
+
+        value
+    end
   end
 
   # Default case, return value as is

@@ -41,7 +41,7 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfPublished do
         msg =
           "Error while checking if record is published: #{inspect(error)}. Params were: catalog_number: #{catalog_number}, gbif_dataset_key: #{gbif_dataset_key}"
 
-        Logger.error(msg)
+        Logger.warning(msg)
 
         Changeset.add_error(changeset, message: msg)
     end

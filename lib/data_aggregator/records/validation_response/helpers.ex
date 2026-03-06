@@ -196,9 +196,12 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   def maybe_convert_values({rows, index}, :validated) do
     rows =
       Enum.map(rows, fn row ->
-        Map.new(row, fn {key, value} ->
+        row
+        |> Enum.map(fn {key, value} ->
           ExtractAttributesHelpers.maybe_convert_values({key, value})
         end)
+        |> List.flatten()
+        |> Map.new()
       end)
 
     {rows, index}

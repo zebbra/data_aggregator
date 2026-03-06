@@ -260,7 +260,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @spec falsy?(any()) :: boolean()
-  defp falsy?(value), do: value in [nil, "", " ", false]
+  defp falsy?(value), do: value in [nil, "", " ", false, 0, "0", "00"]
 
   @spec all_dates_nil?(map()) :: boolean()
   defp all_dates_nil?(dates) do
@@ -313,8 +313,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
     String.to_integer(date_slice)
   end
 
-  @spec maybe_create_ranged_event_date(map(), String.t()) ::
-          {:ok, String.t()} | {:error, String.t()}
+  @spec maybe_create_ranged_event_date(map(), String.t()) :: {:ok, map()} | {:error, String.t()}
   defp maybe_create_ranged_event_date(dates, start_date) do
     if can_create_range_event_date?(dates) do
       case build_ranged_event_date(dates, start_date) do
@@ -348,7 +347,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
 
   @spec get_padded_day_or_month(map(), atom()) :: String.t()
   defp get_padded_day_or_month(dates, field) do
-    dates |> Map.get(field) |> Integer.to_string() |> String.pad_leading(2, "0")
+    case Map.get(dates, field) do
+      value when is_integer(value) ->
+        value |> Integer.to_string() |> String.pad_leading(2, "0")
+
+      value when is_binary(value) ->
+        value |> String.trim() |> String.pad_leading(2, "0")
+    end
   end
 
   @spec can_create_range_event_date?(map()) :: boolean()

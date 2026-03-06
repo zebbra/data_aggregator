@@ -20,6 +20,7 @@ classDiagram
         validation_requests_by_collection(String collection_id)
         publication_verifications_by_collection(String collection_id)
         encodings_by_collection(String collection_id)
+        validation_response_by_id(String validation_response_id)
     }
 
 

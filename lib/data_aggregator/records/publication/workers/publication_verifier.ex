@@ -2,7 +2,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationVerifier do
   @moduledoc """
   checks in a fixed interval if a record has been published on the gbif portal
 
-  if the record has not been pubished, it will check again in the next interval
+  if the record has not been published, it will check again in the next interval
 
   ## Arguments
 
@@ -37,23 +37,12 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationVerifier do
         {:error, _} -> nil
       end
 
-    record =
-      id
-      |> Record.get_by_id!(tenant: collection_id)
-      |> Record.check_if_published!(actor: actor, authorize?: false)
-
-    if record.publication_status == :published do
-      {:ok, record}
-    else
-      maybe_queue_again(attempt, max_attempts, record)
-    end
+    perform_check(id, collection_id, actor, attempt, max_attempts)
   rescue
     e ->
       record = Record.get_by_id!(id, tenant: collection_id)
 
-      Logger.error(
-        "Error while checking if record is published: #{inspect(e)}. Params were: id: #{id}, collection_id: #{collection_id}"
-      )
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
 
       maybe_queue_again(attempt, max_attempts, record)
   end
@@ -64,13 +53,33 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationVerifier do
   @impl Oban.Worker
   def timeout(_job), do: to_timeout(hour: 1)
 
+  defp perform_check(id, collection_id, actor, attempt, max_attempts) do
+    record = Record.get_by_id!(id, tenant: collection_id)
+
+    result = Record.check_if_published(record, actor: actor, authorize?: false)
+
+    case result do
+      {:ok, record} ->
+        if record.publication_status == :published do
+          {:ok, record}
+        else
+          maybe_queue_again(attempt, max_attempts, record)
+        end
+
+      {:error, error} ->
+        Logger.warning(inspect(error))
+
+        maybe_queue_again(attempt, max_attempts, record)
+    end
+  end
+
   defp maybe_queue_again(attempt, max_attempts, record) do
     if attempt < max_attempts && scheduler_active?() do
       Logger.debug("Record #{record.id} has not been published to GBIF. We queue it to check again.")
 
       {:error, nil}
     else
-      Logger.debug("#{record.id} still not published on GBIF on the last attempt. set publicaiton status to failed.")
+      Logger.debug("#{record.id} still not published on GBIF on the last attempt. set publication status to failed.")
 
       Record.update_publication_status(record, :publication_failed)
       :ok
