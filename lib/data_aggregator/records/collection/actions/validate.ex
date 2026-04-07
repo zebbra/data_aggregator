@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Validation.ValidationFile
   alias DataAggregator.Records.ValidationRequest
@@ -43,25 +44,34 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     )
 
     # work through the stream of records and prepare chunks of 1000 records for validation
+    collection = validation_request.collection
     query = build_query(validation_request, tenant)
 
     query
     |> stream_query()
     |> Stream.chunk_every(1000)
     |> Stream.map(fn records ->
-      records
-      |> Enum.map(
-        &process_validation_data(
-          &1,
-          validation_file,
-          validation_request.inserted_at
+      results =
+        records
+        |> Enum.map(
+          &process_validation_data(
+            &1,
+            validation_file,
+            validation_request.inserted_at,
+            collection
+          )
         )
-      )
-      |> Counter.count_each(total_counter)
-      |> Enum.filter(fn {maybe_changes, _record} ->
-        maybe_changes == :changed
-      end)
-      |> Enum.map(fn {_, record} -> record end)
+        |> Counter.count_each(total_counter)
+
+      # Batch-upsert ValidationRequestRecords for all changed records in this chunk
+      changed_with_data =
+        Enum.filter(results, fn {status, _record, _data} -> status == :changed end)
+
+      if changed_with_data != [] do
+        bulk_upsert_validation_request_records!(changed_with_data, tenant)
+      end
+
+      Enum.map(changed_with_data, fn {_, record, _data} -> record end)
     end)
     |> Stream.flat_map(& &1)
     |> Counter.count_each(sent_counter)
@@ -126,7 +136,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Ash.Query.new()
     |> Ash.Query.filter_input(validation_request.records_query)
     |> Ash.Query.set_tenant(tenant)
-    |> Ash.Query.load([:encoded_record, :collection, :validation_request_record])
+    |> Ash.Query.load([:encoded_record, :validation_request_record])
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
@@ -136,6 +146,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp update_validation_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
+    # Record has ~280 attributes and PaperTrail creates a version row per record.
+    # PG can handle at most 65535 params, so we cap at 100 records per batch.
+    batch_size = min(batch_size, 100)
 
     Ash.bulk_update(stream, :update_validation_status, %{status: status},
       actor: actor,
@@ -143,7 +156,6 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       domain: Records,
       resource: Record,
       tenant: tenant,
-      max_concurrency: max_concurrency,
       batch_size: batch_size
     )
 
@@ -166,31 +178,28 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Enum.sort(&(&1 <= &2))
   end
 
-  @spec process_validation_data(Record.t(), ValidationFile.t(), DateTime.t()) ::
-          {:not_changed, Record.t()} | {:changed, Record.t()}
-  defp process_validation_data(record, validation_file, date_time) do
-    case maybe_changed_data(record, validation_file) do
+  @spec process_validation_data(Record.t(), ValidationFile.t(), DateTime.t(), Collection.t()) ::
+          {:not_changed, Record.t(), nil} | {:changed, Record.t(), map()}
+  defp process_validation_data(record, validation_file, date_time, collection) do
+    case maybe_changed_data(record, validation_file, collection) do
       {:not_changed, _data} ->
-        {:not_changed, record}
+        {:not_changed, record, nil}
 
       {:changed, data} ->
-        upsert_validation_request_record!(record, data)
+        formatted = format_data_for_validation(data, date_time)
+        FlatFileUtils.store_on_disk!([formatted], validation_file.file, false)
 
-        data = format_data_for_validation(data, date_time)
-
-        FlatFileUtils.store_on_disk!([data], validation_file.file, false)
-
-        {:changed, record}
+        {:changed, record, data}
     end
   end
 
   # returns {:not_changed, previous_data} if there was no changes and returns {:changed, current_data} if there were
   # changes in the record data since the last validation
-  @spec maybe_changed_data(Record.t(), ValidationFile.t()) ::
+  @spec maybe_changed_data(Record.t(), ValidationFile.t(), Collection.t()) ::
           {:not_changed, map()} | {:changed, map()}
-  defp maybe_changed_data(record, validation_file) do
+  defp maybe_changed_data(record, validation_file, collection) do
     previous_data = previous_data(record)
-    current_data = current_data(record, validation_file)
+    current_data = current_data(record, validation_file, collection)
 
     if previous_data == current_data do
       Logger.info("Validation Request: No changes detected. No data will be sent for validation.")
@@ -213,13 +222,13 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   end
 
   # returns the attributes, values and headers for further processing towards a validation request
-  @spec current_data(Record.t(), ValidationFile.t()) :: map()
-  defp current_data(record, validation_file) do
+  @spec current_data(Record.t(), ValidationFile.t(), Collection.t()) :: map()
+  defp current_data(record, validation_file, collection) do
     collection_attributes = Keyword.keys(validation_file.collection_attributes_and_headers)
     record_attributes = Keyword.keys(validation_file.record_attributes_and_headers)
     encoded_attributes = Keyword.keys(validation_file.encoded_attributes_and_headers)
 
-    reduced_collection_data = Map.take(record.collection, collection_attributes)
+    reduced_collection_data = Map.take(collection, collection_attributes)
     reduced_record_data = Map.take(record, record_attributes)
     reduced_encoded_data = Map.take(record.encoded_record, encoded_attributes)
 
@@ -301,21 +310,22 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     data ++ [date_time]
   end
 
-  @spec upsert_validation_request_record!(Record.t(), map()) :: ValidationRequestRecord.t()
-  defp upsert_validation_request_record!(record, data) do
-    case record.validation_request_record do
-      nil ->
-        ValidationRequestRecord.create!(
-          %{
-            data: data,
-            collection: record.collection,
-            record: record
-          },
-          tenant: record.collection
-        )
+  @spec bulk_upsert_validation_request_records!(list(), term()) :: :ok
+  defp bulk_upsert_validation_request_records!(changed_with_data, tenant) do
+    inputs =
+      Enum.map(changed_with_data, fn {_status, record, data} ->
+        %{data: data, record_id: record.id}
+      end)
 
-      vrr ->
-        ValidationRequestRecord.update!(vrr, %{data: data}, tenant: record.collection)
-    end
+    # VRR has few columns (~6), so batches of 500 stay well within PG's 65535 param limit
+    Ash.bulk_create!(inputs, ValidationRequestRecord, :bulk_upsert,
+      batch_size: 500,
+      tenant: tenant,
+      authorize?: false,
+      domain: Records,
+      return_errors?: true
+    )
+
+    :ok
   end
 end

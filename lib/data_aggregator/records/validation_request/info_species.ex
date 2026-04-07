@@ -105,9 +105,21 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   end
 
   defp update_records_validation_started_at(query) do
+    # Use bulk_update instead of N individual updates.
+    # Cap batch_size to 100 to stay within PG's 65535 parameter limit
+    # (Record has ~280 attributes tracked by PaperTrail).
+    tenant = query.tenant
+
     query
-    |> Ash.stream!()
-    |> Enum.each(&Record.update_last_validation_started_at!(&1))
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+    |> Ash.bulk_update!(:update_last_validation_started_at, %{},
+      resource: Record,
+      batch_size: 100,
+      authorize?: false,
+      domain: Records,
+      tenant: tenant,
+      return_errors?: true
+    )
   end
 
   defp get_date_time do

@@ -12,6 +12,7 @@ defmodule DataAggregator.ValidationRequestTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequestRecord
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -140,6 +141,57 @@ defmodule DataAggregator.ValidationRequestTest do
       assert validation_request.processed_rows_count == 5
       assert validation_request.total_rows_count == 5
       assert validation_request.validation_request_progress == 1.0
+    end
+
+    test "run/1 creates ValidationRequestRecords for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs = ValidationRequestRecord.read!(page: false, tenant: collection)
+
+      assert length(vrrs) == 5
+
+      Enum.each(vrrs, fn vrr ->
+        assert vrr.data
+        assert vrr.collection_id == collection.id
+      end)
+    end
+
+    test "run/1 updates validation_status to :requested for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      records = Record.read!(tenant: collection)
+
+      requested_records =
+        Enum.filter(records, fn r -> r.validation_status == :requested end)
+
+      assert length(requested_records) == 5
+    end
+
+    test "set_failed/1 can transition from queued state", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, validation_request} =
+        ValidationRequest.enqueue(validation_request, %{}, authorize?: false)
+
+      assert validation_request.state == :queued
+
+      {:ok, validation_request} =
+        ValidationRequest.set_failed(validation_request)
+
+      assert validation_request.state == :failed
+      assert validation_request.finished_at
+
+      persisted =
+        ValidationRequest.get_by_id!(validation_request.id, tenant: collection)
+
+      assert persisted.state == :failed
     end
   end
 end

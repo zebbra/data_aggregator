@@ -64,6 +64,14 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
       change manage_relationship(:collection, type: :append)
       change manage_relationship(:record, type: :append)
     end
+
+    create :bulk_upsert do
+      accept [:data, :record_id]
+
+      upsert? true
+      upsert_identity :by_record
+      upsert_fields [:data, :updated_at]
+    end
   end
 
   identities do

@@ -38,8 +38,7 @@ defmodule DataAggregator.Files.AttachmentTest do
 
     assert conn.status == 200
 
-    assert {:ok, %{deleted?: true}} =
-             Attachment.destroy(attachment, load: [:deleted?])
+    assert :ok = Attachment.destroy(attachment)
 
     conn = get(build_conn(), attachment.url)
 
@@ -50,13 +49,15 @@ defmodule DataAggregator.Files.AttachmentTest do
   test "destroy soft-deletes file and hard_destroy deletes it for good", %{collection: collection} do
     {:ok, attachment} = Attachment.import_from_path(@example_file, collection)
 
-    assert {:ok, attachment} = Attachment.destroy(attachment, load: [:deleted?])
-
-    assert attachment.deleted? == true
+    assert :ok = Attachment.destroy(attachment)
 
     assert {:ok, attachments} = Attachment.read_deleted()
     assert length(attachments) == 1
 
+    attachment = hd(attachments)
+    assert attachment.deleted? == true
+
+    attachment = Ash.load!(attachment, [:url])
     assert :ok = Attachment.hard_destroy!(attachment)
 
     conn = get(build_conn(), attachment.url)
