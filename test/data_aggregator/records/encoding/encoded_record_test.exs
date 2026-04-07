@@ -120,10 +120,7 @@ defmodule DataAggregator.EncodedRecordTest do
       assert encoded_record.tax_scientific_name == original_encoded_record.tax_scientific_name
 
       # ...and not explicitly loaded attributes are not loaded
-      assert encoded_record.tax_family == %Ash.NotLoaded{
-               type: :attribute,
-               field: :tax_family
-             }
+      assert %Ash.NotLoaded{type: :attribute, field: :tax_family} = encoded_record.tax_family
 
       # then reload the record to ensure the updated values are loaded
       encoded_record = Ash.reload!(encoded_record)

@@ -82,7 +82,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
-      transition :set_failed, from: :running, to: :failed
+      transition :set_failed, from: [:running, :queued], to: :failed
       transition :cancel_validation_request, from: [:running, :queued], to: :failed
     end
 

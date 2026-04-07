@@ -196,6 +196,89 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
     end
   end
 
+  describe "bulk_upsert action" do
+    test "creates a new VRR when none exists for the record", %{
+      collection1: collection,
+      record: record
+    } do
+      data = validation_request_data_fixture()
+
+      inputs = [%{data: data, record_id: record.id}]
+
+      result =
+        Ash.bulk_create!(inputs, ValidationRequestRecord, :bulk_upsert,
+          tenant: collection,
+          authorize?: false,
+          return_records?: true,
+          return_errors?: true
+        )
+
+      assert length(result.records) == 1
+      [vrr] = result.records
+
+      assert vrr.record_id == record.id
+      assert vrr.collection_id == collection.id
+    end
+
+    test "updates existing VRR data when record already has one", %{
+      collection1: collection,
+      record: record
+    } do
+      _existing = validation_request_record_fixture(%{collection: collection, record: record})
+
+      updated_data =
+        validation_request_data_fixture(%{"tax_scientific_name" => "Updated Species"})
+
+      inputs = [%{data: updated_data, record_id: record.id}]
+
+      result =
+        Ash.bulk_create!(inputs, ValidationRequestRecord, :bulk_upsert,
+          tenant: collection,
+          authorize?: false,
+          return_records?: true,
+          return_errors?: true
+        )
+
+      assert result.errors == []
+
+      # Should still be only one VRR for this record
+      vrrs = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs) == 1
+
+      vrr = hd(vrrs)
+      assert vrr.data["tax_scientific_name"] == "Updated Species"
+    end
+
+    test "handles batch of multiple records", %{collection1: collection} do
+      records =
+        for _ <- 1..5 do
+          record_fixture(%{
+            collection: collection,
+            mte_catalog_number: "cat-#{Uniq.UUID.uuid7(:slug)}"
+          })
+        end
+
+      inputs =
+        Enum.map(records, fn record ->
+          %{data: validation_request_data_fixture(), record_id: record.id}
+        end)
+
+      result =
+        Ash.bulk_create!(inputs, ValidationRequestRecord, :bulk_upsert,
+          tenant: collection,
+          authorize?: false,
+          return_records?: true,
+          return_errors?: true
+        )
+
+      assert result.errors == []
+      assert length(result.records) == 5
+
+      vrrs = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs) == 5
+    end
+  end
+
   describe "identities and uniqueness" do
     test "by_record identity works correctly", %{collection1: collection, record: record} do
       vrr = validation_request_record_fixture(%{collection: collection, record: record})
