@@ -173,6 +173,147 @@ defmodule DataAggregator.ValidationRequestTest do
       assert length(requested_records) == 5
     end
 
+    test "run/1 updates last_validation_started_at for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      records = Record.read!(tenant: collection)
+
+      Enum.each(records, fn record ->
+        assert record.last_validation_started_at
+      end)
+    end
+
+    test "run/1 skips unchanged records on second validation", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      # First run — all 5 records should be sent
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs_after_first = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_first) == 5
+
+      records_after_first = Record.read!(tenant: collection)
+      requested_count = Enum.count(records_after_first, &(&1.validation_status == :requested))
+      assert requested_count == 5
+
+      # Second run with same data — no records should change
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      # VRRs should still be the same 5 (no new ones, data unchanged)
+      vrrs_after_second = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_second) == 5
+
+      # sent_for_validation_count should be 0 since nothing changed
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      assert validation_request2.sent_for_validation_count == 0
+    end
+
+    test "run/1 only sends changed records on second validation after data update", %{
+      validation_request: validation_request,
+      collection: collection,
+      records: records
+    } do
+      # First run — all 5 records sent
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      # Modify one record's data so it will be detected as changed
+      [record_to_update | _rest] = records
+
+      Record.update!(record_to_update, %{tax_scientific_name: "Modified Species Name"}, tenant: collection)
+
+      # Second run
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      # Only the modified record should be sent
+      assert validation_request2.sent_for_validation_count == 1
+    end
+
+    test "validate/1 cleans up only new VRRs on failure, preserving pre-existing ones", %{
+      validation_request: validation_request,
+      collection: collection,
+      records: records
+    } do
+      # First run succeeds — creates 5 VRRs
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs_after_first = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_first) == 5
+
+      # Modify 2 records so they will be detected as changed on the next run
+      [record_a, record_b | _rest] = records
+
+      Record.update!(record_a, %{tax_scientific_name: "Changed Species A"}, tenant: collection)
+
+      Record.update!(record_b, %{tax_scientific_name: "Changed Species B"}, tenant: collection)
+
+      # Create a second validation request
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request Fail",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      # Stub to raise during notify — VRRs for the 2 changed records will already
+      # have been upserted by the time the error occurs
+      stub(Gbif.RestAPI, :get_grscicoll_entity, fn _key, _type ->
+        raise "Simulated notification failure"
+      end)
+
+      assert {:error, _} =
+               Collection.validate(validation_request2, tenant: collection)
+
+      # The 2 changed records had their VRRs upserted (bumping updated_at),
+      # then the rollback deleted VRRs with updated_at >= validation_request2.inserted_at.
+      # Only the 3 unchanged records' VRRs (with original updated_at) should survive.
+      vrrs_after_failure = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_failure) == 3
+    end
+
     test "set_failed/1 can transition from queued state", %{
       validation_request: validation_request,
       collection: collection

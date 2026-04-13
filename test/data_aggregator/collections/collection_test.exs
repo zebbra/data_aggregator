@@ -21,7 +21,6 @@ defmodule DataAggregator.CollectionTest do
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequestRecord
-  alias DataAggregator.Records.ValidationRequestRecord.Version, as: ValidationRequestRecordVersion
   alias DataAggregator.Records.ValidationResponse
 
   describe "collections" do
@@ -272,8 +271,6 @@ defmodule DataAggregator.CollectionTest do
       assert_raise Invalid, fn ->
         ValidationRequest.get_by_id!(validation_request.id)
       end
-
-      assert_lists_equal([], ValidationRequestRecordVersion.read!(tenant: collection))
 
       assert {:ok, attachments} = Attachment.read()
       assert attachments == []
