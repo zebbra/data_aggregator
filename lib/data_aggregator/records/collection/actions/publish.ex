@@ -156,7 +156,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
           Enumerable.t()
   defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
     Ash.bulk_update(stream, :update_publication_status, %{status: status},
       actor: actor,
@@ -165,7 +164,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       resource: Record,
       tenant: tenant,
       max_concurrency: max_concurrency,
-      batch_size: batch_size
+      batch_size: 1000
     )
 
     stream
@@ -183,7 +182,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       upsert_identity: :unique_record_id,
       upsert_fields: {:replace_all_except, [:inserted_at, :id, :record_id, :collection_id]},
       tenant: publication.collection,
-      batch_size: 200
+      batch_size: 150
     )
   end
 
