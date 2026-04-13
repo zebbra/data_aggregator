@@ -15,7 +15,8 @@ defmodule DataAggregator.Records.ValidationResponse.Actions.BulkValidate do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.validation_response_batch_size() / max_concurrency)
+    # Cap at 150: ~280 Darwin Core attributes × 150 ≈ 42k params, safely under PG's 65535 limit
+    batch_size = min(Records.validation_response_batch_size(), 150)
 
     Logger.debug("Bulk validating records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 

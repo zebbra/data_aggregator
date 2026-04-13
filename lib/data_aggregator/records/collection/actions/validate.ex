@@ -130,8 +130,6 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp stream_query(query),
     do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: [:encoded_record, :validation_request_record])
 
-  # Query VRR table for records changed in this validation run, then bulk-update
-  # their validation_status and last_validation_started_at.
   @spec bulk_update_changed_records(ValidationRequest.t(), term(), Context.t()) :: :ok
   defp bulk_update_changed_records(validation_request, tenant, %{actor: actor}) do
     changed_record_ids_query()
@@ -139,7 +137,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Ash.Query.set_tenant(tenant)
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
     |> Stream.map(& &1.record_id)
-    |> Stream.chunk_every(100)
+    |> Stream.chunk_every(1000)
     |> Enum.each(fn ids ->
       Record
       |> Ash.Query.filter(id in ^ids)
@@ -150,7 +148,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         domain: Records,
         resource: Record,
         tenant: tenant,
-        batch_size: 100,
+        batch_size: 1000,
         return_errors?: true
       )
 
@@ -163,7 +161,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         domain: Records,
         resource: Record,
         tenant: tenant,
-        batch_size: 100,
+        batch_size: 1000,
         return_errors?: true
       )
     end)
