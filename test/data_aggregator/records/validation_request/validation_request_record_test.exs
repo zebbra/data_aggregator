@@ -16,7 +16,6 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
 
   require Ash.Expr
   require Ash.Query
-  require Logger
 
   setup do
     Application.put_env(:data_aggregator, Accounts, last_terms_update: ~D[2025-01-28])
@@ -83,20 +82,11 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
       assert {:ok, %ValidationRequestRecord{} = vrr} =
                ValidationRequestRecord.create(attrs, tenant: collection)
 
-      vrr = Ash.load!(vrr, [:paper_trail_versions], tenant: collection)
-
       # Convert atom keys to string keys for comparishon since Ash stores maps with string keys
       expected_data = for {k, v} <- data, into: %{}, do: {to_string(k), v}
       assert vrr.data == expected_data
       assert vrr.record_id == record.id
       assert vrr.collection_id == collection.id
-      assert length(vrr.paper_trail_versions) == 1
-
-      # Verify the version was created correctly
-      version = hd(vrr.paper_trail_versions)
-      assert version.version_action_type == :create
-      assert version.collection_id == collection.id
-      assert version.version_source_id == vrr.id
     end
 
     test "create/1 with invalid data returns error changeset", %{
@@ -144,25 +134,10 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
       assert {:ok, %ValidationRequestRecord{} = updated_vrr} =
                ValidationRequestRecord.update(vrr, update_attrs, actor: user, tenant: collection)
 
-      updated_vrr = Ash.load!(updated_vrr, [:paper_trail_versions], tenant: collection)
-
       # Convert atom keys to string keys for comparison since Ash stores maps with string keys
       expected_new_data = for {k, v} <- new_data, into: %{}, do: {to_string(k), v}
       assert updated_vrr.data == expected_new_data
       assert updated_vrr.id == vrr.id
-      assert length(updated_vrr.paper_trail_versions) == 2
-
-      # Verify the update version was created
-      [update_version, create_version] =
-        Enum.sort_by(
-          updated_vrr.paper_trail_versions,
-          & &1.version_inserted_at,
-          {:desc, DateTime}
-        )
-
-      assert update_version.version_action_type == :update
-      assert update_version.user_id == user.id
-      assert create_version.version_action_type == :create
     end
 
     test "update/2 with invalid data returns error changeset", %{
@@ -371,119 +346,6 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
 
       assert ValidationRequestRecord
              |> Ash.Query.filter(id == ^vrr.id)
-             |> Ash.Query.set_tenant(collection)
-             |> Ash.read!()
-             |> length() == 0
-    end
-  end
-
-  describe "paper trail versions" do
-    test "create action generates version", %{collection1: collection, record: record} do
-      attrs = %{
-        data: validation_request_data_fixture(),
-        collection: collection,
-        record: record
-      }
-
-      {:ok, vrr} = ValidationRequestRecord.create(attrs, tenant: collection)
-      vrr = Ash.load!(vrr, [:paper_trail_versions], tenant: collection)
-
-      assert length(vrr.paper_trail_versions) == 1
-      version = hd(vrr.paper_trail_versions)
-
-      assert version.version_action_type == :create
-      assert version.version_source_id == vrr.id
-      assert version.collection_id == collection.id
-      assert is_nil(version.user_id)
-    end
-
-    test "update action generates version with user", %{
-      collection1: collection,
-      record: record,
-      user: user
-    } do
-      vrr = validation_request_record_fixture(%{collection: collection, record: record})
-
-      update_attrs = %{
-        data: validation_request_data_fixture(%{tax_scientific_name: "Updated Name"})
-      }
-
-      {:ok, updated_vrr} =
-        ValidationRequestRecord.update(vrr, update_attrs, actor: user, tenant: collection)
-
-      updated_vrr = Ash.load!(updated_vrr, [:paper_trail_versions], tenant: collection)
-
-      assert length(updated_vrr.paper_trail_versions) == 2
-
-      [update_version, _create_version] =
-        Enum.sort_by(
-          updated_vrr.paper_trail_versions,
-          & &1.version_inserted_at,
-          {:desc, DateTime}
-        )
-
-      assert update_version.version_action_type == :update
-      assert update_version.user_id == user.id
-      assert update_version.collection_id == collection.id
-    end
-
-    test "versions have correct relationships", %{
-      collection1: collection,
-      record: record,
-      user: user
-    } do
-      vrr = validation_request_record_fixture(%{collection: collection, record: record})
-
-      {:ok, updated_vrr} =
-        ValidationRequestRecord.update(
-          vrr,
-          %{data: validation_request_data_fixture(%{tax_scientific_name: "Test Update"})},
-          actor: user,
-          tenant: collection
-        )
-
-      updated_vrr =
-        Ash.load!(updated_vrr, [paper_trail_versions: [:user, :version_source]], tenant: collection)
-
-      update_version =
-        Enum.find(updated_vrr.paper_trail_versions, &(&1.version_action_type == :update))
-
-      assert update_version.user_id == user.id
-      assert update_version.version_source.id == vrr.id
-    end
-
-    test "deleting validation request record deletes versions", %{
-      collection1: collection,
-      record: record,
-      user: user
-    } do
-      vrr = validation_request_record_fixture(%{collection: collection, record: record})
-
-      # Create some versions by updating
-      {:ok, updated_vrr} =
-        ValidationRequestRecord.update(
-          vrr,
-          %{data: validation_request_data_fixture(%{tax_scientific_name: "Update 1"})},
-          actor: user,
-          tenant: collection
-        )
-
-      {:ok, updated_vrr} =
-        ValidationRequestRecord.update(
-          updated_vrr,
-          %{data: validation_request_data_fixture(%{tax_scientific_name: "Update 2"})},
-          actor: user,
-          tenant: collection
-        )
-
-      updated_vrr = Ash.load!(updated_vrr, [:paper_trail_versions], tenant: collection)
-      assert length(updated_vrr.paper_trail_versions) == 3
-
-      # Delete the validation request record
-      assert :ok = ValidationRequestRecord.destroy(updated_vrr, tenant: collection)
-
-      assert ValidationRequestRecord
-             |> Ash.Query.filter(id == ^updated_vrr.id)
              |> Ash.Query.set_tenant(collection)
              |> Ash.read!()
              |> length() == 0

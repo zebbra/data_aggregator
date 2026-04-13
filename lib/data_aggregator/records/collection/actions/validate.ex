@@ -50,7 +50,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     query
     |> stream_query()
     |> Stream.chunk_every(1000)
-    |> Stream.map(fn records ->
+    |> Enum.each(fn records ->
       results =
         records
         |> Enum.map(
@@ -71,11 +71,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         bulk_upsert_validation_request_records!(changed_with_data, tenant)
       end
 
-      Enum.map(changed_with_data, fn {_, record, _data} -> record end)
+      Counter.increment(sent_counter, length(changed_with_data))
     end)
-    |> Stream.flat_map(& &1)
-    |> Counter.count_each(sent_counter)
-    |> update_validation_status(:requested, ctx)
 
     FlatFileUtils.close_file(file)
     Counter.stop(total_counter)
@@ -98,20 +95,16 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     # only notify center if there are more than 0 entries to validate
     if row_count > 0 do
-      case InfoSpecies.notify(validation_request, query, row_count) do
+      case InfoSpecies.notify(validation_request, row_count) do
         {:ok, validation_request} ->
+          # Use VRR table to find records changed in this run, instead of
+          # accumulating all IDs in memory during the stream.
+          bulk_update_changed_records(validation_request, tenant, ctx)
           {:ok, validation_request}
 
         {:error, error} ->
+          # Nothing to revert — no record statuses were touched yet.
           Logger.error("Error while notifying about validation: #{inspect(error)}")
-
-          query
-          |> stream_query()
-          |> update_validation_status(
-            :unknown,
-            ctx
-          )
-
           {:error, error}
       end
     else
@@ -120,14 +113,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   rescue
     e ->
       Logger.error("Error sending validation request: #{inspect(e)}")
-
       validation_request = input.arguments.validation_request
-
-      validation_request
-      |> build_query(tenant)
-      |> stream_query()
-      |> update_validation_status(:unknown, ctx)
-
+      rollback_changed_records(validation_request, tenant)
       {:error, e}
   end
 
@@ -140,26 +127,75 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
-  defp stream_query(query), do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+  defp stream_query(query),
+    do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: [:encoded_record, :validation_request_record])
 
-  @spec update_validation_status(Enum.t(), atom(), Context.t()) :: Enum.t()
-  defp update_validation_status(stream, status, %{actor: actor, tenant: tenant}) do
-    max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
-    # Record has ~280 attributes and PaperTrail creates a version row per record.
-    # PG can handle at most 65535 params, so we cap at 100 records per batch.
-    batch_size = min(batch_size, 100)
+  # Query VRR table for records changed in this validation run, then bulk-update
+  # their validation_status and last_validation_started_at.
+  @spec bulk_update_changed_records(ValidationRequest.t(), term(), Context.t()) :: :ok
+  defp bulk_update_changed_records(validation_request, tenant, %{actor: actor}) do
+    changed_record_ids_query()
+    |> Ash.Query.filter(updated_at >= ^validation_request.inserted_at)
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+    |> Stream.map(& &1.record_id)
+    |> Stream.chunk_every(100)
+    |> Enum.each(fn ids ->
+      Record
+      |> Ash.Query.filter(id in ^ids)
+      |> Ash.Query.set_tenant(tenant)
+      |> Ash.bulk_update!(:update_validation_status, %{status: :requested},
+        actor: actor,
+        authorize?: false,
+        domain: Records,
+        resource: Record,
+        tenant: tenant,
+        batch_size: 100,
+        return_errors?: true
+      )
 
-    Ash.bulk_update(stream, :update_validation_status, %{status: status},
-      actor: actor,
+      Record
+      |> Ash.Query.filter(id in ^ids)
+      |> Ash.Query.set_tenant(tenant)
+      |> Ash.bulk_update!(:update_last_validation_started_at, %{},
+        actor: actor,
+        authorize?: false,
+        domain: Records,
+        resource: Record,
+        tenant: tenant,
+        batch_size: 100,
+        return_errors?: true
+      )
+    end)
+  end
+
+  # On failure, delete VRRs that were upserted during this run so the next
+  # validation request correctly detects those records as changed again.
+  # No need to reset validation statuses — they are only updated after notify succeeds.
+  @spec rollback_changed_records(ValidationRequest.t(), term()) :: :ok
+  defp rollback_changed_records(validation_request, tenant) do
+    ValidationRequestRecord
+    |> Ash.Query.filter(updated_at >= ^validation_request.inserted_at)
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.bulk_destroy!(:destroy, %{},
       authorize?: false,
       domain: Records,
-      resource: Record,
       tenant: tenant,
-      batch_size: batch_size
+      batch_size: 500,
+      return_errors?: true
     )
 
-    stream
+    :ok
+  rescue
+    e ->
+      Logger.error("Error during rollback of validation request records: #{inspect(e)}")
+      :ok
+  end
+
+  defp changed_record_ids_query do
+    ValidationRequestRecord
+    |> Ash.Query.new()
+    |> Ash.Query.select([:record_id, :updated_at])
   end
 
   @spec compose_headers(ValidationFile.t()) :: list()
@@ -202,11 +238,11 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     current_data = current_data(record, validation_file, collection)
 
     if previous_data == current_data do
-      Logger.info("Validation Request: No changes detected. No data will be sent for validation.")
+      Logger.debug("Validation Request: No changes detected. No data will be sent for validation.")
 
       {:not_changed, previous_data}
     else
-      Logger.info("Validation Request: Changes detected, new data will be sent for validation.")
+      Logger.debug("Validation Request: Changes detected, new data will be sent for validation.")
 
       {:changed, current_data}
     end

@@ -4,7 +4,7 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
   use Ash.Resource,
     otp_app: :data_aggregator,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshPaperTrail.Resource],
+    extensions: [AshUUID],
     authorizers: [Ash.Policy.Authorizer],
     domain: DataAggregator.Records
 
@@ -19,25 +19,6 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
     attribute :data, :map, allow_nil?: false, public?: true
 
     timestamps()
-  end
-
-  paper_trail do
-    mixin DataAggregator.Records.ValidationRequestRecordMixin
-    attributes_as_attributes [:collection_id]
-
-    reference_source? true
-
-    ignore_attributes [
-      :inserted_at,
-      :updated_at
-    ]
-
-    ignore_actions [:destroy]
-
-    belongs_to_actor :user, DataAggregator.Accounts.User,
-      domain: DataAggregator.Accounts,
-      define_attribute?: false,
-      public?: true
   end
 
   relationships do
