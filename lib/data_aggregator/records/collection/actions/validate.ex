@@ -68,7 +68,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         Enum.filter(results, fn {status, _record, _data} -> status == :changed end)
 
       if changed_with_data != [] do
-        bulk_upsert_validation_request_records!(changed_with_data, tenant)
+        bulk_upsert_validation_request_records!(changed_with_data, validation_request, tenant)
       end
 
       Counter.increment(sent_counter, length(changed_with_data))
@@ -133,7 +133,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   @spec bulk_update_changed_records(ValidationRequest.t(), term(), Context.t()) :: :ok
   defp bulk_update_changed_records(validation_request, tenant, %{actor: actor}) do
     changed_record_ids_query()
-    |> Ash.Query.filter(updated_at >= ^validation_request.inserted_at)
+    |> Ash.Query.filter(validation_request_id == ^validation_request.id)
     |> Ash.Query.set_tenant(tenant)
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
     |> Stream.map(& &1.record_id)
@@ -173,7 +173,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   @spec rollback_changed_records(ValidationRequest.t(), term()) :: :ok
   defp rollback_changed_records(validation_request, tenant) do
     ValidationRequestRecord
-    |> Ash.Query.filter(updated_at >= ^validation_request.inserted_at)
+    |> Ash.Query.filter(validation_request_id == ^validation_request.id)
     |> Ash.Query.set_tenant(tenant)
     |> Ash.bulk_destroy!(:destroy, %{},
       authorize?: false,
@@ -193,7 +193,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp changed_record_ids_query do
     ValidationRequestRecord
     |> Ash.Query.new()
-    |> Ash.Query.select([:record_id, :updated_at])
+    |> Ash.Query.select([:record_id, :validation_request_id])
   end
 
   @spec compose_headers(ValidationFile.t()) :: list()
@@ -344,11 +344,11 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     data ++ [date_time]
   end
 
-  @spec bulk_upsert_validation_request_records!(list(), term()) :: :ok
-  defp bulk_upsert_validation_request_records!(changed_with_data, tenant) do
+  @spec bulk_upsert_validation_request_records!(list(), ValidationRequest.t(), term()) :: :ok
+  defp bulk_upsert_validation_request_records!(changed_with_data, validation_request, tenant) do
     inputs =
       Enum.map(changed_with_data, fn {_status, record, data} ->
-        %{data: data, record_id: record.id}
+        %{data: data, record_id: record.id, validation_request_id: validation_request.id}
       end)
 
     # VRR has few columns (~6), so batches of 500 stay well within PG's 65535 param limit

@@ -240,11 +240,31 @@
   ],
   "base_filter": null,
   "check_constraints": [],
+  "create_table_options": null,
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "B79AD9497FA228730F949A997A81CB51C7BA51D5A15D4B87F80CAC54CF4C4501",
-  "identities": [],
+  "hash": "180887255DD23330BAF29CD9892A713C7356231369A97F903FF87E064EDE92CF",
+  "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "validation_requests_by_collection_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "id"
+        },
+        {
+          "type": "atom",
+          "value": "collection_id"
+        }
+      ],
+      "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    }
+  ],
   "multitenancy": {
     "attribute": "collection_id",
     "global": false,
