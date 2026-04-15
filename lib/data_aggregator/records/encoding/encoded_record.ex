@@ -161,6 +161,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     custom_indexes do
       index [:loc_continent, :tax_kingdom, :tax_phylum]
+      index [:collection_id, :tax_scientific_name]
     end
   end
 

@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
 
   @load load()
   @load_all load_all()
-  @update_events ~w(set_running set_done set_failed add_validation_request_progress)
+  @update_events ~w(set_running set_done set_failed add_validation_request_progress set_total_rows_count)
   @collection_action_events ~w(
     set_mapping
     set_importing

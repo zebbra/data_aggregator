@@ -102,7 +102,7 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
 
       reference :validation_request,
-        on_delete: :nilify,
+        on_delete: :delete,
         on_update: :update,
         index?: true,
         match_with: [collection_id: :collection_id]
