@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Validation.ValidationFile
   alias DataAggregator.Records.ValidationRequest
@@ -25,11 +26,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   def run(input, _opts, %{tenant: tenant} = ctx) do
     validation_request = Ash.load!(input.arguments.validation_request, [:collection])
 
-    # Compute total_rows_count inside the worker so the LiveView enqueue path
-    # stays cheap and slow counts don't block the UI.
     validation_request =
       validation_request
-      |> build_query(tenant)
+      |> build_encoded_record_count_query()
       |> Ash.count!(tenant: tenant)
       |> then(&ValidationRequest.set_total_rows_count!(validation_request, &1, tenant: tenant))
 
@@ -132,6 +131,19 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Ash.Query.filter_input(validation_request.records_query)
     |> Ash.Query.set_tenant(tenant)
     |> Ash.Query.load([:encoded_record, :validation_request_record])
+  end
+
+  # Valid only while every records_query predicate lives under :encoded_record
+  # (or :collection). Revisit if a record-only filter is ever added.
+  defp build_encoded_record_count_query(validation_request) do
+    encoded_filter =
+      validation_request.records_query[:encoded_record] ||
+        validation_request.records_query["encoded_record"] ||
+        %{}
+
+    EncodedRecord
+    |> Ash.Query.new()
+    |> Ash.Query.filter_input(encoded_filter)
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
