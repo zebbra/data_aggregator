@@ -116,14 +116,7 @@ defmodule DataAggregator.StartValidationsTest do
       collection: collection,
       actor: actor
     } do
-      assert_start_validations_result_equal(collection, actor,
-        infofauna: 3,
-        vogelwarte: 0,
-        infoflora: 0,
-        swissbryophytes: 0,
-        swisslichens: 0,
-        swissfungi: 1
-      )
+      assert_start_validations_result_equal(collection, actor, [:infofauna, :swissfungi])
 
       jobs = all_enqueued()
       assert length(jobs) == 2
@@ -155,14 +148,7 @@ defmodule DataAggregator.StartValidationsTest do
            collection: collection,
            actor: actor
          } do
-      assert_start_validations_result_equal(collection, actor,
-        infofauna: 3,
-        vogelwarte: 0,
-        infoflora: 0,
-        swissbryophytes: 0,
-        swisslichens: 0,
-        swissfungi: 1
-      )
+      assert_start_validations_result_equal(collection, actor, [:infofauna, :swissfungi])
 
       # add a record that will be included
       record =
@@ -178,14 +164,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record})
 
-      assert_start_validations_result_equal(collection, actor,
-        infofauna: 4,
-        vogelwarte: 0,
-        infoflora: 0,
-        swissbryophytes: 0,
-        swisslichens: 0,
-        swissfungi: 1
-      )
+      assert_start_validations_result_equal(collection, actor, [:infofauna, :swissfungi])
 
       # add a record that will be excluded because oth_swiss_species_registered is false
 
@@ -202,14 +181,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record_excluded_1})
 
-      assert_start_validations_result_equal(collection, actor,
-        infofauna: 4,
-        vogelwarte: 0,
-        infoflora: 0,
-        swissbryophytes: 0,
-        swisslichens: 0,
-        swissfungi: 1
-      )
+      assert_start_validations_result_equal(collection, actor, [:infofauna, :swissfungi])
 
       # add a record that will be excluded because oth_basis_of_record is FossilSpecimen
       record_excluded_2 =
@@ -226,14 +198,7 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record_excluded_2})
 
-      assert_start_validations_result_equal(collection, actor,
-        infofauna: 4,
-        vogelwarte: 0,
-        infoflora: 0,
-        swissbryophytes: 0,
-        swisslichens: 0,
-        swissfungi: 1
-      )
+      assert_start_validations_result_equal(collection, actor, [:infofauna, :swissfungi])
     end
   end
 

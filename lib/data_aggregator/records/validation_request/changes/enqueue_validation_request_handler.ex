@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.EnqueueValidationRequ
     case insert_job(validation_request, actor) do
       {:ok, job} ->
         Logger.debug("Enqueued validation request job #{inspect(job.id)}")
-        changeset
+        Changeset.force_change_attribute(changeset, :oban_job_id, job.id)
 
       {:error, error} ->
         Logger.error("Failed to enqueue validation request job: #{inspect(error)}")

@@ -21,92 +21,8 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "started_at",
-      "type": "utc_datetime"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "finished_at",
-      "type": "utc_datetime"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "records_query",
+      "source": "data",
       "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "0",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "processed_rows_count",
-      "type": "bigint"
-    },
-    {
-      "allow_nil?": false,
-      "default": "0",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "total_rows_count",
-      "type": "bigint"
-    },
-    {
-      "allow_nil?": false,
-      "default": "0",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "sent_for_validation_count",
-      "type": "bigint"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "center",
-      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -134,15 +50,36 @@
     },
     {
       "allow_nil?": false,
-      "default": "\"pending\"",
+      "default": "nil",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": null,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
+        "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "validation_request_records_record_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "records"
+      },
       "scale": null,
       "size": null,
-      "source": "state",
-      "type": "text"
+      "source": "record_id",
+      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -151,7 +88,7 @@
       "precision": null,
       "primary_key?": false,
       "references": {
-        "deferrable": true,
+        "deferrable": false,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
@@ -163,7 +100,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "validation_requests_collection_id_fkey",
+        "name": "validation_request_records_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -186,55 +123,26 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": false,
+        "index?": true,
         "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+        "match_with": {
+          "collection_id": "collection_id"
         },
-        "name": "validation_requests_started_by_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "validation_request_records_validation_request_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
-        "table": "users"
+        "table": "validation_requests"
       },
       "scale": null,
       "size": null,
-      "source": "started_by_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "validation_requests_attachment_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "file_attachments"
-      },
-      "scale": null,
-      "size": null,
-      "source": "attachment_id",
+      "source": "validation_request_id",
       "type": "uuid"
     }
   ],
@@ -244,12 +152,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "180887255DD23330BAF29CD9892A713C7356231369A97F903FF87E064EDE92CF",
+  "hash": "F4F406E06FDF409DD249F0A671A785C7FB6CA17FCCBDBF46A0104D44BF684641",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "validation_requests_by_collection_index",
+      "index_name": "validation_request_records_by_collection_index",
       "keys": [
         {
           "type": "atom",
@@ -263,6 +171,20 @@
       "name": "by_collection",
       "nils_distinct?": true,
       "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "validation_request_records_by_record_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "record_id"
+        }
+      ],
+      "name": "by_record",
+      "nils_distinct?": true,
+      "where": null
     }
   ],
   "multitenancy": {
@@ -272,5 +194,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "validation_requests"
+  "table": "validation_request_records"
 }

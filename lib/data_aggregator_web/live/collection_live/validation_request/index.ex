@@ -236,15 +236,21 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
             </:item>
             <:item title={~t"Done"m}>
               <div class="flex flex-col">
-                <.progress
-                  value={@selected_validation_request.validation_request_progress || 0}
-                  max={1}
-                  class="progress progress-primary w-full"
-                />
-                <div>
-                  {format_number(@selected_validation_request.processed_rows_count)} / {format_number(
-                    @selected_validation_request.total_rows_count
-                  )} {~t"rows"m}
+                <div :if={@selected_validation_request.total_rows_count == 0}>
+                  <.progress max={1} class="progress progress-primary w-full" />
+                  <div>{~t"Counting records…"m}</div>
+                </div>
+                <div :if={@selected_validation_request.total_rows_count > 0}>
+                  <.progress
+                    value={@selected_validation_request.validation_request_progress || 0}
+                    max={1}
+                    class="progress progress-primary w-full"
+                  />
+                  <div>
+                    {format_number(@selected_validation_request.processed_rows_count)} / {format_number(
+                      @selected_validation_request.total_rows_count
+                    )} {~t"rows"m}
+                  </div>
                 </div>
               </div>
             </:item>

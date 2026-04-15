@@ -25,6 +25,14 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   def run(input, _opts, %{tenant: tenant} = ctx) do
     validation_request = Ash.load!(input.arguments.validation_request, [:collection])
 
+    # Compute total_rows_count inside the worker so the LiveView enqueue path
+    # stays cheap and slow counts don't block the UI.
+    validation_request =
+      validation_request
+      |> build_query(tenant)
+      |> Ash.count!(tenant: tenant)
+      |> then(&ValidationRequest.set_total_rows_count!(validation_request, &1, tenant: tenant))
+
     {:ok, total_counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 

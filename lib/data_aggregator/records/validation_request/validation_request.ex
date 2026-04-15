@@ -32,6 +32,7 @@ defmodule DataAggregator.Records.ValidationRequest do
     attribute :total_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :sent_for_validation_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
+    attribute :oban_job_id, :integer, allow_nil?: true, public?: false
 
     timestamps public?: true, writable?: false
   end
@@ -126,6 +127,10 @@ defmodule DataAggregator.Records.ValidationRequest do
         change ensure_selected(:processed_rows_count)
       end
 
+      update :set_total_rows_count do
+        accept [:total_rows_count]
+      end
+
       update :add_sent_for_validation_progress do
         accept []
         argument :processed_rows, :integer, allow_nil?: false
@@ -198,7 +203,9 @@ defmodule DataAggregator.Records.ValidationRequest do
 
       destroy :destroy do
         primary? true
+        require_atomic? false
 
+        change Changes.CancelObanJob
         change cascade_destroy(:attachment, after_action?: false)
       end
     end
@@ -210,6 +217,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       publish_all :create, [[:collection_id, nil], "created"]
       publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
       publish :add_validation_request_progress, [[:collection_id, nil], "updated", [:id, nil]]
+      publish :set_total_rows_count, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
@@ -230,6 +238,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       define :update_attachment, action: :update_attachment, args: [:attachment]
       define :add_validation_request_progress, args: [:processed_rows]
       define :add_sent_for_validation_progress, args: [:processed_rows]
+      define :set_total_rows_count, args: [:total_rows_count]
       define :cancel_validation_request
     end
 
