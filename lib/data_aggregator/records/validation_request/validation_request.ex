@@ -282,5 +282,9 @@ defmodule DataAggregator.Records.ValidationRequest do
       strategy :attribute
       attribute :collection_id
     end
+
+    identities do
+      identity :by_collection, [:id, :collection_id]
+    end
   end
 end

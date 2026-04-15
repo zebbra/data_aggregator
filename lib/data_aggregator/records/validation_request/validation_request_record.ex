@@ -31,6 +31,11 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
       public? true
       allow_nil? false
     end
+
+    belongs_to :validation_request, DataAggregator.Records.ValidationRequest do
+      public? true
+      allow_nil? true
+    end
   end
 
   actions do
@@ -47,11 +52,11 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
     end
 
     create :bulk_upsert do
-      accept [:data, :record_id]
+      accept [:data, :record_id, :validation_request_id]
 
       upsert? true
       upsert_identity :by_record
-      upsert_fields [:data, :updated_at]
+      upsert_fields [:data, :updated_at, :validation_request_id]
     end
   end
 
@@ -95,6 +100,12 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
         match_with: [collection_id: :collection_id]
 
       reference :collection, on_delete: :delete, on_update: :update, index?: true
+
+      reference :validation_request,
+        on_delete: :nilify,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 
