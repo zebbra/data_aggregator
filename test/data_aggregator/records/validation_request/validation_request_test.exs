@@ -265,6 +265,7 @@ defmodule DataAggregator.ValidationRequestTest do
       assert validation_request2.sent_for_validation_count == 1
     end
 
+    @tag capture_log: true
     test "validate/1 cleans up only new VRRs on failure, preserving pre-existing ones", %{
       validation_request: validation_request,
       collection: collection,

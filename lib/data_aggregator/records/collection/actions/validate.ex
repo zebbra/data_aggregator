@@ -26,12 +26,6 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   def run(input, _opts, %{tenant: tenant} = ctx) do
     validation_request = Ash.load!(input.arguments.validation_request, [:collection])
 
-    validation_request =
-      validation_request
-      |> build_encoded_record_count_query()
-      |> Ash.count!(tenant: tenant)
-      |> then(&ValidationRequest.set_total_rows_count!(validation_request, &1, tenant: tenant))
-
     {:ok, total_counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 
@@ -129,12 +123,6 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   # Valid only while every records_query predicate lives under :encoded_record
   # (or :collection). Revisit if a record-only filter is ever added.
-  defp build_encoded_record_count_query(validation_request) do
-    EncodedRecord
-    |> Ash.Query.new()
-    |> Ash.Query.filter_input(encoded_filter(validation_request))
-  end
-
   defp build_encoded_stream_query(validation_request, tenant) do
     EncodedRecord
     |> Ash.Query.new()

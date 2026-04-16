@@ -7,14 +7,12 @@ defmodule DataAggregator.StartValidationsTest do
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
   import DataAggregator.SwissSpeciesRegistryFixtures
-  import Swoosh.TestAssertions
 
   alias DataAggregator.AccountsFixtures
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
-  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   describe "start validations action test" do
     setup do
@@ -114,14 +112,21 @@ defmodule DataAggregator.StartValidationsTest do
       ]
     end
 
-    test "start_validations creates a validation request for every center", %{
+    test "start_validations creates a validation request for each center", %{
       collection: collection,
       actor: actor
     } do
-      assert_start_validations_creates_all_centers(collection, actor)
+      assert_start_validations_result_equal(collection, actor,
+        infofauna: 3,
+        vogelwarte: 0,
+        infoflora: 0,
+        swissbryophytes: 0,
+        swisslichens: 0,
+        swissfungi: 1
+      )
 
       jobs = all_enqueued()
-      assert length(jobs) == length(InfospeciesCenters.get_center_names())
+      assert length(jobs) == 2
 
       Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
 
@@ -129,8 +134,6 @@ defmodule DataAggregator.StartValidationsTest do
       {:ok, collection} = Collection.get_by_id(collection.id)
       assert collection.state == :idle
       {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
-
-      assert length(validation_requests) == length(InfospeciesCenters.get_center_names())
 
       Enum.each(validation_requests, fn vr ->
         assert vr
@@ -145,51 +148,24 @@ defmodule DataAggregator.StartValidationsTest do
       assert infofauna_request.processed_rows_count == 3
       assert swissfungi_request.total_rows_count == 1
       assert swissfungi_request.processed_rows_count == 1
-
-      # centers with no matching records still produce a VR, but it is empty
-      empty_centers =
-        InfospeciesCenters.get_center_names() -- [:infofauna, :swissfungi]
-
-      Enum.each(empty_centers, fn center ->
-        vr = Enum.find(validation_requests, &(&1.center == center))
-        assert vr.total_rows_count == 0
-        assert vr.processed_rows_count == 0
-        assert vr.sent_for_validation_count == 0
-      end)
     end
 
-    test "empty validation requests do not notify infospecies centers", %{
-      collection: collection,
-      actor: actor
-    } do
-      Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, _result} =
-          Collection.start_validations(collection, actor: actor, tenant: collection)
-
-        Enum.each(all_enqueued(), &perform_job(ValidationRequestHandler, &1.args, []))
-      end)
-
-      # Only the two centers that have matching records should receive an email.
-      Enum.each([:infofauna, :swissfungi], fn center ->
-        {:ok, to_mails} = InfospeciesCenters.get_center_emails(center)
-        [first_email | _] = to_mails
-
-        assert_email_sent(fn email ->
-          Enum.any?(email.to, fn {_, addr} -> addr == first_email end)
-        end)
-      end)
-
-      # Every other center has a 0-row VR and must not trigger a notification.
-      refute_email_sent()
-    end
-
-    test "records with oth_swiss_species_registered false or oth_basis_of_record FossilSpecimen are excluded from counts",
+    test "start_validations does not create validation for oth_swiss_species_registered false or oth_basis_of_record FossilSpecimen",
          %{
            collection: collection,
            actor: actor
          } do
+      assert_start_validations_result_equal(collection, actor,
+        infofauna: 3,
+        vogelwarte: 0,
+        infoflora: 0,
+        swissbryophytes: 0,
+        swisslichens: 0,
+        swissfungi: 1
+      )
+
       # add a record that will be included
-      record_included =
+      record =
         record_fixture(%{
           tax_scientific_name: "Scientific Name 1",
           collection: collection,
@@ -200,9 +176,19 @@ defmodule DataAggregator.StartValidationsTest do
           oth_swiss_species_registered: true
         })
 
-      encoded_record_fixture(%{record: record_included})
+      encoded_record_fixture(%{record: record})
+
+      assert_start_validations_result_equal(collection, actor,
+        infofauna: 4,
+        vogelwarte: 0,
+        infoflora: 0,
+        swissbryophytes: 0,
+        swisslichens: 0,
+        swissfungi: 1
+      )
 
       # add a record that will be excluded because oth_swiss_species_registered is false
+
       record_excluded_1 =
         record_fixture(%{
           tax_scientific_name: "Scientific Name 1",
@@ -215,6 +201,15 @@ defmodule DataAggregator.StartValidationsTest do
         })
 
       encoded_record_fixture(%{record: record_excluded_1})
+
+      assert_start_validations_result_equal(collection, actor,
+        infofauna: 4,
+        vogelwarte: 0,
+        infoflora: 0,
+        swissbryophytes: 0,
+        swisslichens: 0,
+        swissfungi: 1
+      )
 
       # add a record that will be excluded because oth_basis_of_record is FossilSpecimen
       record_excluded_2 =
@@ -231,34 +226,27 @@ defmodule DataAggregator.StartValidationsTest do
 
       encoded_record_fixture(%{record: record_excluded_2})
 
-      Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, _result} =
-          Collection.start_validations(collection, actor: actor, tenant: collection)
-
-        Enum.each(all_enqueued(), &perform_job(ValidationRequestHandler, &1.args, []))
-      end)
-
-      {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
-
-      infofauna_request = Enum.find(validation_requests, &(&1.center == :infofauna))
-      swissfungi_request = Enum.find(validation_requests, &(&1.center == :swissfungi))
-
-      # 3 original + 1 newly added "Scientific Name 1" record; the 2 excluded records do not count
-      assert infofauna_request.total_rows_count == 4
-      assert swissfungi_request.total_rows_count == 1
+      assert_start_validations_result_equal(collection, actor,
+        infofauna: 4,
+        vogelwarte: 0,
+        infoflora: 0,
+        swissbryophytes: 0,
+        swisslichens: 0,
+        swissfungi: 1
+      )
     end
   end
 
-  defp assert_start_validations_creates_all_centers(collection, actor) do
+  defp assert_start_validations_result_equal(collection, actor, expected) do
     Oban.Testing.with_testing_mode(:manual, fn ->
       {:ok, result} =
         Collection.start_validations(collection, actor: actor, tenant: collection)
 
-      assert_lists_equal(result, InfospeciesCenters.get_center_names())
+      {:ok, collection} = Collection.get_by_id(collection.id)
+
+      assert_lists_equal(result, expected)
 
       {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
-
-      assert length(validation_requests) == length(InfospeciesCenters.get_center_names())
 
       Enum.each(validation_requests, fn vr ->
         assert vr

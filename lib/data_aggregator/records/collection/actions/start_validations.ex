@@ -6,9 +6,11 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
+  require Ash.Query
   require Logger
 
   @impl true
@@ -18,7 +20,7 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
 
     infospecies_centers = InfospeciesCenters.get_center_names()
 
-    enqueued_centers =
+    center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         filter =
           Ash.Helpers.deep_merge_maps(
@@ -26,21 +28,30 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
             ValidationRequest.Helpers.center_specific_filter(center)
           )
 
-        %{
-          name: "vrq-#{collection.name}-#{:os.system_time()}",
-          collection: collection,
-          records_query: filter,
-          center: center
-        }
-        |> ValidationRequest.create!(tenant: tenant)
-        |> ValidationRequest.enqueue(%{started_by_id: actor.id},
-          actor: actor,
-          authorize?: false
-        )
+        count =
+          EncodedRecord
+          |> Ash.Query.new()
+          |> Ash.Query.filter_input(filter[:encoded_record] || %{})
+          |> Ash.count!(tenant: tenant)
 
-        center
+        if count > 0 do
+          %{
+            name: "vrq-#{collection.name}-#{:os.system_time()}",
+            collection: collection,
+            records_query: filter,
+            center: center,
+            total_rows_count: count
+          }
+          |> ValidationRequest.create!(tenant: tenant)
+          |> ValidationRequest.enqueue(%{started_by_id: actor.id},
+            actor: actor,
+            authorize?: false
+          )
+        end
+
+        {center, count}
       end)
 
-    {:ok, enqueued_centers}
+    {:ok, center_and_record_counts}
   end
 end
