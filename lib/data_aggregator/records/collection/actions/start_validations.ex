@@ -6,11 +6,9 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   """
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
-  require Ash.Query
   require Logger
 
   @impl true
@@ -21,37 +19,26 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
     infospecies_centers = InfospeciesCenters.get_center_names()
 
     enqueued_centers =
-      Enum.flat_map(infospecies_centers, fn center ->
+      Enum.map(infospecies_centers, fn center ->
         filter =
           Ash.Helpers.deep_merge_maps(
             collection.validation_query,
             ValidationRequest.Helpers.center_specific_filter(center)
           )
 
-        query =
-          Record
-          |> Ash.Query.new()
-          |> Ash.Query.filter_input(filter)
+        %{
+          name: "vrq-#{collection.name}-#{:os.system_time()}",
+          collection: collection,
+          records_query: filter,
+          center: center
+        }
+        |> ValidationRequest.create!(tenant: tenant)
+        |> ValidationRequest.enqueue(%{started_by_id: actor.id},
+          actor: actor,
+          authorize?: false
+        )
 
-        # Use exists? instead of count to keep the synchronous LiveView path cheap.
-        # The worker computes and sets total_rows_count as its first step.
-        if Ash.exists?(query, tenant: tenant) do
-          %{
-            name: "vrq-#{collection.name}-#{:os.system_time()}",
-            collection: collection,
-            records_query: filter,
-            center: center
-          }
-          |> ValidationRequest.create!(tenant: tenant)
-          |> ValidationRequest.enqueue(%{started_by_id: actor.id},
-            actor: actor,
-            authorize?: false
-          )
-
-          [center]
-        else
-          []
-        end
+        center
       end)
 
     {:ok, enqueued_centers}
