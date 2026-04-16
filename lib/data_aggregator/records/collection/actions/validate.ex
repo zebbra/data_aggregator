@@ -229,7 +229,15 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
           DateTime.t(),
           Collection.t()
         ) ::
-          {:not_changed, EncodedRecord.t(), nil} | {:changed, EncodedRecord.t(), map()}
+          {:not_changed, EncodedRecord.t(), nil}
+          | {:changed, EncodedRecord.t(), map()}
+          | {:missing_record, EncodedRecord.t(), nil}
+  defp process_validation_data(%{record: nil} = encoded_record, _validation_file, _date_time, _collection) do
+    # we skip validation for encoded records without a record
+    # they are likeley the result of an error, should not happen
+    {:missing_record, encoded_record, nil}
+  end
+
   defp process_validation_data(encoded_record, validation_file, date_time, collection) do
     case maybe_changed_data(encoded_record, validation_file, collection) do
       {:not_changed, _data} ->
