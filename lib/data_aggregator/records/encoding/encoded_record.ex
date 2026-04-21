@@ -99,6 +99,10 @@ defmodule DataAggregator.Records.EncodedRecord do
     default_accept :*
     defaults [:read, :update, :destroy]
 
+    read :list do
+      prepare build(sort: [id: :asc])
+    end
+
     create :create do
       primary? true
       argument :record, :struct, allow_nil?: false
@@ -135,6 +139,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   code_interface do
     define :read
+    define :list
     define :create
     define :update
     define :update_return_minimal_fields
@@ -171,7 +176,7 @@ defmodule DataAggregator.Records.EncodedRecord do
       base "/datasets/:collection_id/encoded_records"
 
       get :read
-      index :read
+      index :list
       patch :update
       delete :destroy
     end

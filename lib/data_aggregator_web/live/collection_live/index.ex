@@ -245,7 +245,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   defp list_collections(params, actor, opts \\ [load: @load]) do
     opts = Keyword.put(opts, :actor, actor)
-    AshPagify.validate_and_run(Collection, params, opts)
+    AshPagify.validate_and_run(Ash.Query.for_read(Collection, :list), params, opts)
   end
 
   defp no_results_content(assigns) do

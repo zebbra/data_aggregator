@@ -113,7 +113,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     opts = Keyword.put(opts, :actor, get_actor(socket))
     opts = Keyword.put(opts, :tenant, get_tenant(socket))
 
-    case AshPagify.validate_and_run(Record, ash_pagify, opts, id) do
+    case AshPagify.validate_and_run(Ash.Query.for_read(Record, :list), ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
         %{meta: origin_meta, results: origin_results} = socket.assigns
 
