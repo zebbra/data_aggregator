@@ -47,7 +47,6 @@ defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
