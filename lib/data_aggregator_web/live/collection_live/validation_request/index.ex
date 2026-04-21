@@ -369,7 +369,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
   defp list_validation_requests(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
-    AshPagify.validate_and_run(ValidationRequest, params, opts)
+    AshPagify.validate_and_run(Ash.Query.for_read(ValidationRequest, :list), params, opts)
   end
 
   attr :collection, :any

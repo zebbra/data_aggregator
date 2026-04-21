@@ -292,13 +292,16 @@ defmodule DataAggregator.Records.Record do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
     defaults [:read, :update]
+
+    read :list do
+      prepare build(sort: [id: :asc])
+    end
 
     read :encoding do
       filter expr(state in [:encoding, :queued])
@@ -478,6 +481,7 @@ defmodule DataAggregator.Records.Record do
 
   code_interface do
     define :read
+    define :list
     define :encoding
     define :create
     define :import, args: [:import, :params]
@@ -543,7 +547,7 @@ defmodule DataAggregator.Records.Record do
       base "/datasets/:collection_id/records"
 
       get :read
-      index :read
+      index :list
       patch :update
       post :create
       delete :destroy

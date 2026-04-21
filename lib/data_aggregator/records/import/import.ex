@@ -141,13 +141,16 @@ defmodule DataAggregator.Records.Import do
   end
 
   preparations do
-    prepare build(sort: [id: :desc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
     defaults [:read, :update]
+
+    read :list do
+      prepare build(sort: [id: :desc])
+    end
 
     read :active do
       filter expr(state in [:importing, :import_queued])
@@ -295,6 +298,7 @@ defmodule DataAggregator.Records.Import do
 
   code_interface do
     define :read
+    define :list
     define :update
     define :get_by_id, action: :read, get_by: [:id]
     define :active
@@ -333,7 +337,7 @@ defmodule DataAggregator.Records.Import do
       base "/datasets/:collection_id/imports"
 
       get :read
-      index :read
+      index :list
       post :create_from_path
 
       patch :update_mapping,

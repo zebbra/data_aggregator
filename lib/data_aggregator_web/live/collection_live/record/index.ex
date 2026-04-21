@@ -1098,10 +1098,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       ])
 
     query =
-      Ash.Query.select(
-        Record,
-        record_select
-      )
+      Record
+      |> Ash.Query.for_read(:list)
+      |> Ash.Query.select(record_select)
 
     AshPagify.validate_and_run(query, params, opts, params["id"])
   end
