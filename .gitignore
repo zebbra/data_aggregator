@@ -84,3 +84,11 @@ test/support/fixtures/files/dataset-*.csv
 
 # Ignore test reports
 test/reports/*.xml
+
+# Ignore benchmark outputs
+/bench/results/*
+!/bench/results/.gitkeep
+/bench/snapshots/*
+!/bench/snapshots/.gitkeep
+/bench/datasets/*
+!/bench/datasets/.gitkeep

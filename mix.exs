@@ -53,6 +53,7 @@ defmodule DataAggregator.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:bench), do: ["lib", "test/support/fixtures/stubs"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Hex package manager configuration.
@@ -242,7 +243,7 @@ defmodule DataAggregator.MixProject do
       {:git_ops, "~> 2.8.0", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 2.1", only: :test},
+      {:mimic, "~> 2.1", only: [:test, :bench]},
       {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
       {:ex_machina, "~> 2.8.0", only: :test},
@@ -354,6 +355,15 @@ defmodule DataAggregator.MixProject do
       "repo.reset": [
         "repo.drop",
         "repo.setup"
+      ],
+      "repo.bench.setup": [
+        "repo.create --quiet",
+        "repo.migrate --quiet",
+        "run priv/repo/catalogs/init.exs"
+      ],
+      "repo.bench.reset": [
+        "repo.drop",
+        "repo.bench.setup"
       ],
       "repo.lint": [
         "ash_postgres.generate_migrations --check"

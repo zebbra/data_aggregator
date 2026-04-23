@@ -9,7 +9,7 @@ import Config
 
 require Logger
 
-if config_env() in [:test] do
+if config_env() in [:test, :bench] do
   Envy.load(["config/.env.#{config_env()}"])
 end
 
