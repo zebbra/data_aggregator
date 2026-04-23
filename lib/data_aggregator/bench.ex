@@ -16,6 +16,11 @@ defmodule DataAggregator.Bench do
 
   require Ash.Query
 
+  # `mimic` is scoped `only: [:test, :bench]` in mix.exs; `install_stubs/0`
+  # only runs under MIX_ENV=bench. Silence the compiler's undefined-module
+  # check in :dev — calls are still real in :bench.
+  @compile {:no_warn_undefined, Mimic}
+
   @grscicoll_reference "322ce107-3156-4420-8a2b-7f17efeaa472"
   @user_email "bench+admin@example.com"
 
