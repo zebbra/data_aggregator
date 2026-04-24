@@ -446,9 +446,8 @@ defmodule DataAggregator.Records.Record do
 
     update :update_last_validation_started_at do
       accept []
-      require_atomic? false
 
-      change set_attribute(:last_validation_started_at, &DateTime.utc_now/0)
+      change atomic_update(:last_validation_started_at, expr(now()))
     end
 
     update :add_images do

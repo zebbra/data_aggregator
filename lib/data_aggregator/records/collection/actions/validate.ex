@@ -134,7 +134,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp encoded_filter(validation_request) do
     validation_request.records_query[:encoded_record] ||
       validation_request.records_query["encoded_record"] ||
-      %{}
+      raise ArgumentError,
+            "ValidationRequest #{validation_request.id} has no :encoded_record filter in records_query; " <>
+              "refusing to stream the full collection. records_query=#{inspect(validation_request.records_query)}"
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
