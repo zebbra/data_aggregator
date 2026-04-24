@@ -482,7 +482,7 @@ defmodule DataAggregator.WorkflowTest do
       # record
       query = %{
         collection: %{id: %{eq: collection.id}},
-        tax_kingdom: %{is_nil: false}
+        encoded_record: %{tax_kingdom: %{is_nil: false}}
         # encoded_record: %{swiss_species: %{center: %{eq: "infofauna"}}}
       }
 

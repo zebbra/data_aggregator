@@ -244,7 +244,7 @@ defmodule DataAggregator.CollectionTest do
           %{
             name: "Validation Request",
             center: :infofauna,
-            records_query: %{},
+            records_query: %{encoded_record: %{}},
             total_rows_count: 1,
             collection: collection
           },
