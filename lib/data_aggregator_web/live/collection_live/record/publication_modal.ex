@@ -23,6 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias Phoenix.LiveView.AsyncResult
 
   require Ash.Query
 
@@ -39,13 +40,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
 
   @impl true
   def update(assigns, socket) do
+    first_update? = not Map.has_key?(socket.assigns, :counts)
+
+    socket = socket |> assign(assigns) |> assign_form()
+
     socket =
-      socket
-      |> assign(assigns)
-      |> assign_dataset_still_exists()
-      |> assign_counts()
-      |> assign_grscicoll_data()
-      |> assign_form()
+      if first_update? do
+        socket
+        |> assign(:counts, AsyncResult.loading())
+        |> assign(:grscicoll_data, AsyncResult.loading())
+        |> assign(:dataset_still_exist?, AsyncResult.loading())
+        |> start_async_counts()
+        |> start_async_grscicoll_data()
+        |> start_async_dataset_still_exists()
+      else
+        socket
+      end
 
     {:ok, socket}
   end
@@ -197,202 +207,234 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     ~H"""
     <div class={unless @step == 1, do: "hidden"}>
       <div class="space-y-4">
-        <p class="text-sm">
-          {~t"You've selected"m}
-          <span class="font-bold">
-            {mgettext(
-              "%{count} records from the %{layer} layer",
-              count: format_number(@total_count),
-              layer: @layer
-            )}
-          </span>
-          {~t"for publication to GBIF, which will make them publicly available. Make sure the layer and filters are corresponding to the selection you’d like to publish."m}
-        </p>
-
-        <div :if={@no_kingdom_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
-          </div>
+        <.async_data :let={counts} async_result={@counts}>
+          <:loading>
+            <.skeleton class="h-4 w-full" />
+            <.skeleton class="mt-2 h-4 w-5/6" />
+            <.skeleton class="mt-2 h-4 w-4/5" />
+          </:loading>
+          <:failed>
+            <div class="flex">
+              <div class="mr-4 shrink-0">
+                <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+              </div>
+              <p class="text-sm">
+                {~t"Failed to load the publication summary. Please close the modal and try again."m}
+              </p>
+            </div>
+          </:failed>
           <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext("%{no_kingdom_count} out of %{total_count} records",
-                no_kingdom_count: format_number(@no_kingdom_count),
-                total_count: format_number(@total_count)
+            {~t"You've selected"m}
+            <span class="font-bold">
+              {mgettext(
+                "%{count} records from the %{layer} layer",
+                count: format_number(counts.total),
+                layer: @layer
               )}
             </span>
-            {~t"that do not have a kingdom, therefore, will not be published."m}
+            {~t"for publication to GBIF, which will make them publicly available. Make sure the layer and filters are corresponding to the selection you’d like to publish."m}
           </p>
-        </div>
 
-        <div :if={@total_count - @checked_publication_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+          <div :if={counts.no_kingdom > 0} class="flex">
+            <div class="mr-4 flex-shrink-0">
+              <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+            </div>
+            <p class="text-sm">
+              {~t"There are"m}
+              <span class="text-sm font-bold">
+                {mgettext("%{no_kingdom_count} out of %{total_count} records",
+                  no_kingdom_count: format_number(counts.no_kingdom),
+                  total_count: format_number(counts.total)
+                )}
+              </span>
+              {~t"that do not have a kingdom, therefore, will not be published."m}
+            </p>
           </div>
-          <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext("%{possible_sensitive_count} out of %{total_count} records",
-                possible_sensitive_count: format_number(@total_count - @checked_publication_count),
-                total_count: format_number(@total_count)
-              )}
-            </span>
-            {~t"that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."m}
-          </p>
-        </div>
-        <div :if={@publication_rules_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext("%{publication_rules_count} out of %{total_count} records",
-                publication_rules_count: format_number(@publication_rules_count),
-                total_count: format_number(@total_count)
-              )}
-            </span>
-            {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."m}
-          </p>
-        </div>
 
-        <%= if @dataset_still_exist? do %>
-          <div class="flex">
+          <div :if={counts.total - counts.checked_publication > 0} class="flex">
+            <div class="mr-4 flex-shrink-0">
+              <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+            </div>
+            <p class="text-sm">
+              {~t"There are"m}
+              <span class="text-sm font-bold">
+                {mgettext("%{possible_sensitive_count} out of %{total_count} records",
+                  possible_sensitive_count: format_number(counts.total - counts.checked_publication),
+                  total_count: format_number(counts.total)
+                )}
+              </span>
+              {~t"that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."m}
+            </p>
+          </div>
+          <div :if={counts.publication_rules > 0} class="flex">
             <div class="mr-4 flex-shrink-0">
               <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
             </div>
             <p class="text-sm">
-              {~t"Your records will be published into an existing dataset on"m}
-              <.link
-                :if={@collection.gbif_dataset_key !== nil}
-                class="link link-primary link-hover"
-                target="_blank"
-                href={"#{gbif_base_url()}/dataset/#{@collection.gbif_dataset_key}"}
-              >
-                {~t"GBIF"}
-                <.icon name="hero-arrow-top-right-on-square" class="size-4" />
-              </.link>
+              {~t"There are"m}
+              <span class="text-sm font-bold">
+                {mgettext("%{publication_rules_count} out of %{total_count} records",
+                  publication_rules_count: format_number(counts.publication_rules),
+                  total_count: format_number(counts.total)
+                )}
+              </span>
+              {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."m}
             </p>
           </div>
-        <% else %>
-          <div class="flex">
-            <%= if @collection.gbif_dataset_key != nil do %>
-              <div class="mr-4 flex-shrink-0">
-                <.icon name="hero-exclamation-triangle-solid" class="size-6 text-warning" />
+        </.async_data>
+
+        <.async_data :let={dataset_still_exist?} async_result={@dataset_still_exist?}>
+          <:loading>
+            <.skeleton class="h-4 w-3/4" />
+          </:loading>
+          <:failed>
+            <div class="flex">
+              <div class="mr-4 shrink-0">
+                <.icon name="hero-x-circle-mini" class="size-6 text-error" />
               </div>
               <p class="text-sm">
-                {~t"These records have been published to a dataset that could not be found anymore; Either it has been deleted on GBIF or the instance has changed (uat/prod). Therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
-                <.link href="mailto:contact@gbif.ch" class="text-primary">
-                  {"contact@gbif.ch"}
-                </.link>
+                {~t"Failed to check the target dataset on GBIF. Please close the modal and try again."m}
               </p>
-            <% else %>
+            </div>
+          </:failed>
+          <%= if dataset_still_exist? do %>
+            <div class="flex">
               <div class="mr-4 flex-shrink-0">
                 <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
               </div>
               <p class="text-sm">
-                {~t"These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
-                <.link href="mailto:contact@gbif.ch" class="text-primary">
-                  {"contact@gbif.ch"}
+                {~t"Your records will be published into an existing dataset on"m}
+                <.link
+                  :if={@collection.gbif_dataset_key !== nil}
+                  class="link link-primary link-hover"
+                  target="_blank"
+                  href={"#{gbif_base_url()}/dataset/#{@collection.gbif_dataset_key}"}
+                >
+                  {~t"GBIF"}
+                  <.icon name="hero-arrow-top-right-on-square" class="size-4" />
                 </.link>
               </p>
-            <% end %>
-          </div>
-          <.fieldgroup class="space-y-3">
-            <.field
-              type="radio"
-              name="creation_option"
-              id="creation_option_1"
-              label={~t"Create new dataset"m}
-              description={~t"A new dataset will be created on GBIF."m}
-              phx-change="non_form_data:change"
-              checked={@creation_option == "new"}
-              value="new"
-            />
-            <%= if has_role?(@current_user, "admin") do %>
+            </div>
+          <% else %>
+            <div class="flex">
+              <%= if @collection.gbif_dataset_key != nil do %>
+                <div class="mr-4 flex-shrink-0">
+                  <.icon name="hero-exclamation-triangle-solid" class="size-6 text-warning" />
+                </div>
+                <p class="text-sm">
+                  {~t"These records have been published to a dataset that could not be found anymore; Either it has been deleted on GBIF or the instance has changed (uat/prod). Therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
+                  <.link href="mailto:contact@gbif.ch" class="text-primary">
+                    {"contact@gbif.ch"}
+                  </.link>
+                </p>
+              <% else %>
+                <div class="mr-4 flex-shrink-0">
+                  <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+                </div>
+                <p class="text-sm">
+                  {~t"These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
+                  <.link href="mailto:contact@gbif.ch" class="text-primary">
+                    {"contact@gbif.ch"}
+                  </.link>
+                </p>
+              <% end %>
+            </div>
+            <.fieldgroup class="space-y-3">
               <.field
                 type="radio"
                 name="creation_option"
-                id="creation_option_2"
-                label={~t"Use existing dataset"m}
-                description={~t"Your records will be published into an existing dataset on GBIF."m}
+                id="creation_option_1"
+                label={~t"Create new dataset"m}
+                description={~t"A new dataset will be created on GBIF."m}
                 phx-change="non_form_data:change"
-                checked={@creation_option == "existing"}
-                value="existing"
+                checked={@creation_option == "new"}
+                value="new"
               />
-            <% end %>
-            <%= if @creation_option == "existing" do %>
-              <div class="pl-10">
-                <.custom_field
-                  field={@form[:existing_dataset_key]}
-                  type="text"
-                  placeholder={~t"Dataset Key"m}
-                  class="pb-6"
-                >
-                  <:content :let={value}>
-                    <div class="inline-flex gap-x-3 sm:col-span-2">
-                      <.input {value} class="w-full" />
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        phx-click="existing_dataset_key:check"
-                        phx-keydown="existing_dataset_key:check"
-                        phx-key="Enter"
-                        phx-target={@myself}
-                        disabled={
-                          (@dataset != nil and @dataset.loading != nil) or
-                            blank?(@form.params["existing_dataset_key"])
-                        }
-                      >
-                        <%= if @dataset != nil and @dataset.loading do %>
-                          {~t"Checking..."}
+              <%= if has_role?(@current_user, "admin") do %>
+                <.field
+                  type="radio"
+                  name="creation_option"
+                  id="creation_option_2"
+                  label={~t"Use existing dataset"m}
+                  description={~t"Your records will be published into an existing dataset on GBIF."m}
+                  phx-change="non_form_data:change"
+                  checked={@creation_option == "existing"}
+                  value="existing"
+                />
+              <% end %>
+              <%= if @creation_option == "existing" do %>
+                <div class="pl-10">
+                  <.custom_field
+                    field={@form[:existing_dataset_key]}
+                    type="text"
+                    placeholder={~t"Dataset Key"m}
+                    class="pb-6"
+                  >
+                    <:content :let={value}>
+                      <div class="inline-flex gap-x-3 sm:col-span-2">
+                        <.input {value} class="w-full" />
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          phx-click="existing_dataset_key:check"
+                          phx-keydown="existing_dataset_key:check"
+                          phx-key="Enter"
+                          phx-target={@myself}
+                          disabled={
+                            (@dataset != nil and @dataset.loading != nil) or
+                              blank?(@form.params["existing_dataset_key"])
+                          }
+                        >
+                          <%= if @dataset != nil and @dataset.loading do %>
+                            {~t"Checking..."}
+                          <% else %>
+                            {~t"Check"m}
+                          <% end %>
+                        </button>
+                      </div>
+                      <%= unless @dataset == nil or @dataset.loading do %>
+                        <%= if @dataset.result != nil do %>
+                          <p id={"#{@id}_success"} class="text-base/6 mt-1 sm:text-sm/6">
+                            <span class="text-success">
+                              {mgettext("Dataset \"%{dataset_title}\" was found",
+                                dataset_title: @dataset.result["title"]
+                              )}
+                            </span>
+                          </p>
                         <% else %>
-                          {~t"Check"m}
+                          <.errors errors={["No dataset was found"]} id={@id} class="mt-1" />
                         <% end %>
-                      </button>
-                    </div>
-                    <%= unless @dataset == nil or @dataset.loading do %>
-                      <%= if @dataset.result != nil do %>
-                        <p id={"#{@id}_success"} class="text-base/6 mt-1 sm:text-sm/6">
-                          <span class="text-success">
-                            {mgettext("Dataset \"%{dataset_title}\" was found",
-                              dataset_title: @dataset.result["title"]
-                            )}
-                          </span>
-                        </p>
-                      <% else %>
-                        <.errors errors={["No dataset was found"]} id={@id} class="mt-1" />
                       <% end %>
-                    <% end %>
-                  </:content>
-                </.custom_field>
-                <%= if @dataset != nil and @dataset.result != nil do %>
-                  <p class="pb-3 text-sm">
-                    {~t"For security reasons: Please type in the name of the target dataset you are going to publish into."m}
-                  </p>
-                  <.field
-                    value={@target_dataset_name}
-                    name="target_dataset_name"
-                    placeholder={~t"Name of target dataset"m}
-                    phx-change="non_form_data:change"
-                    class={
-                      if @target_dataset_name == @dataset.result["title"],
-                        do: "[&_span]:text-success",
-                        else: "[&_span]:text-error"
-                    }
-                    icon_end={
-                      if @target_dataset_name == @dataset.result["title"] do
-                        "hero-check"
-                      else
-                        "hero-x-mark"
-                      end
-                    }
-                  />
-                <% end %>
-              </div>
-            <% end %>
-          </.fieldgroup>
-        <% end %>
+                    </:content>
+                  </.custom_field>
+                  <%= if @dataset != nil and @dataset.result != nil do %>
+                    <p class="pb-3 text-sm">
+                      {~t"For security reasons: Please type in the name of the target dataset you are going to publish into."m}
+                    </p>
+                    <.field
+                      value={@target_dataset_name}
+                      name="target_dataset_name"
+                      placeholder={~t"Name of target dataset"m}
+                      phx-change="non_form_data:change"
+                      class={
+                        if @target_dataset_name == @dataset.result["title"],
+                          do: "[&_span]:text-success",
+                          else: "[&_span]:text-error"
+                      }
+                      icon_end={
+                        if @target_dataset_name == @dataset.result["title"] do
+                          "hero-check"
+                        else
+                          "hero-x-mark"
+                        end
+                      }
+                    />
+                  <% end %>
+                </div>
+              <% end %>
+            </.fieldgroup>
+          <% end %>
+        </.async_data>
       </div>
     </div>
     """
@@ -401,91 +443,112 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   defp body(assigns, 2) do
     ~H"""
     <div class={unless @step == 2, do: "hidden"}>
-      <.section_heading
-        text={~t"Dataset"m}
-        description={~t"Basic metadata regarding the dataset."m}
-        size="md"
-      />
-      <.list dense>
-        <:item title={~t"Title"m}>
-          {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
-        </:item>
-        <:item title={~t"Publisher"m}>
-          <.link
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary"
-            href="https://www.gbif.org/publisher/9661d20d-86b6-4485-8948-f3c86b022fa7"
-          >
-            {"SwissNatColl"}
-          </.link>
-        </:item>
-        <:item
-          :if={
-            persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider") !=
-              []
-          }
-          title={~t"Authors"}
-        >
-          <div :for={
-            person <-
-              (persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider"))
-              |> Enum.uniq()
-          }>
-            {person}
-          </div>
-        </:item>
-      </.list>
-
-      <.section_heading
-        text={~t"Institution and contact Information"m}
-        description={~t"Metadata regarding the institution and contacts based on GrSciColl."m}
-        size="md"
-        class="pt-4"
-      />
-      <.list dense>
-        <:item title={~t"Institution"m}>
-          {@grscicoll_data["institutionName"]}
-        </:item>
-        <:item title={~t"Institution Code"}>
-          {@grscicoll_data["institutionCode"]}
-        </:item>
-        <:item title={~t"Address"}>
-          <div>
-            <p>{@grscicoll_data["address"]["address"]}</p>
-            <p>
-              {@grscicoll_data["address"]["postalCode"]} {@grscicoll_data["address"]["city"]}
+      <.async_data :let={grscicoll_data} async_result={@grscicoll_data}>
+        <:loading>
+          <.skeleton class="h-5 w-1/3" />
+          <.skeleton class="mt-4 h-4 w-full" />
+          <.skeleton class="mt-2 h-4 w-5/6" />
+          <.skeleton class="mt-2 h-4 w-4/5" />
+        </:loading>
+        <:failed>
+          <div class="flex">
+            <div class="mr-4 shrink-0">
+              <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+            </div>
+            <p class="text-sm">
+              {~t"Failed to load the dataset metadata from GBIF. Please close the modal and try again."m}
             </p>
-            <p>{@grscicoll_data["address"]["country"]}</p>
           </div>
-        </:item>
-        <:item :if={persons(@grscicoll_data, "creator") != []} title={~t"Originator"}>
-          <div :for={person <- persons(@grscicoll_data, "creator")}>
-            {person}
-          </div>
-        </:item>
-        <:item :if={persons(@grscicoll_data, "metadataprovider") != []} title={~t"Metadata Provider"}>
-          <div :for={person <- persons(@grscicoll_data, "metadataprovider")}>
-            {person}
-          </div>
-        </:item>
-        <:item
-          :if={persons(@grscicoll_data, "contact") != []}
-          title={~t"Administrative point of contact"}
-        >
-          <div :for={person <- persons(@grscicoll_data, "contact")}>
-            {person}
-          </div>
-        </:item>
-      </.list>
+        </:failed>
+        <.section_heading
+          text={~t"Dataset"m}
+          description={~t"Basic metadata regarding the dataset."m}
+          size="md"
+        />
+        <.list dense>
+          <:item title={~t"Title"m}>
+            {"#{grscicoll_data["name"]} (#{grscicoll_data["code"]}) of #{grscicoll_data["institutionName"]}"}
+          </:item>
+          <:item title={~t"Publisher"m}>
+            <.link
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-primary"
+              href="https://www.gbif.org/publisher/9661d20d-86b6-4485-8948-f3c86b022fa7"
+            >
+              {"SwissNatColl"}
+            </.link>
+          </:item>
+          <:item
+            :if={
+              persons(grscicoll_data, "creator") ++ persons(grscicoll_data, "metadataprovider") !=
+                []
+            }
+            title={~t"Authors"}
+          >
+            <div :for={
+              person <-
+                (persons(grscicoll_data, "creator") ++ persons(grscicoll_data, "metadataprovider"))
+                |> Enum.uniq()
+            }>
+              {person}
+            </div>
+          </:item>
+        </.list>
 
-      <.section_heading text={~t"Intellectual property rights"m} size="md" class="pt-4 pb-1" />
-      <.radio_group
-        field={@form[:license]}
-        options={[{"CC0", :cc0}, {"CC BY", :cc_by}, {"CC BY-NC", :cc_by_nc}]}
-        as_atoms
-        description={~t"Please choose under what license this publication and dataset is covered."m}
-      />
+        <.section_heading
+          text={~t"Institution and contact Information"m}
+          description={~t"Metadata regarding the institution and contacts based on GrSciColl."m}
+          size="md"
+          class="pt-4"
+        />
+        <.list dense>
+          <:item title={~t"Institution"m}>
+            {grscicoll_data["institutionName"]}
+          </:item>
+          <:item title={~t"Institution Code"}>
+            {grscicoll_data["institutionCode"]}
+          </:item>
+          <:item title={~t"Address"}>
+            <div>
+              <p>{grscicoll_data["address"]["address"]}</p>
+              <p>
+                {grscicoll_data["address"]["postalCode"]} {grscicoll_data["address"]["city"]}
+              </p>
+              <p>{grscicoll_data["address"]["country"]}</p>
+            </div>
+          </:item>
+          <:item :if={persons(grscicoll_data, "creator") != []} title={~t"Originator"}>
+            <div :for={person <- persons(grscicoll_data, "creator")}>
+              {person}
+            </div>
+          </:item>
+          <:item
+            :if={persons(grscicoll_data, "metadataprovider") != []}
+            title={~t"Metadata Provider"}
+          >
+            <div :for={person <- persons(grscicoll_data, "metadataprovider")}>
+              {person}
+            </div>
+          </:item>
+          <:item
+            :if={persons(grscicoll_data, "contact") != []}
+            title={~t"Administrative point of contact"}
+          >
+            <div :for={person <- persons(grscicoll_data, "contact")}>
+              {person}
+            </div>
+          </:item>
+        </.list>
+
+        <.section_heading text={~t"Intellectual property rights"m} size="md" class="pt-4 pb-1" />
+        <.radio_group
+          field={@form[:license]}
+          options={[{"CC0", :cc0}, {"CC BY", :cc_by}, {"CC BY-NC", :cc_by_nc}]}
+          as_atoms
+          description={~t"Please choose under what license this publication and dataset is covered."m}
+        />
+      </.async_data>
     </div>
     """
   end
@@ -494,29 +557,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     ~H"""
     <div class={unless @step == 3, do: "hidden"}>
       <div class="space-y-4">
-        <p class="text-sm">
-          {~t"You are about to"m}
-          <span class="font-bold">
-            {cond do
-              @collection.gbif_dataset_key -> ~t"publish into an already existing dataset"m
-              @creation_option == "new" -> ~t"create a new dataset"m
-              @creation_option == "existing" -> ~t"publish into an already existing dataset"m
-            end}
-          </span>
-          {~t"and send"m}
-          <span class="font-bold">
-            {mgettext(
-              "%{checked_publication_count} records",
-              checked_publication_count: format_number(@checked_publication_count - @no_kingdom_count)
-            )}
-          </span>
-          {~t"to GBIF"m}
-        </p>
+        <.async_data :let={counts} async_result={@counts}>
+          <:loading>
+            <.skeleton class="h-4 w-full" />
+            <.skeleton class="mt-2 h-4 w-5/6" />
+          </:loading>
+          <:failed>
+            <div class="flex">
+              <div class="mr-4 shrink-0">
+                <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+              </div>
+              <p class="text-sm">
+                {~t"Failed to load the publication summary. Please close the modal and try again."m}
+              </p>
+            </div>
+          </:failed>
+          <p class="text-sm">
+            {~t"You are about to"m}
+            <span class="font-bold">
+              {cond do
+                @collection.gbif_dataset_key -> ~t"publish into an already existing dataset"m
+                @creation_option == "new" -> ~t"create a new dataset"m
+                @creation_option == "existing" -> ~t"publish into an already existing dataset"m
+              end}
+            </span>
+            {~t"and send"m}
+            <span class="font-bold">
+              {mgettext(
+                "%{checked_publication_count} records",
+                checked_publication_count:
+                  format_number(counts.checked_publication - counts.no_kingdom)
+              )}
+            </span>
+            {~t"to GBIF"m}
+          </p>
+        </.async_data>
 
         <.list dense>
           <:item title={~t"Dataset Title"m}>
             <%= if @creation_option == "new" do %>
-              {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
+              <.async_data :let={grscicoll_data} async_result={@grscicoll_data}>
+                <:loading><.skeleton class="h-4 w-2/3" /></:loading>
+                {"#{grscicoll_data["name"]} (#{grscicoll_data["code"]}) of #{grscicoll_data["institutionName"]}"}
+              </.async_data>
             <% else %>
               <%= if @dataset != nil do %>
                 {"#{@dataset.result["title"]}"}
@@ -585,7 +668,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   defp footer(%{step: 1} = assigns) do
     ~H"""
     <button
-      disabled={dataset_validation_valid?(assigns) == false or @checked_publication_count == 0}
+      disabled={step_1_next_disabled?(assigns)}
       type="button"
       class="btn btn-primary"
       phx-click="publication:next"
@@ -601,7 +684,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
 
   defp footer(%{step: 2} = assigns) do
     ~H"""
-    <button type="button" class="btn btn-primary" phx-click="publication:next" phx-target={@myself}>
+    <button
+      type="button"
+      class="btn btn-primary"
+      disabled={not @grscicoll_data.ok?}
+      phx-click="publication:next"
+      phx-target={@myself}
+    >
       {~t"Next"m}
     </button>
     <button type="button" class="btn btn-ghost" phx-click="publication:back" phx-target={@myself}>
@@ -612,13 +701,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
 
   defp footer(%{step: 3} = assigns) do
     ~H"""
-    <button type="submit" class="btn btn-primary" disabled={!@agreed}>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      disabled={!@agreed or not @counts.ok? or not @grscicoll_data.ok?}
+    >
       {~t"Publish"m}
     </button>
     <button type="button" class="btn btn-ghost" phx-click="publication:back" phx-target={@myself}>
       {~t"Back"m}
     </button>
     """
+  end
+
+  defp step_1_next_disabled?(assigns) do
+    dataset_validation_valid?(assigns) == false or
+      not assigns.counts.ok? or
+      not assigns.dataset_still_exist?.ok? or
+      assigns.counts.result.checked_publication == 0
   end
 
   defp persons(%{"contactPersons" => persons}, type) do
@@ -652,53 +752,61 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
          assigns.target_dataset_name == assigns.dataset.result["title"])
   end
 
-  defp assign_dataset_still_exists(socket) do
-    existing_dataset_key = socket.assigns.collection.gbif_dataset_key
+  defp start_async_counts(socket) do
+    %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
+    actor = get_actor(socket)
 
-    if existing_dataset_key != nil and does_datset_still_exist?(existing_dataset_key) do
-      assign(socket, :dataset_still_exist?, true)
-    else
-      assign(socket, :dataset_still_exist?, false)
-    end
+    assign_async(socket, :counts, fn -> load_counts(collection, ash_pagify, layer, actor) end)
   end
 
-  defp assign_counts(socket) do
-    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
-    actor = get_actor(socket)
+  defp load_counts(collection, ash_pagify, layer, actor) do
     collection = Ash.load!(collection, [:publication_query], lazy?: true, actor: actor)
 
     selected_query =
-      filter_map(
-        ash_pagify,
-        Ash.Query.set_tenant(Record, collection.id),
-        socket.assigns.layer
-      )
+      filter_map(ash_pagify, Ash.Query.set_tenant(Record, collection.id), layer)
 
-    total_count = count_from_query(selected_query, collection)
-
-    no_kingdom_count =
-      selected_query |> no_kingdom_query(socket.assigns.layer) |> count_from_query(collection)
-
-    checked_publication_query = checked_publication_query(selected_query, socket.assigns.layer)
-
-    checked_publication_count = count_from_query(checked_publication_query, collection)
-
+    checked_publication_query = checked_publication_query(selected_query, layer)
     publication_rules_query = publication_rules_query(selected_query)
-    publication_rules_count = count_from_query(publication_rules_query, collection)
 
-    socket
-    |> assign(:total_count, total_count)
-    |> assign(:no_kingdom_count, no_kingdom_count)
-    |> assign(:checked_publication_count, checked_publication_count)
-    |> assign(:publication_rules_count, publication_rules_count)
+    [total, no_kingdom, checked_publication, publication_rules] =
+      [
+        fn -> count_from_query(selected_query, collection) end,
+        fn -> selected_query |> no_kingdom_query(layer) |> count_from_query(collection) end,
+        fn -> count_from_query(checked_publication_query, collection) end,
+        fn -> count_from_query(publication_rules_query, collection) end
+      ]
+      |> Task.async_stream(& &1.(), ordered: true, timeout: to_timeout(second: 30))
+      |> Enum.map(fn {:ok, result} -> result end)
+
+    {:ok,
+     %{
+       counts: %{
+         total: total,
+         no_kingdom: no_kingdom,
+         checked_publication: checked_publication,
+         publication_rules: publication_rules
+       }
+     }}
   end
 
-  defp assign_grscicoll_data(socket) do
-    {:ok, grscicoll_data} =
-      RestAPI.get_one_collection(socket.assigns.collection.grscicoll_reference)
+  defp start_async_grscicoll_data(socket) do
+    grscicoll_reference = socket.assigns.collection.grscicoll_reference
 
-    assign(socket, :grscicoll_data, grscicoll_data)
+    assign_async(socket, :grscicoll_data, fn ->
+      {:ok, grscicoll_data} = RestAPI.get_one_collection(grscicoll_reference)
+      {:ok, %{grscicoll_data: grscicoll_data}}
+    end)
   end
+
+  defp start_async_dataset_still_exists(socket) do
+    existing_dataset_key = socket.assigns.collection.gbif_dataset_key
+
+    assign_async(socket, :dataset_still_exist?, fn ->
+      {:ok, %{dataset_still_exist?: does_datset_still_exist?(existing_dataset_key)}}
+    end)
+  end
+
+  defp does_datset_still_exist?(nil), do: false
 
   defp does_datset_still_exist?(gbif_dataset_key) do
     case RestAPI.get_grscicoll_entity(gbif_dataset_key, :dataset) do

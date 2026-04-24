@@ -6,24 +6,30 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
+  alias Phoenix.LiveView.AsyncResult
 
   @impl true
   def update(assigns, socket) do
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign_form()}
+    first_update? = not Map.has_key?(socket.assigns, :form)
+
+    socket = socket |> assign(assigns) |> assign_form()
+
+    socket =
+      if first_update? and assigns.action == :new do
+        socket
+        |> assign(:grscicoll_collections, AsyncResult.loading())
+        |> start_async_grscicoll_collections()
+      else
+        socket
+      end
+
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     assigns =
-      assigns
-      |> assign(
-        :collection_types,
-        CollectionType.get_collection_type_options()
-      )
-      |> maybe_assign_available_collection_options()
+      assign(assigns, :collection_types, CollectionType.get_collection_type_options())
 
     ~H"""
     <div class="contents">
@@ -55,16 +61,31 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
               />
             </div>
             <div :if={@action == :new} class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
-              <.field
-                type="combobox"
-                field={@form[:grscicoll_reference]}
-                label={~t"GrSciColl Collection"m}
-                options={@grscicoll_collections}
-                placeholder={~t"Filter Datasets"m}
-                prompt={~t"None"m}
-                required
-                data-portal="collection_modal"
-              />
+              <.async_data :let={grscicoll_collections} async_result={@grscicoll_collections}>
+                <:loading>
+                  <.skeleton class="h-10 w-full" />
+                </:loading>
+                <:failed>
+                  <div class="flex">
+                    <div class="mr-4 shrink-0">
+                      <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+                    </div>
+                    <p class="text-sm">
+                      {~t"Failed to load GrSciColl collections. Please close the modal and try again."m}
+                    </p>
+                  </div>
+                </:failed>
+                <.field
+                  type="combobox"
+                  field={@form[:grscicoll_reference]}
+                  label={~t"GrSciColl Collection"m}
+                  options={grscicoll_collections}
+                  placeholder={~t"Filter Datasets"m}
+                  prompt={~t"None"m}
+                  required
+                  data-portal="collection_modal"
+                />
+              </.async_data>
             </div>
             <.field
               type="textarea"
@@ -140,12 +161,11 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     {:noreply, socket}
   end
 
-  defp maybe_assign_available_collection_options(%{action: :edit} = assigns) do
-    assigns
-  end
+  defp start_async_grscicoll_collections(socket) do
+    actor = get_actor(socket)
 
-  defp maybe_assign_available_collection_options(assigns) do
-    actor = get_actor(assigns)
-    assign(assigns, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options(actor))
+    assign_async(socket, :grscicoll_collections, fn ->
+      {:ok, %{grscicoll_collections: Gbif.RestAPI.get_available_collection_options(actor)}}
+    end)
   end
 end

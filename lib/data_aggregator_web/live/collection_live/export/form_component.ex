@@ -9,12 +9,26 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
+  alias Phoenix.LiveView.AsyncResult
 
   require Logger
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_rows_count() |> assign_form()}
+    first_update? = not Map.has_key?(socket.assigns, :rows_count)
+
+    socket = socket |> assign(assigns) |> assign_form()
+
+    socket =
+      if first_update? do
+        socket
+        |> assign(:rows_count, AsyncResult.loading())
+        |> start_async_rows_count()
+      else
+        socket
+      end
+
+    {:ok, socket}
   end
 
   @impl true
@@ -31,12 +45,28 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
         phx-submit="export:save"
       >
         <div class="h-full space-y-8 overflow-y-auto p-6">
-          <p class="text-sm">
-            {mgettext(
-              "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
-              rows_count: format_number(@rows_count)
-            )}
-          </p>
+          <.async_data :let={rows_count} async_result={@rows_count}>
+            <:loading>
+              <.skeleton class="h-4 w-full" />
+              <.skeleton class="mt-2 h-4 w-4/5" />
+            </:loading>
+            <:failed>
+              <div class="flex">
+                <div class="mr-4 shrink-0">
+                  <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+                </div>
+                <p class="text-sm">
+                  {~t"Failed to load the export summary. Please close the modal and try again."m}
+                </p>
+              </div>
+            </:failed>
+            <p class="text-sm">
+              {mgettext(
+                "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
+                rows_count: format_number(rows_count)
+              )}
+            </p>
+          </.async_data>
           <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
             <.fieldset legend={~t"Select your data headers"m}>
               <.fieldgroup class="space-y-3">
@@ -109,7 +139,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
         </div>
 
         <:actions modal>
-          <button type="submit" class="btn btn-primary text-primary-content" disabled={@busy}>
+          <button
+            type="submit"
+            class="btn btn-primary text-primary-content"
+            disabled={@busy or not @rows_count.ok?}
+          >
             {~t"Start export"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
@@ -146,7 +180,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
     %{
       collection: collection,
       meta: %{ash_pagify: ash_pagify},
-      rows_count: rows_count,
+      rows_count: %AsyncResult{result: rows_count},
       layer: layer
     } =
       socket.assigns
@@ -172,19 +206,25 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
     assign(socket, :form, %{})
   end
 
-  defp assign_rows_count(socket) do
+  defp start_async_rows_count(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
-    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
+    actor = get_actor(socket)
 
+    assign_async(socket, :rows_count, fn ->
+      load_rows_count(collection, ash_pagify, layer, actor)
+    end)
+  end
+
+  defp load_rows_count(collection, ash_pagify, layer, actor) do
+    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true, actor: actor)
     records_to_export_query = filter_map(ash_pagify, collection.records_to_export_query, layer)
 
-    count_query =
+    rows_count =
       Record
       |> AshPagify.query_for_filters_map(records_to_export_query)
       |> Ash.Query.set_tenant(collection)
+      |> Ash.count!(actor: actor)
 
-    rows_count = Ash.count!(count_query)
-
-    assign(socket, :rows_count, rows_count)
+    {:ok, %{rows_count: rows_count}}
   end
 end

@@ -10,6 +10,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
   alias DataAggregator.Records.Record
+  alias Phoenix.LiveView.AsyncResult
 
   require Ash.Query
 
@@ -22,14 +23,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   @impl true
   def update(assigns, socket) do
+    first_update_for_collection? =
+      Map.get(socket.assigns, :loaded_collection_id) != assigns.collection.id
+
     socket =
       socket
       |> assign(assigns)
       |> assign_form()
       |> assign_collapsible_state()
-      |> assign_options()
       |> assign(:count, format_count(assigns.meta.total_count))
       |> assign(:label, Map.get(assigns, :label, ~t"entries"m))
+
+    socket =
+      if first_update_for_collection? do
+        socket
+        |> assign(:distinct_options, AsyncResult.loading())
+        |> assign(:loaded_collection_id, assigns.collection.id)
+        |> start_async_options()
+      else
+        socket
+      end
 
     {:ok, socket}
   end
@@ -38,23 +51,48 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   def render(assigns) do
     ~H"""
     <div class="contents">
-      <.simple_filter_form
-        filter_form={@filter_form}
-        count={@count}
-        label={@label}
-        target={@myself}
-        error={@error}
-      >
-        <:components :let={filter_form}>
-          <.filter_form_component
-            component={filter_form}
-            resource={@meta.resource}
-            collapsible_state={@collapsible_state}
-            distinct_options={@distinct_options}
-            target={@myself}
-          />
-        </:components>
-      </.simple_filter_form>
+      <.async_data :let={distinct_options} async_result={@distinct_options}>
+        <:loading>
+          <div class="space-y-6 p-6">
+            <.skeleton class="h-5 w-1/4" />
+            <.skeleton class="h-4 w-full" />
+            <.skeleton class="h-4 w-5/6" />
+            <.skeleton class="mt-8 h-5 w-1/4" />
+            <.skeleton class="h-4 w-full" />
+            <.skeleton class="h-4 w-4/5" />
+            <.skeleton class="mt-8 h-5 w-1/4" />
+            <.skeleton class="h-4 w-full" />
+            <.skeleton class="h-4 w-5/6" />
+          </div>
+        </:loading>
+        <:failed>
+          <div class="flex p-6">
+            <div class="mr-4 shrink-0">
+              <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+            </div>
+            <p class="text-sm">
+              {~t"Failed to load filter options. Please close the modal and try again."m}
+            </p>
+          </div>
+        </:failed>
+        <.simple_filter_form
+          filter_form={@filter_form}
+          count={@count}
+          label={@label}
+          target={@myself}
+          error={@error}
+        >
+          <:components :let={filter_form}>
+            <.filter_form_component
+              component={filter_form}
+              resource={@meta.resource}
+              collapsible_state={@collapsible_state}
+              distinct_options={distinct_options}
+              target={@myself}
+            />
+          </:components>
+        </.simple_filter_form>
+      </.async_data>
     </div>
     """
   end
@@ -852,55 +890,31 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     Map.get(collapsible_state, key, false)
   end
 
-  defp assign_options(socket) do
-    assign_new(socket, :distinct_options, fn ->
-      %{
-        loc_continent: loc_continent_options(socket.assigns.collection),
-        loc_country: loc_country_options(socket.assigns.collection),
-        loc_state_province: loc_state_province_options(socket.assigns.collection),
-        idf_type_status: idf_type_status_options(socket.assigns.collection),
-        mts_material_sample_type: mts_material_sample_type_options(socket.assigns.collection),
-        mte_preparations: mte_preparations_options(socket.assigns.collection),
-        tax_kingdom: tax_kingdom_options(socket.assigns.collection),
-        tax_phylum: tax_phylum_options(socket.assigns.collection),
-        tax_family: tax_family_options(socket.assigns.collection)
-      }
-    end)
+  defp start_async_options(socket) do
+    collection = socket.assigns.collection
+
+    assign_async(socket, :distinct_options, fn -> load_options(collection) end)
   end
 
-  defp loc_continent_options(collection) do
-    distinct_ecto(:loc_continent, :encoded_records, collection)
-  end
+  defp load_options(collection) do
+    fields = [
+      :loc_continent,
+      :loc_country,
+      :loc_state_province,
+      :idf_type_status,
+      :mts_material_sample_type,
+      :mte_preparations,
+      :tax_kingdom,
+      :tax_phylum,
+      :tax_family
+    ]
 
-  defp loc_country_options(collection) do
-    distinct_ecto(:loc_country, :encoded_records, collection)
-  end
+    results =
+      fields
+      |> Enum.map(&fn -> distinct_ecto(&1, :encoded_records, collection) end)
+      |> Task.async_stream(& &1.(), ordered: true, timeout: to_timeout(second: 30))
+      |> Enum.map(fn {:ok, result} -> result end)
 
-  defp loc_state_province_options(collection) do
-    distinct_ecto(:loc_state_province, :encoded_records, collection)
-  end
-
-  defp idf_type_status_options(collection) do
-    distinct_ecto(:idf_type_status, :encoded_records, collection)
-  end
-
-  defp mts_material_sample_type_options(collection) do
-    distinct_ecto(:mts_material_sample_type, :encoded_records, collection)
-  end
-
-  defp mte_preparations_options(collection) do
-    distinct_ecto(:mte_preparations, :encoded_records, collection)
-  end
-
-  defp tax_kingdom_options(collection) do
-    distinct_ecto(:tax_kingdom, :encoded_records, collection)
-  end
-
-  defp tax_phylum_options(collection) do
-    distinct_ecto(:tax_phylum, :encoded_records, collection)
-  end
-
-  defp tax_family_options(collection) do
-    distinct_ecto(:tax_family, :encoded_records, collection)
+    {:ok, %{distinct_options: Map.new(Enum.zip(fields, results))}}
   end
 end
