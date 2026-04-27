@@ -82,19 +82,6 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
       )
     end
 
-    test "with invalid field format prints nicely formatted error", %{collection: collection} do
-      {:error, error} =
-        Import.create_from_path(
-          collection,
-          "test/support/fixtures/files/invalid_field_format.txt"
-        )
-
-      assert_invalid_path(
-        error,
-        "Could not parse '02. M�r' as data type 'str' for field '_duplicated_0'. Please verify your data."
-      )
-    end
-
     test "with non-existing file", %{collection: collection} do
       path = "test/this-file-does-not-exist.csv"
       {:error, error} = Import.create_from_path(collection, path, tenant: collection)
