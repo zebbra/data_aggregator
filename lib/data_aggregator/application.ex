@@ -16,6 +16,9 @@ defmodule DataAggregator.Application do
     # Attach default Oban logger
     :ok = Oban.Telemetry.attach_default_logger(encode: false)
 
+    # Report slow queries to Sentry (no-op unless :slow_query_threshold_ms is set)
+    _ = DataAggregator.Repo.SlowQueryLogger.attach()
+
     children = [
       # Start the Telemetry supervisor
       DataAggregatorWeb.Telemetry,
