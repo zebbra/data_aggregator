@@ -153,16 +153,11 @@ if config_env() == :prod do
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
     connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
     timeout: String.to_integer(System.get_env("DB_TIMEOUT") || "30000"),
-    # Capture call-site stacktraces so SlowQueryLogger can forward them to Sentry.
-    stacktrace: true,
     socket_options: maybe_ipv6,
     queue_target: 5000
 
   ## Configure Erlang clustering using DNS cluster
   config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
-
-  config :data_aggregator,
-    slow_query_threshold_ms: String.to_integer(System.get_env("SLOW_QUERY_THRESHOLD_MS") || "10000")
 
   if base_url.scheme not in ["http", "https"] do
     raise "BASE_URL must start with `http` or `https`. Currently configured as `#{System.get_env("BASE_URL")}`"
