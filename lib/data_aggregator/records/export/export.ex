@@ -95,10 +95,6 @@ defmodule DataAggregator.Records.Export do
     default_accept :*
     defaults [:read]
 
-    read :list do
-      prepare build(sort: [id: :desc])
-    end
-
     read :active do
       filter expr(state in [:running, :queued])
     end
@@ -220,7 +216,6 @@ defmodule DataAggregator.Records.Export do
 
   code_interface do
     define :read
-    define :list
     define :active
     define :create
     define :update
@@ -257,7 +252,7 @@ defmodule DataAggregator.Records.Export do
       base "/datasets/:collection_id/exports"
 
       get :read
-      index :list
+      index :read
       post :create
       patch :update
       delete :destroy

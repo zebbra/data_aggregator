@@ -339,7 +339,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   defp list_publications(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
-    AshPagify.validate_and_run(Ash.Query.for_read(Publication, :list), params, opts)
+
+    AshPagify.validate_and_run(Publication, params, opts)
   end
 
   attr :collection, :any

@@ -173,10 +173,6 @@ defmodule DataAggregator.Records.Collection do
     default_accept :*
     defaults [:read, :update]
 
-    read :list do
-      prepare build(sort: [id: :asc])
-    end
-
     create :create do
       primary? true
 
@@ -352,7 +348,6 @@ defmodule DataAggregator.Records.Collection do
 
   code_interface do
     define :read
-    define :list
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update
@@ -440,7 +435,7 @@ defmodule DataAggregator.Records.Collection do
       base "/datasets"
 
       get :read
-      index :list
+      index :read
       post :create
       patch :update
       delete :destroy
