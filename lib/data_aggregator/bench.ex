@@ -7,8 +7,6 @@ defmodule DataAggregator.Bench do
   import Ecto.Query, only: [from: 2]
 
   alias DataAggregator.Accounts.User
-  alias DataAggregator.Bench.LatencyShim
-  alias DataAggregator.Bench.LatencyShims
   alias DataAggregator.CatalogOfLife
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
@@ -25,9 +23,9 @@ defmodule DataAggregator.Bench do
   @user_email "bench+admin@example.com"
 
   @stubs [
-    {Gbif.RestAPI, Gbif.RestAPIStub, LatencyShims.Gbif},
-    {Opencage.RestAPI, Opencage.RestAPIStub, LatencyShims.Opencage},
-    {CatalogOfLife.RestAPI, CatalogOfLife.RestAPIStub, LatencyShims.CatalogOfLife}
+    {Gbif.RestAPI, Gbif.RestAPIStub},
+    {Opencage.RestAPI, Opencage.RestAPIStub},
+    {CatalogOfLife.RestAPI, CatalogOfLife.RestAPIStub}
   ]
 
   @poll_ms 50
@@ -35,13 +33,9 @@ defmodule DataAggregator.Bench do
   def grscicoll_reference, do: @grscicoll_reference
 
   def install_stubs do
-    Enum.each(@stubs, fn {target, _, _} -> Mimic.copy(target) end)
+    Enum.each(@stubs, fn {target, _} -> Mimic.copy(target) end)
     Mimic.set_mimic_global()
-    wrap? = LatencyShim.enabled?()
-
-    Enum.each(@stubs, fn {target, plain, latency} ->
-      Mimic.stub_with(target, if(wrap?, do: latency, else: plain))
-    end)
+    Enum.each(@stubs, fn {target, stub} -> Mimic.stub_with(target, stub) end)
   end
 
   def user! do

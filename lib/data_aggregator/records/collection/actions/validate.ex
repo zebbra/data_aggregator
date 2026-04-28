@@ -102,7 +102,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         {:ok, validation_request} ->
           # Use VRR table to find records changed in this run, instead of
           # accumulating all IDs in memory during the stream.
-          bulk_update_changed_records(validation_request, tenant, ctx)
+          bulk_update_changed_records!(validation_request, tenant, ctx)
           {:ok, validation_request}
 
         {:error, error} ->
@@ -143,8 +143,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp stream_query(query),
     do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: [record: [:validation_request_record]])
 
-  @spec bulk_update_changed_records(ValidationRequest.t(), term(), Context.t()) :: :ok
-  defp bulk_update_changed_records(validation_request, tenant, %{actor: actor}) do
+  @spec bulk_update_changed_records!(ValidationRequest.t(), term(), Context.t()) :: :ok
+  defp bulk_update_changed_records!(validation_request, tenant, %{actor: actor}) do
     changed_record_ids_query()
     |> Ash.Query.filter(validation_request_id == ^validation_request.id)
     |> Ash.Query.set_tenant(tenant)

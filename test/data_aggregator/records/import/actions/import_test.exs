@@ -177,7 +177,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert {:ok, import} = Import.import(import, tenant: import.collection)
 
       column_names = Enum.map(import.columns, & &1.name)
-      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
+      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order!(path)
 
       collection = Collection.get_by_id!(import.collection_id)
 

@@ -37,14 +37,14 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
     end
   end
 
-  def column_order(filename) when is_binary(filename) do
+  def column_order!(filename) when is_binary(filename) do
     case Records.DataFrame.column_names(filename) do
       {:ok, names} -> names
       {:error, error} -> raise error
     end
   end
 
-  def column_order(%Explorer.DataFrame{} = df) do
+  def column_order!(%Explorer.DataFrame{} = df) do
     Explorer.DataFrame.names(df)
   end
 

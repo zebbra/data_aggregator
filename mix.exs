@@ -6,7 +6,15 @@ defmodule DataAggregator.MixProject do
   end
 
   def cli do
-    [preferred_envs: ["test.watch": :test]]
+    [
+      preferred_envs: [
+        "test.watch": :test,
+        "bench.seed": :bench,
+        "bench.run": :bench,
+        "bench.run.single": :bench,
+        "bench.report": :bench
+      ]
+    ]
   end
 
   def project do
