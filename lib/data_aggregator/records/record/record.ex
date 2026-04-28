@@ -292,13 +292,16 @@ defmodule DataAggregator.Records.Record do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
     defaults [:read, :update]
+
+    read :list do
+      prepare build(sort: [id: :asc])
+    end
 
     read :encoding do
       filter expr(state in [:encoding, :queued])
@@ -443,9 +446,8 @@ defmodule DataAggregator.Records.Record do
 
     update :update_last_validation_started_at do
       accept []
-      require_atomic? false
 
-      change set_attribute(:last_validation_started_at, &DateTime.utc_now/0)
+      change atomic_update(:last_validation_started_at, expr(now()))
     end
 
     update :add_images do
@@ -478,6 +480,7 @@ defmodule DataAggregator.Records.Record do
 
   code_interface do
     define :read
+    define :list
     define :encoding
     define :create
     define :import, args: [:import, :params]
@@ -543,7 +546,7 @@ defmodule DataAggregator.Records.Record do
       base "/datasets/:collection_id/records"
 
       get :read
-      index :read
+      index :list
       patch :update
       post :create
       delete :destroy

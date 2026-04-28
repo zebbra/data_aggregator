@@ -10,6 +10,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Validation.ValidationFile
   alias DataAggregator.Records.ValidationRequest
@@ -42,30 +44,38 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       false
     )
 
-    # work through the stream of records and prepare chunks of 1000 records for validation
-    query = build_query(validation_request, tenant)
+    # Stream encoded_records (where the filter lives) instead of records so every
+    # batch is bounded by LIMIT 1000 on the driving table. Record + VRR are
+    # loaded via nested belongs_to / has_one so they come back in bounded PK
+    # lookups per batch.
+    collection = validation_request.collection
 
-    query
+    validation_request
+    |> build_encoded_stream_query(tenant)
     |> stream_query()
     |> Stream.chunk_every(1000)
-    |> Stream.map(fn records ->
-      records
-      |> Enum.map(
-        &process_validation_data(
-          &1,
-          validation_file,
-          validation_request.inserted_at
+    |> Enum.each(fn encoded_records ->
+      results =
+        encoded_records
+        |> Enum.map(
+          &process_validation_data(
+            &1,
+            validation_file,
+            validation_request.inserted_at,
+            collection
+          )
         )
-      )
-      |> Counter.count_each(total_counter)
-      |> Enum.filter(fn {maybe_changes, _record} ->
-        maybe_changes == :changed
-      end)
-      |> Enum.map(fn {_, record} -> record end)
+        |> Counter.count_each(total_counter)
+
+      changed_with_data =
+        Enum.filter(results, fn {status, _encoded_record, _data} -> status == :changed end)
+
+      if changed_with_data != [] do
+        bulk_upsert_validation_request_records!(changed_with_data, validation_request, tenant)
+      end
+
+      Counter.increment(sent_counter, length(changed_with_data))
     end)
-    |> Stream.flat_map(& &1)
-    |> Counter.count_each(sent_counter)
-    |> update_validation_status(:requested, ctx)
 
     FlatFileUtils.close_file(file)
     Counter.stop(total_counter)
@@ -88,20 +98,16 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     # only notify center if there are more than 0 entries to validate
     if row_count > 0 do
-      case InfoSpecies.notify(validation_request, query, row_count) do
+      case InfoSpecies.notify(validation_request, row_count) do
         {:ok, validation_request} ->
+          # Use VRR table to find records changed in this run, instead of
+          # accumulating all IDs in memory during the stream.
+          bulk_update_changed_records!(validation_request, tenant, ctx)
           {:ok, validation_request}
 
         {:error, error} ->
+          # Nothing to revert — no record statuses were touched yet.
           Logger.error("Error while notifying about validation: #{inspect(error)}")
-
-          query
-          |> stream_query()
-          |> update_validation_status(
-            :unknown,
-            ctx
-          )
-
           {:error, error}
       end
     else
@@ -110,44 +116,97 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   rescue
     e ->
       Logger.error("Error sending validation request: #{inspect(e)}")
-
       validation_request = input.arguments.validation_request
-
-      validation_request
-      |> build_query(tenant)
-      |> stream_query()
-      |> update_validation_status(:unknown, ctx)
-
+      rollback_changed_records(validation_request, tenant)
       {:error, e}
   end
 
-  defp build_query(validation_request, tenant) do
-    Record
+  # Valid only while every records_query predicate lives under :encoded_record
+  # (or :collection). Revisit if a record-only filter is ever added.
+  defp build_encoded_stream_query(validation_request, tenant) do
+    EncodedRecord
     |> Ash.Query.new()
-    |> Ash.Query.filter_input(validation_request.records_query)
+    |> Ash.Query.filter_input(encoded_filter(validation_request))
     |> Ash.Query.set_tenant(tenant)
-    |> Ash.Query.load([:encoded_record, :collection, :validation_request_record])
+    |> Ash.Query.load(record: [:validation_request_record])
+  end
+
+  defp encoded_filter(validation_request) do
+    validation_request.records_query[:encoded_record] ||
+      validation_request.records_query["encoded_record"] ||
+      raise ArgumentError,
+            "ValidationRequest #{validation_request.id} has no :encoded_record filter in records_query; " <>
+              "refusing to stream the full collection. records_query=#{inspect(validation_request.records_query)}"
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
-  defp stream_query(query), do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+  defp stream_query(query),
+    do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: [record: [:validation_request_record]])
 
-  @spec update_validation_status(Enum.t(), atom(), Context.t()) :: Enum.t()
-  defp update_validation_status(stream, status, %{actor: actor, tenant: tenant}) do
-    max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
+  @spec bulk_update_changed_records!(ValidationRequest.t(), term(), Context.t()) :: :ok
+  defp bulk_update_changed_records!(validation_request, tenant, %{actor: actor}) do
+    changed_record_ids_query()
+    |> Ash.Query.filter(validation_request_id == ^validation_request.id)
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+    |> Stream.map(& &1.record_id)
+    |> Stream.chunk_every(1000)
+    |> Enum.each(fn ids ->
+      Record
+      |> Ash.Query.filter(id in ^ids)
+      |> Ash.Query.set_tenant(tenant)
+      |> Ash.bulk_update!(:update_validation_status, %{status: :requested},
+        actor: actor,
+        authorize?: false,
+        domain: Records,
+        resource: Record,
+        tenant: tenant,
+        batch_size: 1000,
+        return_errors?: true
+      )
 
-    Ash.bulk_update(stream, :update_validation_status, %{status: status},
-      actor: actor,
+      Record
+      |> Ash.Query.filter(id in ^ids)
+      |> Ash.Query.set_tenant(tenant)
+      |> Ash.bulk_update!(:update_last_validation_started_at, %{},
+        actor: actor,
+        authorize?: false,
+        domain: Records,
+        resource: Record,
+        tenant: tenant,
+        batch_size: 1000,
+        return_errors?: true
+      )
+    end)
+  end
+
+  # On failure, delete VRRs that were upserted during this run so the next
+  # validation request correctly detects those records as changed again.
+  # No need to reset validation statuses — they are only updated after notify succeeds.
+  @spec rollback_changed_records(ValidationRequest.t(), term()) :: :ok
+  defp rollback_changed_records(validation_request, tenant) do
+    ValidationRequestRecord
+    |> Ash.Query.filter(validation_request_id == ^validation_request.id)
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.bulk_destroy!(:destroy, %{},
       authorize?: false,
       domain: Records,
-      resource: Record,
       tenant: tenant,
-      max_concurrency: max_concurrency,
-      batch_size: batch_size
+      batch_size: 500,
+      return_errors?: true
     )
 
-    stream
+    :ok
+  rescue
+    e ->
+      Logger.error("Error during rollback of validation request records: #{inspect(e)}")
+      :ok
+  end
+
+  defp changed_record_ids_query do
+    ValidationRequestRecord
+    |> Ash.Query.new()
+    |> Ash.Query.select([:record_id, :validation_request_id])
   end
 
   @spec compose_headers(ValidationFile.t()) :: list()
@@ -166,62 +225,68 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Enum.sort(&(&1 <= &2))
   end
 
-  @spec process_validation_data(Record.t(), ValidationFile.t(), DateTime.t()) ::
-          {:not_changed, Record.t()} | {:changed, Record.t()}
-  defp process_validation_data(record, validation_file, date_time) do
-    case maybe_changed_data(record, validation_file) do
+  @spec process_validation_data(
+          EncodedRecord.t(),
+          ValidationFile.t(),
+          DateTime.t(),
+          Collection.t()
+        ) ::
+          {:not_changed, EncodedRecord.t(), nil}
+          | {:changed, EncodedRecord.t(), map()}
+          | {:missing_record, EncodedRecord.t(), nil}
+  defp process_validation_data(%{record: nil} = encoded_record, _validation_file, _date_time, _collection) do
+    # we skip validation for encoded records without a record
+    # they are likeley the result of an error, should not happen
+    {:missing_record, encoded_record, nil}
+  end
+
+  defp process_validation_data(encoded_record, validation_file, date_time, collection) do
+    case maybe_changed_data(encoded_record, validation_file, collection) do
       {:not_changed, _data} ->
-        {:not_changed, record}
+        {:not_changed, encoded_record, nil}
 
       {:changed, data} ->
-        upsert_validation_request_record!(record, data)
+        formatted = format_data_for_validation(data, date_time)
+        FlatFileUtils.store_on_disk!([formatted], validation_file.file, false)
 
-        data = format_data_for_validation(data, date_time)
-
-        FlatFileUtils.store_on_disk!([data], validation_file.file, false)
-
-        {:changed, record}
+        {:changed, encoded_record, data}
     end
   end
 
   # returns {:not_changed, previous_data} if there was no changes and returns {:changed, current_data} if there were
   # changes in the record data since the last validation
-  @spec maybe_changed_data(Record.t(), ValidationFile.t()) ::
+  @spec maybe_changed_data(EncodedRecord.t(), ValidationFile.t(), Collection.t()) ::
           {:not_changed, map()} | {:changed, map()}
-  defp maybe_changed_data(record, validation_file) do
-    previous_data = previous_data(record)
-    current_data = current_data(record, validation_file)
+  defp maybe_changed_data(encoded_record, validation_file, collection) do
+    previous_data = previous_data(encoded_record)
+    current_data = current_data(encoded_record, validation_file, collection)
 
     if previous_data == current_data do
-      Logger.info("Validation Request: No changes detected. No data will be sent for validation.")
+      Logger.debug("Validation Request: No changes detected. No data will be sent for validation.")
 
       {:not_changed, previous_data}
     else
-      Logger.info("Validation Request: Changes detected, new data will be sent for validation.")
+      Logger.debug("Validation Request: Changes detected, new data will be sent for validation.")
 
       {:changed, current_data}
     end
   end
 
   # returns the data which was previously sent for validation
-  @spec previous_data(Record.t()) :: map() | nil
-  defp previous_data(record) do
-    case record.validation_request_record do
-      nil -> nil
-      previous_data -> previous_data.data
-    end
-  end
+  @spec previous_data(EncodedRecord.t()) :: map() | nil
+  defp previous_data(%{record: %{validation_request_record: %{data: data}}}), do: data
+  defp previous_data(_), do: nil
 
   # returns the attributes, values and headers for further processing towards a validation request
-  @spec current_data(Record.t(), ValidationFile.t()) :: map()
-  defp current_data(record, validation_file) do
+  @spec current_data(EncodedRecord.t(), ValidationFile.t(), Collection.t()) :: map()
+  defp current_data(encoded_record, validation_file, collection) do
     collection_attributes = Keyword.keys(validation_file.collection_attributes_and_headers)
     record_attributes = Keyword.keys(validation_file.record_attributes_and_headers)
     encoded_attributes = Keyword.keys(validation_file.encoded_attributes_and_headers)
 
-    reduced_collection_data = Map.take(record.collection, collection_attributes)
-    reduced_record_data = Map.take(record, record_attributes)
-    reduced_encoded_data = Map.take(record.encoded_record, encoded_attributes)
+    reduced_collection_data = Map.take(collection, collection_attributes)
+    reduced_record_data = Map.take(encoded_record.record, record_attributes)
+    reduced_encoded_data = Map.take(encoded_record, encoded_attributes)
 
     collection_data =
       reduced_collection_data
@@ -301,21 +366,26 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     data ++ [date_time]
   end
 
-  @spec upsert_validation_request_record!(Record.t(), map()) :: ValidationRequestRecord.t()
-  defp upsert_validation_request_record!(record, data) do
-    case record.validation_request_record do
-      nil ->
-        ValidationRequestRecord.create!(
-          %{
-            data: data,
-            collection: record.collection,
-            record: record
-          },
-          tenant: record.collection
-        )
+  @spec bulk_upsert_validation_request_records!(list(), ValidationRequest.t(), term()) :: :ok
+  defp bulk_upsert_validation_request_records!(changed_with_data, validation_request, tenant) do
+    inputs =
+      Enum.map(changed_with_data, fn {_status, encoded_record, data} ->
+        %{
+          data: data,
+          record_id: encoded_record.record_id,
+          validation_request_id: validation_request.id
+        }
+      end)
 
-      vrr ->
-        ValidationRequestRecord.update!(vrr, %{data: data}, tenant: record.collection)
-    end
+    # VRR has few columns (~6), so batches of 500 stay well within PG's 65535 param limit
+    Ash.bulk_create!(inputs, ValidationRequestRecord, :bulk_upsert,
+      batch_size: 500,
+      tenant: tenant,
+      authorize?: false,
+      domain: Records,
+      return_errors?: true
+    )
+
+    :ok
   end
 end

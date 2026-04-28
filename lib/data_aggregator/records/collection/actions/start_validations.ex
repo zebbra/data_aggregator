@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   """
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
@@ -28,21 +28,19 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
             ValidationRequest.Helpers.center_specific_filter(center)
           )
 
-        query =
-          Record
+        count =
+          EncodedRecord
           |> Ash.Query.new()
-          |> Ash.Query.filter_input(filter)
+          |> Ash.Query.filter_input(filter[:encoded_record] || %{})
+          |> Ash.count!(tenant: tenant)
 
-        rows_count = Ash.count!(query, tenant: tenant)
-
-        # do only create a validation request if there are records
-        if rows_count > 0 do
+        if count > 0 do
           %{
             name: "vrq-#{collection.name}-#{:os.system_time()}",
             collection: collection,
             records_query: filter,
-            total_rows_count: rows_count,
-            center: center
+            center: center,
+            total_rows_count: count
           }
           |> ValidationRequest.create!(tenant: tenant)
           |> ValidationRequest.enqueue(%{started_by_id: actor.id},
@@ -51,7 +49,7 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
           )
         end
 
-        {center, rows_count}
+        {center, count}
       end)
 
     {:ok, center_and_record_counts}

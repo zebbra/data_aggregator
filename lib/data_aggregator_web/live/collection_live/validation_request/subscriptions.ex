@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
 
   @load load()
   @load_all load_all()
-  @update_events ~w(set_running set_done set_failed add_validation_request_progress)
+  @update_events ~w(set_running set_done set_failed add_validation_request_progress set_total_rows_count)
   @collection_action_events ~w(
     set_mapping
     set_importing
@@ -137,7 +137,12 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
   defp refresh(socket) do
     %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
 
-    case AshPagify.validate_and_run(ValidationRequest, ash_pagify, opts, id) do
+    case AshPagify.validate_and_run(
+           Ash.Query.for_read(ValidationRequest, :list),
+           ash_pagify,
+           opts,
+           id
+         ) do
       {:ok, {records, meta}} ->
         socket =
           socket

@@ -4,7 +4,7 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
   use Ash.Resource,
     otp_app: :data_aggregator,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshPaperTrail.Resource],
+    extensions: [AshUUID],
     authorizers: [Ash.Policy.Authorizer],
     domain: DataAggregator.Records
 
@@ -21,25 +21,6 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
     timestamps()
   end
 
-  paper_trail do
-    mixin DataAggregator.Records.ValidationRequestRecordMixin
-    attributes_as_attributes [:collection_id]
-
-    reference_source? true
-
-    ignore_attributes [
-      :inserted_at,
-      :updated_at
-    ]
-
-    ignore_actions [:destroy]
-
-    belongs_to_actor :user, DataAggregator.Accounts.User,
-      domain: DataAggregator.Accounts,
-      define_attribute?: false,
-      public?: true
-  end
-
   relationships do
     belongs_to :record, DataAggregator.Records.Record do
       public? true
@@ -49,6 +30,11 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
     belongs_to :collection, DataAggregator.Records.Collection do
       public? true
       allow_nil? false
+    end
+
+    belongs_to :validation_request, DataAggregator.Records.ValidationRequest do
+      public? true
+      allow_nil? true
     end
   end
 
@@ -63,6 +49,14 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
 
       change manage_relationship(:collection, type: :append)
       change manage_relationship(:record, type: :append)
+    end
+
+    create :bulk_upsert do
+      accept [:data, :record_id, :validation_request_id]
+
+      upsert? true
+      upsert_identity :by_record
+      upsert_fields [:data, :updated_at, :validation_request_id]
     end
   end
 
@@ -106,6 +100,12 @@ defmodule DataAggregator.Records.ValidationRequestRecord do
         match_with: [collection_id: :collection_id]
 
       reference :collection, on_delete: :delete, on_update: :update, index?: true
+
+      reference :validation_request,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 

@@ -47,13 +47,16 @@ defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
     defaults [:read, :update, :destroy]
+
+    read :list do
+      prepare build(sort: [id: :asc])
+    end
 
     create :create do
       primary? true
@@ -111,6 +114,7 @@ defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
 
   code_interface do
     define :read
+    define :list
     define :create
     define :update
     define :destroy
@@ -146,7 +150,7 @@ defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
       end
 
       get :read
-      index :read
+      index :list
       patch :update
       delete :destroy
     end

@@ -80,6 +80,17 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert collection.records_count == 18
     end
 
+    @tag path: "test/support/fixtures/files/invalid_field_format.txt"
+    test "logs a formatted parse error and aborts the import when Polars cannot read the file",
+         %{import: import} do
+      {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
+
+      assert {:ok, import} = result
+      assert import.state == :failed
+      assert logs =~ "Please verify your data"
+      assert logs =~ "_duplicated_0"
+    end
+
     @tag path: "test/support/fixtures/files/invalid-records-small.csv"
     test "fails with a file with some invalid records", %{import: import} do
       {result, _logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
@@ -166,7 +177,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert {:ok, import} = Import.import(import, tenant: import.collection)
 
       column_names = Enum.map(import.columns, & &1.name)
-      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
+      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order!(path)
 
       collection = Collection.get_by_id!(import.collection_id)
 

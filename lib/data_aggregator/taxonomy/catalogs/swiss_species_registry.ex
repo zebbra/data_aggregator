@@ -55,5 +55,9 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry do
   postgres do
     table "swiss_species_registry"
     repo DataAggregator.Repo
+
+    custom_indexes do
+      index [:center]
+    end
   end
 end

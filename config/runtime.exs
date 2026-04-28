@@ -9,7 +9,7 @@ import Config
 
 require Logger
 
-if config_env() in [:test] do
+if config_env() in [:test, :bench] do
   Envy.load(["config/.env.#{config_env()}"])
 end
 
@@ -152,6 +152,7 @@ if config_env() == :prod do
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
     connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
+    timeout: String.to_integer(System.get_env("DB_TIMEOUT") || "30000"),
     socket_options: maybe_ipv6,
     queue_target: 5000
 

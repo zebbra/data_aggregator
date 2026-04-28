@@ -92,13 +92,16 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
     defaults [:read, :update, :destroy]
+
+    read :list do
+      prepare build(sort: [id: :asc])
+    end
 
     create :create do
       primary? true
@@ -136,6 +139,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   code_interface do
     define :read
+    define :list
     define :create
     define :update
     define :update_return_minimal_fields
@@ -161,6 +165,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     custom_indexes do
       index [:loc_continent, :tax_kingdom, :tax_phylum]
+      index [:collection_id, :tax_scientific_name]
     end
   end
 
@@ -171,7 +176,7 @@ defmodule DataAggregator.Records.EncodedRecord do
       base "/datasets/:collection_id/encoded_records"
 
       get :read
-      index :read
+      index :list
       patch :update
       delete :destroy
     end

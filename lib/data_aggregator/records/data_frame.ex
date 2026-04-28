@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.DataFrame do
     opts = Keyword.merge(@pqt_read_opts, opts)
     Logger.debug("Reading Parquet file #{inspect(file)} with options: #{inspect(opts)}")
 
-    Explorer.DataFrame.from_parquet(file)
+    Explorer.DataFrame.from_parquet(file, opts)
   end
 
   def to_file(df, file, opts \\ []) when is_binary(file) do
@@ -156,15 +156,69 @@ defmodule DataAggregator.Records.DataFrame do
     error -> {:error, error}
   end
 
-  def maybe_parse_polaris_error("Polars Error: could not parse `" <> message) do
-    [parts] = Regex.scan(~r/(.*)` as dtype `(.*)` at column '(.*)' \(column number/, message)
+  @doc """
+  Returns the column names of a tabular file (CSV, IPC, or Parquet) without
+  materializing its body.
 
-    if length(parts) == 4 do
-      [_, value, dtype, column] = parts
+  Uses a lazy Polars frame and reads the names from the cached schema.
+  """
+  def column_names(file) when is_binary(file) do
+    with {:ok, ldf} <- from_file(file, lazy: true) do
+      {:ok, Explorer.DataFrame.names(ldf)}
+    end
+  end
 
-      "Could not parse '#{value}' as data type '#{dtype}' for field '#{column}'. Please verify your data."
-    else
-      "Polars Error: could not parse `" <> message
+  @doc """
+  Returns the column dtypes of a tabular file (CSV, IPC, or Parquet) without
+  materializing its body.
+
+  CSV reads use `infer_schema_length: 0`, so all CSV columns come back as
+  `:string`. IPC and Parquet dtypes come from the file's schema metadata.
+  """
+  def column_dtypes(file) when is_binary(file) do
+    with {:ok, ldf} <- from_file(file, lazy: true) do
+      {:ok, Explorer.DataFrame.dtypes(ldf)}
+    end
+  end
+
+  @doc """
+  Returns the total row count of a tabular file without materializing it.
+
+  Builds a lazy Polars query that aggregates `Series.size/1` over a single
+  column and computes it. Polars compiles this to a streaming scan that
+  reports total row count (including nil rows) without holding rows in
+  memory.
+  """
+  def row_count(file) when is_binary(file) do
+    with {:ok, ldf} <- from_file(file, lazy: true) do
+      [first_col | _] = Explorer.DataFrame.names(ldf)
+
+      rows =
+        ldf
+        |> Explorer.DataFrame.summarise_with(fn lf ->
+          [n: Explorer.Series.size(lf[first_col])]
+        end)
+        |> Explorer.DataFrame.compute()
+        |> Explorer.DataFrame.pull("n")
+        |> Explorer.Series.first()
+
+      {:ok, rows}
+    end
+  end
+
+  def maybe_parse_polaris_error(error) when is_exception(error),
+    do: error |> Exception.message() |> maybe_parse_polaris_error()
+
+  def maybe_parse_polaris_error(message) when is_binary(message) do
+    case Regex.run(
+           ~r/Polars Error: could not parse `(.*?)` as dtype `(.*?)` at column '(.*?)'/,
+           message
+         ) do
+      [_, value, dtype, column] ->
+        "Could not parse '#{value}' as data type '#{dtype}' for field '#{column}'. Please verify your data."
+
+      nil ->
+        message
     end
   end
 

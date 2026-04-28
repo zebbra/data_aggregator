@@ -32,6 +32,7 @@ defmodule DataAggregator.Records.ValidationRequest do
     attribute :total_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :sent_for_validation_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
+    attribute :oban_job_id, :integer, allow_nil?: true, public?: false
 
     timestamps public?: true, writable?: false
   end
@@ -82,18 +83,21 @@ defmodule DataAggregator.Records.ValidationRequest do
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
-      transition :set_failed, from: :running, to: :failed
+      transition :set_failed, from: [:running, :queued], to: :failed
       transition :cancel_validation_request, from: [:running, :queued], to: :failed
     end
 
     preparations do
-      prepare build(sort: [id: :desc])
       prepare DataAggregator.Preparations.Sort
     end
 
     actions do
       default_accept :*
       defaults [:read, :update]
+
+      read :list do
+        prepare build(sort: [id: :desc])
+      end
 
       read :active do
         filter expr(state in [:running, :queued])
@@ -124,6 +128,10 @@ defmodule DataAggregator.Records.ValidationRequest do
                )
 
         change ensure_selected(:processed_rows_count)
+      end
+
+      update :set_total_rows_count do
+        accept [:total_rows_count]
       end
 
       update :add_sent_for_validation_progress do
@@ -198,7 +206,9 @@ defmodule DataAggregator.Records.ValidationRequest do
 
       destroy :destroy do
         primary? true
+        require_atomic? false
 
+        change Changes.CancelObanJob
         change cascade_destroy(:attachment, after_action?: false)
       end
     end
@@ -210,6 +220,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       publish_all :create, [[:collection_id, nil], "created"]
       publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
       publish :add_validation_request_progress, [[:collection_id, nil], "updated", [:id, nil]]
+      publish :set_total_rows_count, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
@@ -217,6 +228,7 @@ defmodule DataAggregator.Records.ValidationRequest do
 
     code_interface do
       define :read
+      define :list
       define :active
       define :create
       define :update
@@ -230,6 +242,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       define :update_attachment, action: :update_attachment, args: [:attachment]
       define :add_validation_request_progress, args: [:processed_rows]
       define :add_sent_for_validation_progress, args: [:processed_rows]
+      define :set_total_rows_count, args: [:total_rows_count]
       define :cancel_validation_request
     end
 
@@ -271,7 +284,7 @@ defmodule DataAggregator.Records.ValidationRequest do
         base "/datasets/:collection_id/validation_requests"
 
         get :read
-        index :read
+        index :list
         post :create
         patch :update
         delete :destroy
@@ -281,6 +294,10 @@ defmodule DataAggregator.Records.ValidationRequest do
     multitenancy do
       strategy :attribute
       attribute :collection_id
+    end
+
+    identities do
+      identity :by_collection, [:id, :collection_id]
     end
   end
 end

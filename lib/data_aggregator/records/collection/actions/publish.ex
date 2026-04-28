@@ -38,11 +38,17 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   def run(input, _opts, %{tenant: tenant} = ctx) do
     publication = input.arguments.publication
 
+    Logger.info(
+      "Starting publication process for publication #{publication.id} of collection #{publication.collection_id}"
+    )
+
     # these are the new records that will be published
     query =
       Record
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
+
+    Logger.debug("Built query for publication: #{inspect(query)}")
 
     # first we need to copy the data of these records to published_records table
     append_published_records(publication, query)
@@ -52,6 +58,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     collection =
       case register(publication) do
         {:ok, collection} ->
+          Logger.debug("Successfully registered collection at GBIF for publication: #{publication.id}")
+
           collection
 
         {:error, error} ->
@@ -156,7 +164,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
           Enumerable.t()
   defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
     Ash.bulk_update(stream, :update_publication_status, %{status: status},
       actor: actor,
@@ -165,13 +172,15 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       resource: Record,
       tenant: tenant,
       max_concurrency: max_concurrency,
-      batch_size: batch_size
+      batch_size: 1000
     )
 
     stream
   end
 
   defp append_published_records(publication, query) do
+    Logger.debug("Appending published records for publication: #{publication.id}")
+
     query
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
     |> Stream.map(fn record ->
@@ -183,8 +192,10 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       upsert_identity: :unique_record_id,
       upsert_fields: {:replace_all_except, [:inserted_at, :id, :record_id, :collection_id]},
       tenant: publication.collection,
-      batch_size: 200
+      batch_size: 150
     )
+
+    Logger.debug("Finished appending published records for publication: #{publication.id}")
   end
 
   defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_scientific_name: scientific_name} = record)

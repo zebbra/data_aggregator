@@ -34,8 +34,6 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
   end
 
   defp insert_job(%Collection{id: id}) do
-    %{id: id, collection_id: id}
-    |> Collection.Workers.EncodingStatePoller.new()
-    |> Oban.insert()
+    Collection.Workers.EncodingStatePoller.schedule_next(id)
   end
 end

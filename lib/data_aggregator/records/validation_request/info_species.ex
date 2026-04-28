@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Mailer
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
@@ -18,9 +16,9 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   @doc """
   Notifies the infospecies center by mail about the validation request.
   """
-  @spec notify(ValidationRequest.t(), Ash.Query.t(), pos_integer()) ::
+  @spec notify(ValidationRequest.t(), pos_integer()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
-  def notify(validation_request, query, count) do
+  def notify(validation_request, count) do
     with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(validation_request.collection.grscicoll_institution_key) do
@@ -35,7 +33,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
           collection_code: validation_request.collection.code
         }
 
-      notify_infospecies(query, notification)
+      notify_infospecies(notification)
 
       {:ok, validation_request}
     else
@@ -72,8 +70,8 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
       "The GBIF.ch team"
   end
 
-  @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
-  defp notify_infospecies(query, notification) do
+  @spec notify_infospecies(map()) :: :ok
+  defp notify_infospecies(notification) do
     Logger.debug("Notifying infospecies center: #{inspect(notification)}")
 
     {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
@@ -95,19 +93,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
         )
     end
 
-    if Records.execute_async?() do
-      Task.start(fn -> update_records_validation_started_at(query) end)
-    else
-      update_records_validation_started_at(query)
-    end
-
     :ok
-  end
-
-  defp update_records_validation_started_at(query) do
-    query
-    |> Ash.stream!()
-    |> Enum.each(&Record.update_last_validation_started_at!(&1))
   end
 
   defp get_date_time do
