@@ -93,10 +93,6 @@ defmodule DataAggregator.Records.ValidationResponse do
     default_accept :*
     defaults [:read, :update]
 
-    read :list do
-      prepare build(sort: [id: :desc])
-    end
-
     update :add_affected_collection do
       require_atomic? false
       accept []
@@ -232,7 +228,6 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   code_interface do
     define :read
-    define :list
     define :create
     define :update
     define :destroy
@@ -269,7 +264,7 @@ defmodule DataAggregator.Records.ValidationResponse do
       base "/validation_responses"
 
       get :read
-      index :list
+      index :read
       post :create
       patch :update
       delete :destroy

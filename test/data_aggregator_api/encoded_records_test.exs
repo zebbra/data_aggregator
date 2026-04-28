@@ -102,9 +102,7 @@ defmodule DataAggregatorApi.EncodedRecordsTest do
       encoded_record_3: encoded_record_3
     } do
       # Make the request
-      conn = get(conn, "/api/json/datasets/#{collection.id}/encoded_records", status: 200)
-
-      EncodedRecord.list!(tenant: collection.id)
+      conn = get(conn, "/api/json/datasets/#{collection.id}/encoded_records?sort=id", status: 200)
 
       # Asert on the response
       assert %{"data" => data} = json_response(conn, 200)

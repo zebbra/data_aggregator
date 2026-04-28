@@ -136,7 +136,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   defp refresh(socket) do
     %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
 
-    case AshPagify.validate_and_run(Ash.Query.for_read(Export, :list), ash_pagify, opts, id) do
+    case AshPagify.validate_and_run(Export, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
         socket =
           socket

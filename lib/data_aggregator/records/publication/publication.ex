@@ -97,10 +97,6 @@ defmodule DataAggregator.Records.Publication do
     default_accept :*
     defaults [:read, :update]
 
-    read :list do
-      prepare build(sort: [id: :desc])
-    end
-
     read :active do
       filter expr(state in [:running, :queued])
     end
@@ -207,7 +203,6 @@ defmodule DataAggregator.Records.Publication do
 
   code_interface do
     define :read
-    define :list
     define :active
     define :create
     define :update
@@ -253,7 +248,7 @@ defmodule DataAggregator.Records.Publication do
       base "/datasets/:collection_id/publications"
 
       get :read
-      index :list
+      index :read
       post :create
       patch :update
       delete :destroy

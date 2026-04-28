@@ -95,10 +95,6 @@ defmodule DataAggregator.Records.ValidationRequest do
       default_accept :*
       defaults [:read, :update]
 
-      read :list do
-        prepare build(sort: [id: :desc])
-      end
-
       read :active do
         filter expr(state in [:running, :queued])
       end
@@ -228,7 +224,6 @@ defmodule DataAggregator.Records.ValidationRequest do
 
     code_interface do
       define :read
-      define :list
       define :active
       define :create
       define :update
@@ -284,7 +279,7 @@ defmodule DataAggregator.Records.ValidationRequest do
         base "/datasets/:collection_id/validation_requests"
 
         get :read
-        index :list
+        index :read
         post :create
         patch :update
         delete :destroy

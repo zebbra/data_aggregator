@@ -438,7 +438,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
 
   defp list_validation_responses(params, actor, opts \\ []) do
     opts = opts |> Keyword.put(:actor, actor) |> Keyword.put(:load, @load)
-    AshPagify.validate_and_run(Ash.Query.for_read(ValidationResponse, :list), params, opts)
+
+    AshPagify.validate_and_run(ValidationResponse, params, opts)
   end
 
   defp error_log_preview_data(error_log) do

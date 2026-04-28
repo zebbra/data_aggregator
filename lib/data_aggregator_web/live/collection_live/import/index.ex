@@ -564,7 +564,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
 
-    AshPagify.validate_and_run(Ash.Query.for_read(Import, :list), params, opts)
+    AshPagify.validate_and_run(Import, params, opts)
   end
 
   attr :collection, :any
