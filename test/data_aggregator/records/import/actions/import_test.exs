@@ -81,13 +81,13 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     end
 
     @tag path: "test/support/fixtures/files/invalid_field_format.txt"
-    test "surfaces a formatted polars error when validating a file with invalid bytes",
+    test "logs a formatted parse error and aborts the import when Polars cannot read the file",
          %{import: import} do
       {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
 
       assert {:ok, import} = result
       assert import.state == :failed
-      assert logs =~ "Could not parse"
+      assert logs =~ "Please verify your data"
       assert logs =~ "_duplicated_0"
     end
 
