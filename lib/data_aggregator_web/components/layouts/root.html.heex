@@ -22,7 +22,7 @@
         s.src='https://betterstack.net/b.js?t='+r;
         (e.head||e.getElementsByTagName('head')[0]).appendChild(s);
       }(window,document,'betterstack','AUMZxyKMAWnATe6F7rfqDQGY');
-      betterstack('init', { environment: <%= System.get_env("ENV_NAME") %> });
+      betterstack('init', { environment: '<%= System.get_env("ENV_NAME") %>' });
     </script>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
