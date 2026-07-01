@@ -1318,6 +1318,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
         enqueue(UUID started_by_id)
         add_validation_request_progress(Integer processed_rows)
+        set_total_rows_count(Integer total_rows_count)
         add_sent_for_validation_progress(Integer processed_rows)
         set_running()
         set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
@@ -1685,26 +1686,15 @@ classDiagram
         Map data
         UUID record_id
         UUID collection_id
+        UUID validation_request_id
         Record record
         Collection collection
-        update(Map data, UUID record_id, UUID collection_id)
+        ValidationRequest validation_request
+        update(Map data, UUID record_id, UUID collection_id, UUID validation_request_id)
         destroy()
         read()
         create(Struct collection, Struct record, Map data, UUID record_id, ...)
-    }
-    class Version {
-        UUID id
-        Atom version_action_type
-        UUID collection_id
-        UUID version_source_id
-        Map changes
-        UUID user_id
-        ValidationRequestRecord version_source
-        User user
-        update(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
-        create(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
-        destroy()
-        read()
+        bulk_upsert(Map data, UUID record_id, UUID validation_request_id)
     }
     class ValidationResponseCollection {
         destroy()
@@ -1719,7 +1709,6 @@ classDiagram
     User -- Publication
     User -- Version
     User -- ValidationRequest
-    User -- Version
     User -- ValidationResponse
     Attachment -- Export
     Attachment -- ImageUpload
@@ -1759,7 +1748,7 @@ classDiagram
     Record -- Version
     Record -- ValidationRequestRecord
     Record -- ValidatedRecord
-    ValidationRequestRecord -- Version
+    ValidationRequest -- ValidationRequestRecord
     ValidationResponse -- ValidationResponseCollection
 
 ```

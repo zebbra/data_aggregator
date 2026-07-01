@@ -2354,7 +2354,12 @@ defmodule DataAggregator.DarwinCore.Schema do
       eve_cover_rock_in_percentage: &format_float/1,
       eve_cover_total_in_percentage: &format_float/1,
       eve_tree_layer_height_in_meters: &format_float/1,
-      oth_dynamic_properties: &format_json/1
+      oth_dynamic_properties: &format_json/1,
+      loc_swissCoordinatesLv03_E: &format_float/1,
+      loc_swissCoordinatesLv03_N: &format_float/1,
+      loc_swissCoordinatesLv95_E: &format_float/1,
+      loc_swissCoordinatesLv95_N: &format_float/1,
+      eve_sampleSizeValue: &format_float/1
     }
   end
 
