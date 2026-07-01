@@ -56,6 +56,9 @@ defmodule DataAggregatorWeb.Helpers do
     iex> format_float("2.0e3", nil)
     "2000.0"
 
+    iex> format_float("5.544e5", nil)
+    "554400.0"
+
     iex> format_float("nil", nil)
     "nil"
   """

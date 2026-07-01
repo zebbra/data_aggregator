@@ -1,0 +1,18 @@
+# Residual security advisories that cannot be resolved by a version bump yet.
+# Each fix requires a major upstream release that our other dependencies do not
+# yet allow. Revisit whenever the "track" deps below ship a compatible version
+# (e.g. `mix hex.outdated`), then drop the corresponding line and upgrade.
+#
+# hackney: fix is 4.0.1 (major bump). Blocked because waffle (~> 1.9),
+#   tzdata (~> 1.17) and ex_aws (~> 1.16) all require hackney < 2.0.
+#   hackney is only used server-side against fixed endpoints (S3/ex_aws,
+#   Sentry, tzdata downloads), not attacker-controlled URLs.
+#   Track: waffle, tzdata, ex_aws.
+GHSA-gp9c-pm5m-5cxr
+GHSA-j9wq-vxxc-94wf
+GHSA-mp55-p8c9-rfw2
+GHSA-pj7v-xfvx-wmjq
+#
+# decimal: fix is 3.0.0. Blocked because explorer (even latest 0.11.1) still
+#   requires decimal ~> 2.1 (< 3.0). Track: explorer.
+GHSA-rhv4-8758-jx7v
