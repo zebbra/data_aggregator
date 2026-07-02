@@ -32,7 +32,7 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
       period: :infinity,
       fields: [:worker, :args],
       keys: [:id],
-      states: [:available, :scheduled]
+      states: [:available, :scheduled, :suspended, :executing, :retryable]
     ]
 
   import Ash.Expr

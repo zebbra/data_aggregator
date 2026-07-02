@@ -1324,6 +1324,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
         enqueue(UUID started_by_id)
         add_validation_request_progress(Integer processed_rows)
+        set_total_rows_count(Integer total_rows_count)
         add_sent_for_validation_progress(Integer processed_rows)
         set_running()
         set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
@@ -1691,26 +1692,15 @@ classDiagram
         Map data
         UUID record_id
         UUID collection_id
+        UUID validation_request_id
         Record record
         Collection collection
-        update(Map data, UUID record_id, UUID collection_id)
+        ValidationRequest validation_request
+        update(Map data, UUID record_id, UUID collection_id, UUID validation_request_id)
         destroy()
         read()
         create(Struct collection, Struct record, Map data, UUID record_id, ...)
-    }
-    class Version {
-        UUID id
-        Atom version_action_type
-        UUID collection_id
-        UUID version_source_id
-        Map changes
-        UUID user_id
-        ValidationRequestRecord version_source
-        User user
-        update(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
-        create(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
-        destroy()
-        read()
+        bulk_upsert(Map data, UUID record_id, UUID validation_request_id)
     }
     class ValidationResponseCollection {
         destroy()
@@ -1725,7 +1715,6 @@ classDiagram
     User -- Publication
     User -- Version
     User -- ValidationRequest
-    User -- Version
     User -- ValidationResponse
     Attachment -- Export
     Attachment -- ImageUpload
@@ -1765,7 +1754,7 @@ classDiagram
     Record -- Version
     Record -- ValidationRequestRecord
     Record -- ValidatedRecord
-    ValidationRequestRecord -- Version
+    ValidationRequest -- ValidationRequestRecord
     ValidationResponse -- ValidationResponseCollection
 ```
 
@@ -3218,14 +3207,7 @@ erDiagram
         Map data
         UUID record_id
         UUID collection_id
-    }
-    "Version" {
-        UUID id
-        Atom version_action_type
-        UUID collection_id
-        UUID version_source_id
-        Map changes
-        UUID user_id
+        UUID validation_request_id
     }
     "ValidationResponseCollection" {
 
@@ -3238,7 +3220,6 @@ erDiagram
     "User" ||--|| "Publication" : ""
     "User" ||--|| "Version" : ""
     "User" ||--|| "ValidationRequest" : ""
-    "User" ||--|| "Version" : ""
     "User" ||--|| "ValidationResponse" : ""
     "Attachment" ||--|| "Export" : ""
     "Attachment" ||--|| "ImageUpload" : ""
@@ -3278,7 +3259,7 @@ erDiagram
     "Record" ||--|| "Version" : ""
     "Record" ||--|| "ValidationRequestRecord" : ""
     "Record" ||--|| "ValidatedRecord" : ""
-    "ValidationRequestRecord" ||--|| "Version" : ""
+    "ValidationRequest" ||--|| "ValidationRequestRecord" : ""
     "ValidationResponse" ||--|| "ValidationResponseCollection" : ""
 ```
 
@@ -3301,7 +3282,6 @@ erDiagram
 - [ValidationResponse](#validationresponse)
 - [ValidatedRecord](#validatedrecord)
 - [ValidationRequestRecord](#validationrequestrecord)
-- [Version](#version)
 - [ValidationResponseCollection](#validationresponsecollection)
 
 ### Collection
@@ -4709,6 +4689,7 @@ erDiagram
 | **total_rows_count** | Integer |  |
 | **sent_for_validation_count** | Integer |  |
 | **center** | Atom |  |
+| **oban_job_id** | Integer |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **state** | Atom |  |
@@ -4726,6 +4707,7 @@ erDiagram
 | **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>sent_for_validation_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **enqueue** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **add_validation_request_progress** | _update_ | <ul><li><b>processed_rows</b> <i>Integer</i> </li></ul> |  |
+| **set_total_rows_count** | _update_ | <ul><li><b>total_rows_count</b> <i>Integer</i> attribute</li></ul> |  |
 | **add_sent_for_validation_progress** | _update_ | <ul><li><b>processed_rows</b> <i>Integer</i> </li></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
 | **set_failed** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>sent_for_validation_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li></ul> |  |
@@ -5119,41 +5101,17 @@ erDiagram
 | **updated_at** | UtcDatetimeUsec |  |
 | **record_id** | UUID |  |
 | **collection_id** | UUID |  |
+| **validation_request_id** | UUID |  |
 
 #### Actions
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>data</b> <i>Map</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>data</b> <i>Map</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>validation_request_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>record</b> <i>Struct</i> </li><li><b>data</b> <i>Map</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
-
-### Version
-
-
-
-#### Attributes
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **id** | UUID |  |
-| **version_action_type** | Atom |  |
-| **collection_id** | UUID |  |
-| **version_source_id** | UUID |  |
-| **changes** | Map |  |
-| **version_inserted_at** | UtcDatetimeUsec |  |
-| **version_updated_at** | UtcDatetimeUsec |  |
-| **user_id** | UUID |  |
-
-#### Actions
-
-| Name | Type | Input | Description |
-| ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li><li><b>user_id</b> <i>UUID</i> attribute</li></ul> |  |
-| **create** | _create_ | <ul><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li><li><b>user_id</b> <i>UUID</i> attribute</li></ul> |  |
-| **destroy** | _destroy_ | <ul></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>record</b> <i>Struct</i> </li><li><b>data</b> <i>Map</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>validation_request_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **bulk_upsert** | _create_ | <ul><li><b>data</b> <i>Map</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>validation_request_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### ValidationResponseCollection
 
