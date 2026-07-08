@@ -220,7 +220,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_live_view, "~> 1.1.14"},
       {:phoenix_storybook, "~> 1.2"},
       {:tidewave, "~> 0.4", only: [:dev]},
-      {:live_debugger, "~> 0.3", only: [:dev]},
+      {:live_debugger, "~> 1.0", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
