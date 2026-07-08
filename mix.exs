@@ -209,7 +209,7 @@ defmodule DataAggregator.MixProject do
     [
       {:oban_web, "~> 2.0"},
       {:ash_oban, "~> 0.6"},
-      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:usage_rules, "~> 1.2", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
       {:bandit, "~> 1.12"},
@@ -248,7 +248,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-      {:git_ops, "~> 2.8.0", only: [:dev]},
+      {:git_ops, "~> 2.10.0", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 2.1", only: [:test, :bench]},
