@@ -209,7 +209,7 @@ defmodule DataAggregator.MixProject do
     [
       {:oban_web, "~> 2.0"},
       {:ash_oban, "~> 0.6"},
-      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:usage_rules, "~> 1.2", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
       {:bandit, "~> 1.12"},
