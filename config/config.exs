@@ -149,6 +149,11 @@ config :phoenix, :filter_parameters, ["password", "account_token"]
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Req v0.6 stopped auto-decoding archive bodies. Restore ZIP decoding
+# (kept alongside the built-in json/json_api decoders) so responses for
+# DwC-A / export archives come back as [{filename, content}] tuples.
+config :req, default_options: [decoders: [:json, :json_api, :zip]]
+
 # Configure error reporting using Sentry. The Sentry DSN is configured
 # dynamically based on the SENTRY_DSN environment variable.
 config :sentry,

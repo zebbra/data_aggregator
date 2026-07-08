@@ -282,7 +282,7 @@ defmodule DataAggregator.MixProject do
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.5.0"},
+      {:req, "~> 0.6.2"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
