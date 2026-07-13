@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
@@ -116,7 +116,7 @@ jobs:
           application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
           application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
           revoke_token: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
 
@@ -187,7 +187,7 @@ jobs:
           application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
           application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
           revoke_token: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           token: ${{ steps.get_workflow_token.outputs.token }}
 
