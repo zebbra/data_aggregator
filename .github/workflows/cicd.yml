@@ -152,7 +152,7 @@ jobs:
           password: ${{ secrets.QUAY_PASSWORD }}
 
       - name: Read .tool-versions
-        uses: marocchino/tool-versions-action@v1
+        uses: marocchino/tool-versions-action@v2
         id: versions
 
       - name: Build and push image
