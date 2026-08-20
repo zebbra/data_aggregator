@@ -14,6 +14,14 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
   concurrently. The current interval lives in args but is excluded from the
   unique key so it can grow without splitting jobs.
 
+  The constraint only applies to the *first* tick (`start/1`). Follow-up ticks
+  are inserted with `unique: false`, because a tick schedules its successor
+  while it is itself still `:executing` - a state included in `:incomplete` -
+  so a unique insert would conflict with the very job doing the inserting and
+  be silently dropped, halting the chain after one tick. Uniqueness is not
+  needed there: a chain is serial, so only the single executing tick ever
+  inserts the next one.
+
   If a tick raises, the job is discarded and polling halts for that
   collection. This is intentional — the previous snooze-based implementation
   silently retried with growing exponential backoff and masked real errors.
@@ -67,14 +75,26 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
   end
 
   @doc """
-  Inserts a polling job for the given collection that runs in `interval` seconds.
+  Inserts the first polling tick for the given collection, in #{@min_interval}s.
 
-  The default `interval` is the minimum of #{@min_interval}s, used for the
-  first tick after `Collection.enqueue_encoding/2`.
+  Guarded by the worker's unique constraint, so re-triggering an encoding while
+  a poller chain is already running for the collection is a no-op.
+  """
+  def start(id), do: insert_tick(id, @min_interval, [])
+
+  @doc """
+  Inserts the follow-up polling tick for the given collection in `interval` seconds.
+
+  Called from `perform/1` only. Bypasses the unique constraint - see the module
+  documentation for why.
   """
   def schedule_next(id, interval \\ @min_interval) do
+    insert_tick(id, interval, unique: false)
+  end
+
+  defp insert_tick(id, interval, opts) do
     %{id: id, collection_id: id, interval: interval}
-    |> new(schedule_in: interval)
+    |> new([schedule_in: interval] ++ opts)
     |> Oban.insert!()
   end
 
