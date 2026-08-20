@@ -11,6 +11,7 @@ config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/bench/ca
 
 # Stub mailer — no real emails.
 config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Test
+config :data_aggregator, DataAggregator.Records, publication_grace_period: 0
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
@@ -29,7 +30,6 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
   server: true
 
 config :data_aggregator, http_cache_enabled: false
-config :data_aggregator, publication_verification_scheduler_active: false
 config :data_aggregator, serve_files_from: "priv/storage/bench/files"
 
 config :logger, :console, format: "[$level] $message\n"

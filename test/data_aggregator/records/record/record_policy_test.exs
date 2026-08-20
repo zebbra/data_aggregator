@@ -140,8 +140,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_check_if_published?, "check_if_published"},
-      {:can_enqueue_publication_verifier?, "enqueue_publication_verifier"},
       {:can_update_last_validation_started_at?, "update_last_validation_started_at"}
     ]
 
@@ -241,10 +239,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
       assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
-    end
-
-    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_publication_verifier?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot update record with same institution", %{
@@ -386,10 +380,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
-    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_publication_verifier?(actor, record_same, reuse_values?: true)
-    end
-
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
@@ -527,10 +517,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
       assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
-    end
-
-    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_publication_verifier?(actor, record_same, reuse_values?: true)
     end
 
     test "can update record with same institution", %{

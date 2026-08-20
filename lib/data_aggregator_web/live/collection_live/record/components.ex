@@ -261,10 +261,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         {@record.mte_catalog_number}
       </p>
       <.link
-        :if={@record.oth_gbif_id !== nil && @record.publication_status == :published}
+        :if={
+          @record.mte_catalog_number !== nil && @record.collection.code !== nil &&
+            @record.collection.gbif_dataset_key !== nil &&
+            @record.publication_status == :published
+        }
         class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
-        href={"#{gbif_base_url()}/occurrence/#{@record.oth_gbif_id}"}
+        href={gbif_occurrence_search_url(@record)}
       >
         {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
       </.link>
@@ -282,6 +286,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       </.link>
     </div>
     """
+  end
+
+  # We no longer know the record's gbifID (that came from the GBIF API check we dropped), so
+  # we link to a search instead of to the occurrence itself. `dataset_key` scopes the search
+  # to this collection's dataset - catalog numbers are only unique within an institution.
+  # gbif.org expects snake_case filter parameters.
+  defp gbif_occurrence_search_url(record) do
+    query =
+      URI.encode_query(
+        catalog_number: record.mte_catalog_number,
+        collection_code: record.collection.code,
+        dataset_key: record.collection.gbif_dataset_key
+      )
+
+    "#{gbif_base_url()}/occurrence/search?#{query}"
   end
 
   attr :record, Record, required: true

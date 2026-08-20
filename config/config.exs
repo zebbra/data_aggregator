@@ -62,14 +62,18 @@ config :data_aggregator, Oban,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},
     {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)},
-    {Oban.Plugins.Cron, []}
+    {Oban.Plugins.Cron,
+     crontab: [
+       # safety net for records left in `:publishing` because their finalizer job was lost
+       {"0 * * * *", DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweeper}
+     ]}
   ],
   queues: [
     imports: 1,
     encoders: 5,
     exports: 1,
     publications: 1,
-    publication_verifications: 1,
+    publication_finalizations: 1,
     extractions: 1,
     mappings: 1,
     validation_responses: 1,

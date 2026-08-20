@@ -123,7 +123,20 @@ defmodule DataAggregator.MixProject do
   defp before_closing_body_tag(_), do: ""
 
   defp extras do
-    Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+    project_extras() ++ Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+  end
+
+  # Root level documents referenced from the README, which is used as the
+  # @moduledoc of DataAggregator. They must be listed as extras so ExDoc can
+  # resolve the links to them.
+  defp project_extras do
+    [
+      "CONTRIBUTING.md",
+      "CODE_OF_CONDUCT.md",
+      "SECURITY.md",
+      "LICENSE-IMPLICATIONS.md",
+      {:LICENSE, [title: "License"]}
+    ]
   end
 
   defp groups_for_extras do
@@ -133,7 +146,14 @@ defmodule DataAggregator.MixProject do
         "docs/deployment.md"
       ],
       Ash: "docs/api.md",
-      Guides: ~r'docs/guides'
+      Guides: ~r'docs/guides',
+      Project: [
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+        "LICENSE-IMPLICATIONS.md",
+        "LICENSE"
+      ]
     ]
   end
 

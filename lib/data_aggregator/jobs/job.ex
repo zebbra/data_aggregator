@@ -75,12 +75,6 @@ defmodule DataAggregator.Jobs.Job do
       filter expr(collection_id == ^arg(:collection_id) and queue == "validation_requests")
     end
 
-    read :publication_verifications_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and queue == "publication_verifications")
-    end
-
     read :encodings_by_collection do
       argument :collection_id, :string, allow_nil?: false
 
@@ -105,7 +99,6 @@ defmodule DataAggregator.Jobs.Job do
     define :exports_by_collection, args: [:collection_id]
     define :publications_by_collection, args: [:collection_id]
     define :validation_requests_by_collection, args: [:collection_id]
-    define :publication_verifications_by_collection, args: [:collection_id]
     define :encodings_by_collection, args: [:collection_id]
     define :validation_response_by_id, args: [:validation_response_id]
     define :update

@@ -11,6 +11,9 @@ database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 # Cache files in the priv/storage directory
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
 
+# Finalize publications immediately instead of waiting for GBIF to ingest the archive
+config :data_aggregator, DataAggregator.Records, publication_grace_period: 0
+
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
   pool_size: 30,
@@ -54,7 +57,6 @@ config :data_aggregator, dev_routes: true
 config :data_aggregator,
   http_cache_enabled: true
 
-config :data_aggregator, publication_verification_scheduler_active: false
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 
 config :esbuild,
@@ -129,8 +131,6 @@ config :git_ops,
 # Enable dev routes for dashboard and mailbox
 
 # Enable http file cache
-
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.PublicationVerifier`
 
 # Serve uploaded files from the priv/storage directory
 

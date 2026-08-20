@@ -1826,10 +1826,15 @@ oth_attributes = [
     dwca_file: nil,
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
   },
+  # `dwca_file: nil` on purpose: the gbifID was only ever filled by the GBIF API check we
+  # no longer run, so it is not published, exported, validated or shown. The attribute stays
+  # so the existing values are retained for a possible future re-sync - do not remove it,
+  # `DataAggregator.DarwinCore.Resource.Transformers.AddAttributes` builds the record columns
+  # from this list. See `docs/adr/0001-publication-is-asserted-not-verified.md`.
   %{
     dwc_field: "gbifID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
   },
   %{
@@ -2190,6 +2195,29 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec prefixed_attributes() :: [Attribute.t()]
   def prefixed_attributes do
     Enum.flat_map(@categories, &Category.prefixed_attributes/1)
+  end
+
+  # Attributes we keep on the record but never hand out again. `:oth_gbif_id` was filled by
+  # the GBIF API check that used to verify publications; that check is gone, so the value is
+  # frozen at whatever it was and would only mislead. The data itself is retained for a
+  # possible future re-sync. See `docs/adr/0001-publication-is-asserted-not-verified.md`.
+  @unexportable_attribute_names [:oth_gbif_id]
+
+  @doc """
+  Returns the attribute names that must never be exported, published or sent for validation.
+
+  These attributes still exist on the record and keep their stored values - they are simply
+  never handed out again.
+  """
+  @spec unexportable_attribute_names() :: [atom()]
+  def unexportable_attribute_names, do: @unexportable_attribute_names
+
+  @doc """
+  Returns the prefixed attribute names that may be handed out through an export.
+  """
+  @spec exportable_attribute_names() :: [atom()]
+  def exportable_attribute_names do
+    Enum.reject(prefixed_attribute_names(), &(&1 in @unexportable_attribute_names))
   end
 
   @doc """

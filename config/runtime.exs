@@ -54,6 +54,12 @@ if System.get_env("EXPORT_TIMEOUT") do
   config :data_aggregator, DataAggregator.Records, export_timeout: export_timeout
 end
 
+if System.get_env("PUBLICATION_GRACE_PERIOD_MINUTES") do
+  minutes = "PUBLICATION_GRACE_PERIOD_MINUTES" |> System.get_env() |> String.to_integer()
+
+  config :data_aggregator, DataAggregator.Records, publication_grace_period: to_timeout(minute: minutes)
+end
+
 if System.get_env("LAST_TERMS_UPDATE") do
   last_terms_update = "LAST_TERMS_UPDATE" |> System.get_env() |> Date.from_iso8601!()
   config :data_aggregator, DataAggregator.Accounts, last_terms_update: last_terms_update

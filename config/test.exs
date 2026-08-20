@@ -23,7 +23,9 @@ config :data_aggregator, DataAggregator.Records,
   import_batch_size: 3,
   import_max_concurrency: 1,
   async_import_progress?: false,
-  execute_async: false
+  execute_async: false,
+  # Finalize publications immediately instead of waiting for GBIF to ingest the archive
+  publication_grace_period: 0
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
@@ -45,9 +47,6 @@ config :data_aggregator, Oban, testing: :inline
 config :data_aggregator,
   # Disabled http file cache
   http_cache_enabled: false
-
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.PublicationVerifier`
-config :data_aggregator, publication_verification_scheduler_active: false
 
 # Serve uploaded files
 config :data_aggregator, serve_files_from: "priv/storage/test/files"

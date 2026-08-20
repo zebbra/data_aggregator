@@ -24,6 +24,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.PublishedRecord
+  alias DataAggregator.Records.Publication.Scheduler.PublicationFinalizer
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
@@ -117,14 +118,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    set_publication_status(
-      Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
-      :in_publication,
-      ctx
-    )
-
     # create endpoint with attachment
-    case publish(publication, query, ctx) do
+    case publish(publication, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
@@ -281,20 +276,36 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(publication, query, ctx) do
+  defp publish(publication, %{actor: actor}) do
     with {:ok, _dataset_key} <-
            Collection.create_endpoint(
              publication.collection,
              Attachment.Helpers.attachment_public_url(publication.attachment.id)
            ),
-         :ok <- queue_records_for_verification(query, ctx) do
+         :ok <- enqueue_finalizer(publication, actor) do
       {:ok, publication}
     end
   end
 
-  defp queue_records_for_verification(query, %{actor: actor}) do
-    query
-    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
-    |> Enum.each(&Record.enqueue_publication_verifier(&1, nil, actor: actor))
+  # The records stay `:publishing` until the finalizer runs. We do not ask GBIF whether the
+  # occurrences turned up - see `docs/adr/0001-publication-is-asserted-not-verified.md`.
+  defp enqueue_finalizer(publication, actor) do
+    publication.id
+    |> PublicationFinalizer.new_job(publication.collection_id, maybe_get_id(actor))
+    |> Oban.insert()
+    |> case do
+      {:ok, job} ->
+        Logger.debug("Enqueued publication_finalizer job #{inspect(job.id)} for publication #{publication.id}")
+
+        :ok
+
+      {:error, error} ->
+        Logger.error("Failed to enqueue publication_finalizer job for publication #{publication.id}: #{inspect(error)}")
+
+        {:error, error}
+    end
   end
+
+  defp maybe_get_id(nil), do: nil
+  defp maybe_get_id(%{id: id}), do: id
 end

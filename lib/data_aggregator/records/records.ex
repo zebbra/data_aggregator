@@ -24,7 +24,7 @@ defmodule DataAggregator.Records do
     validation_request_timeout: to_timeout(day: 1),
     encode_timeout: to_timeout(hour: 1),
     encode_batch_size: 1000,
-    publication_verification_timeout: to_timeout(minute: 5),
+    publication_grace_period: to_timeout(hour: 6),
     execute_async: true,
     image_upload_timeout: to_timeout(hour: 12),
     extraction_timeout: to_timeout(hour: 12),
@@ -95,4 +95,22 @@ defmodule DataAggregator.Records do
   def image_upload_timeout, do: get_env(:image_upload_timeout)
   def extraction_timeout, do: get_env(:extraction_timeout)
   def mapping_timeout, do: get_env(:mapping_timeout)
+
+  @doc """
+  How long a record stays in `:publishing` after its publication finished before
+  `DataAggregator.Records.Publication.Scheduler.PublicationFinalizer` marks it `:published`.
+
+  Publication is asserted, not verified: we hand the archive to GBIF and give GBIF this
+  much time to ingest it. See `docs/adr/0001-publication-is-asserted-not-verified.md`.
+  """
+  def publication_grace_period, do: get_env(:publication_grace_period)
+
+  @doc """
+  Age at which `DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweeper`
+  considers a `:publishing` record stranded and finalizes it anyway.
+
+  Derived from `publication_grace_period/0` so the sweeper can never overtake the
+  finalizer, whatever the grace period is configured to.
+  """
+  def publication_stranded_after, do: publication_grace_period() + to_timeout(day: 1)
 end

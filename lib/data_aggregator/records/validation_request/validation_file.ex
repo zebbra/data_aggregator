@@ -34,7 +34,6 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "fieldNotes",
     "fieldNumber",
     "gbifCHID",
-    "gbifID",
     "occurrenceID",
     "verbatimLabel",
     "anatomicalDescription",
@@ -125,6 +124,12 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "verbatimLongitude",
     "waterBody"
   ]
+
+  @doc """
+  The Darwin Core fields of a record that are sent to the InfoSpecies Centers for validation.
+  """
+  @spec record_headers() :: [String.t()]
+  def record_headers, do: @record_headers
 
   @doc """
   Opens a validation file at the given path and returns a ValidationFile struct.

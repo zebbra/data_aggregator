@@ -218,7 +218,7 @@ defmodule DataAggregator.ExportTest do
       "tax_family" => "Famille"
     }
 
-    @default_mapping Map.new(Schema.prefixed_attribute_names(), &{to_string(&1), to_string(&1)})
+    @default_mapping Map.new(Schema.exportable_attribute_names(), &{to_string(&1), to_string(&1)})
 
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
@@ -579,7 +579,7 @@ defmodule DataAggregator.ExportTest do
                "Annotation 4"
              ]
 
-      assert DataFrame.n_columns(data_frame) == 307
+      assert DataFrame.n_columns(data_frame) == 306
       assert DataFrame.n_rows(data_frame) == 4
     end
 
@@ -626,7 +626,7 @@ defmodule DataAggregator.ExportTest do
                }
              ]
 
-      assert DataFrame.n_columns(data_frame) == 306
+      assert DataFrame.n_columns(data_frame) == 305
       assert DataFrame.n_rows(data_frame) == 4
     end
 
@@ -683,7 +683,7 @@ defmodule DataAggregator.ExportTest do
                }
              ]
 
-      assert DataFrame.n_columns(data_frame) == 306
+      assert DataFrame.n_columns(data_frame) == 305
       assert DataFrame.n_rows(data_frame) == 1
     end
   end

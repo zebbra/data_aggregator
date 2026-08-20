@@ -32,6 +32,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
         header_source
       )
       |> ensure_validation_annotation(data_layer, header_source)
+      |> reject_unexportable()
 
     header_labels = get_header_labels(mapping)
     headers = Enum.map(header_labels, fn {_, v} -> v end)
@@ -170,6 +171,17 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
 
   defp get_default_mapping do
     Map.new(Schema.prefixed_attribute_names(), fn name -> {name, name} end)
+  end
+
+  # Applied to every header source, including a hand picked `:custom_selection`, so these
+  # attributes can never leave the system through an export. The generated mappings are atom
+  # keyed while a stored `:custom_selection` mapping comes back from the database string
+  # keyed, so both spellings have to go.
+  defp reject_unexportable(mapping) do
+    unexportable =
+      Enum.flat_map(Schema.unexportable_attribute_names(), &[&1, Atom.to_string(&1)])
+
+    Map.drop(mapping, unexportable)
   end
 
   defp get_data_attributes(mapping) do

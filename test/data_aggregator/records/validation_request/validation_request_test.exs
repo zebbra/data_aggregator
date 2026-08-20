@@ -123,7 +123,7 @@ defmodule DataAggregator.ValidationRequestTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 202
+      assert DataFrame.n_columns(data_frame) == 200
     end
 
     test "run/1 successful", %{

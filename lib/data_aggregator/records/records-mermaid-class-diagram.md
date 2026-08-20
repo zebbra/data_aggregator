@@ -888,6 +888,7 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        by_publication(String publication_id)
     }
     class Record {
         Map ext_vernacular_names
@@ -1228,10 +1229,8 @@ classDiagram
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
-        enqueue_publication_verifier(Struct published_record)
         bulk_import(Struct import, Term rows)
         encode(Term record, Atom catalog)
-        check_if_published(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
