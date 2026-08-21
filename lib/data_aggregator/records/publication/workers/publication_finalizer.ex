@@ -56,7 +56,8 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizer do
       unique: [
         period: :infinity,
         fields: [:args, :worker],
-        keys: [:publication_id, :collection_id]
+        keys: [:publication_id, :collection_id],
+        states: :incomplete
       ],
       replace: [scheduled: [:scheduled_at]],
       schedule_in: {grace_period_in_seconds(), :second}
