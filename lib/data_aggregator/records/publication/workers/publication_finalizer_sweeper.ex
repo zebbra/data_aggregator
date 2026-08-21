@@ -50,7 +50,10 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweep
   defp sweep(collection, stranded_before) do
     result =
       Record
-      |> Ash.Query.filter(publication_status == :publishing and updated_at < ^stranded_before)
+      |> Ash.Query.filter(
+        publication_status == :publishing and updated_at < ^stranded_before and
+          exists(published_record, publication.state == :done)
+      )
       |> Ash.Query.set_tenant(collection.id)
       |> Ash.bulk_update(:update_publication_status, %{status: :published},
         authorize?: false,

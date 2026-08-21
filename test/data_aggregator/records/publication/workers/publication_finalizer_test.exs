@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerTest 
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Publication.Scheduler.PublicationFinalizer
   alias DataAggregator.Records.Record
+  alias DataAggregator.Repo
 
   setup do
     stub_with(Gbif.RestAPI, RestAPIStub)
@@ -84,6 +85,23 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerTest 
         assert second.conflict?
       end)
     end
+
+    test "enqueues a fresh job when the previous finalizer has already run", ctx do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, first} =
+                 Oban.insert(PublicationFinalizer.new_job(ctx.publication.id, ctx.collection.id))
+
+        complete(first)
+
+        assert {:ok, second} =
+                 Oban.insert(PublicationFinalizer.new_job(ctx.publication.id, ctx.collection.id))
+
+        # a completed job must not swallow the finalizer of the next publication run
+        refute second.conflict?
+        assert second.id != first.id
+        assert second.state == "scheduled"
+      end)
+    end
   end
 
   # a record that was written into this publication's archive and is still `:publishing`
@@ -116,4 +134,11 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerTest 
   end
 
   defp reload(record, ctx), do: Record.get_by_id!(record.id, tenant: ctx.collection)
+
+  # Oban only moves jobs out of `:scheduled` while its queues run, so age the job by hand.
+  defp complete(job) do
+    Repo.query!("UPDATE oban_jobs SET state = 'completed', completed_at = now() WHERE id = $1", [
+      job.id
+    ])
+  end
 end
