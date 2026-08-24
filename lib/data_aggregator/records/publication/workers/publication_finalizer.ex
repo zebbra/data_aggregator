@@ -21,13 +21,12 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizer do
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records
+  alias DataAggregator.Records.Publication.Finalization
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
 
   require Ash.Query
   require Logger
-
-  @batch_size 1000
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"publication_id" => publication_id, "collection_id" => collection_id} = args}) do
@@ -79,39 +78,29 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizer do
   # are still `:publishing`. The filter is what makes this job idempotent and keeps it off
   # records that moved on to `:stale` or `:publication_failed` during the grace period.
   defp finalize(publication_id, collection_id, actor) do
-    PublishedRecord
-    |> Ash.Query.for_read(:by_publication, %{publication_id: publication_id},
+    publication_id
+    |> PublishedRecord.by_publication!(
       tenant: collection_id,
-      authorize?: false
+      authorize?: false,
+      stream?: true,
+      stream_options: [stream_with: :keyset, batch_size: Finalization.batch_size()]
     )
-    |> Ash.stream!(stream_with: :keyset, batch_size: @batch_size)
     |> Stream.map(& &1.record_id)
-    |> Stream.chunk_every(@batch_size)
+    |> Stream.chunk_every(Finalization.batch_size())
     |> Enum.reduce(0, fn record_ids, acc ->
       acc + finalize_batch(record_ids, collection_id, actor)
     end)
   end
 
   defp finalize_batch(record_ids, collection_id, actor) do
-    result =
-      Record
-      |> Ash.Query.filter(id in ^record_ids and publication_status == :publishing)
-      |> Ash.Query.set_tenant(collection_id)
-      |> Ash.bulk_update(:update_publication_status, %{status: :published},
-        actor: actor,
-        authorize?: false,
-        domain: Records,
-        resource: Record,
-        tenant: collection_id,
-        return_records?: true,
-        batch_size: @batch_size
-      )
+    Record
+    |> Ash.Query.filter(id in ^record_ids and publication_status == :publishing)
+    |> Finalization.finalize(collection_id, actor: actor)
+    |> case do
+      {:ok, count} ->
+        count
 
-    case result do
-      %Ash.BulkResult{status: :success, records: records} ->
-        length(records || [])
-
-      %Ash.BulkResult{errors: errors} ->
+      {:error, errors} ->
         raise "Failed to finalize records of collection #{collection_id}: #{inspect(errors)}"
     end
   end
