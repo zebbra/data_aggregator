@@ -291,7 +291,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   # occurrences turned up - see `docs/adr/0001-publication-is-asserted-not-verified.md`.
   defp enqueue_finalizer(publication, actor) do
     publication.id
-    |> PublicationFinalizer.new_job(publication.collection_id, maybe_get_id(actor))
+    |> PublicationFinalizer.new_job(publication.collection_id, actor_id(actor))
     |> Oban.insert()
     |> case do
       {:ok, job} ->
@@ -306,6 +306,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     end
   end
 
-  defp maybe_get_id(nil), do: nil
-  defp maybe_get_id(%{id: id}), do: id
+  defp actor_id(nil), do: nil
+  defp actor_id(%{id: id}), do: id
 end

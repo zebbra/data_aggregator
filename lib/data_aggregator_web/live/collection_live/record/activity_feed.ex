@@ -369,7 +369,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         ~t"No publication information available. Publish the dataset to see the status."m
 
       "publishing" ->
-        ~t"Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 24 hours - no further action required."m
+        ~t"Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 6 hours - no further action required."m
 
       "in_publication" ->
         ~t"Record is now in the publication pipeline - no further action required."m

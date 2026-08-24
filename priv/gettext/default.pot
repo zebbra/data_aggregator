@@ -5815,14 +5815,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Failed to load the publication summary. Please close the modal and try again."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:372
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 24 hours - no further action required."
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:378
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The record has been handed to GBIF as part of a published archive."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:372
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 6 hours - no further action required."
 msgstr ""
