@@ -18,12 +18,11 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweep
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Publication.Finalization
   alias DataAggregator.Records.Record
 
   require Ash.Query
   require Logger
-
-  @batch_size 1000
 
   @impl Oban.Worker
   def perform(%Oban.Job{}) do
@@ -48,27 +47,17 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweep
   def timeout(_job), do: to_timeout(hour: 1)
 
   defp sweep(collection, stranded_before) do
-    result =
-      Record
-      |> Ash.Query.filter(
-        publication_status == :publishing and updated_at < ^stranded_before and
-          exists(published_record, publication.state == :done)
-      )
-      |> Ash.Query.set_tenant(collection.id)
-      |> Ash.bulk_update(:update_publication_status, %{status: :published},
-        authorize?: false,
-        domain: Records,
-        resource: Record,
-        tenant: collection.id,
-        return_records?: true,
-        batch_size: @batch_size
-      )
+    Record
+    |> Ash.Query.filter(
+      publication_status == :publishing and updated_at < ^stranded_before and
+        exists(published_record, publication.state == :done)
+    )
+    |> Finalization.finalize(collection.id)
+    |> case do
+      {:ok, count} ->
+        count
 
-    case result do
-      %Ash.BulkResult{status: :success, records: records} ->
-        length(records || [])
-
-      %Ash.BulkResult{errors: errors} ->
+      {:error, errors} ->
         # one bad collection must not stop the sweep of the others
         Logger.error("Failed to sweep stranded records of collection #{collection.id}: #{inspect(errors)}")
 
