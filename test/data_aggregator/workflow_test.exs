@@ -586,7 +586,7 @@ defmodule DataAggregator.WorkflowTest do
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
 
       assert DataFrame.n_rows(data_frame) == 6
-      assert DataFrame.n_columns(data_frame) == 200
+      assert DataFrame.n_columns(data_frame) == 202
 
       # no new records versions should have been created
       assert_encode_versions(actor, tenant)

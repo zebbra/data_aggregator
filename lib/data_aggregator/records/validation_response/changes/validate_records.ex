@@ -32,7 +32,9 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     with {:ok, df} <- Records.DataFrame.from_file(cached_file),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
-      process_in_chunks(changeset, stream, type, actor)
+      ignored_headers = Helpers.ignored_headers(Explorer.DataFrame.names(df), type)
+
+      process_in_chunks(changeset, stream, type, actor, ignored_headers)
     else
       {:error, error} ->
         Logger.error("[Import validation records] CSV could not be read or it was empty")
@@ -41,8 +43,9 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     end
   end
 
-  @spec process_in_chunks(Changeset.t(), Enum.t(), atom(), User.t()) :: Changeset.t()
-  defp process_in_chunks(%Changeset{} = changeset, rows, type, actor) do
+  @spec process_in_chunks(Changeset.t(), Enum.t(), atom(), User.t(), [String.t()]) ::
+          Changeset.t()
+  defp process_in_chunks(%Changeset{} = changeset, rows, type, actor, ignored_headers) do
     chunk_size = Records.validation_response_batch_size()
 
     Logger.debug("Import validation rows in chunks of #{chunk_size} rows ...")
@@ -54,11 +57,12 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
     |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
+    |> Stream.map(&Helpers.reject_ignored_headers_from_chunk(&1, ignored_headers))
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
     |> Stream.map(&Helpers.maybe_convert_values(&1, type))
     |> Stream.map(&import_chunk(changeset, &1, type, actor))
-    |> reduce_validation_results(changeset)
+    |> reduce_validation_results(changeset, ignored_headers)
     |> NotificationHelpers.notify_infospecies()
   end
 
@@ -100,9 +104,13 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   end
 
   # For each chunk, we process the errors and update the changeset accordingly
-  @spec reduce_validation_results(Enum.t(), Changeset.t()) :: Changeset.t()
-  defp reduce_validation_results(results, %Changeset{data: validation_response} = changeset) do
+  @spec reduce_validation_results(Enum.t(), Changeset.t(), [String.t()]) :: Changeset.t()
+  defp reduce_validation_results(results, %Changeset{data: validation_response} = changeset, ignored_headers) do
     {path, error_log_file} = Helpers.open_error_log_file(validation_response)
+
+    # report the ignored columns once, before the row errors
+    ignored_header_errors = Helpers.ignored_header_errors(ignored_headers)
+    Helpers.write_normalized_errors(error_log_file, ignored_header_errors)
 
     changeset =
       Enum.reduce_while(results, changeset, fn
@@ -122,7 +130,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
           end
       end)
 
-    validation_response = Helpers.upload_error_log_file!(path, changeset.data)
+    validation_response =
+      Helpers.upload_error_log_file!(path, changeset.data, length(ignored_header_errors))
 
     %{changeset | data: validation_response}
   end

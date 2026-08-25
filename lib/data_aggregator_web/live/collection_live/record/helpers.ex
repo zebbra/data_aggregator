@@ -80,7 +80,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
       |> Enum.filter(fn %{imported: value} -> value not in ["", nil] end)
 
     Schema.prefixed_attribute_names()
-    |> Enum.filter(&should_show_attribute?(&1, record, output_dwc_fields))
+    |> Enum.filter(&should_show_attribute?(&1, record, validated_record))
     |> Enum.map(fn key ->
       imported_value =
         record
@@ -124,22 +124,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
          record.state == :encoded)
   end
 
-  defp should_show_attribute?(key, record, output_dwc_fields) do
+  # Gating on the raw layer alone would hide values that only exist further down the
+  # pipeline, such as a validated organismID on a record imported without one.
+  defp should_show_attribute?(key, record, validated_record) do
     cond do
-      key in @fields_not_shown_in_ui ->
-        false
-
-      Map.get(record, key) not in ["", nil] ->
-        true
-
-      Enum.member?(output_dwc_fields, key) and
-          Map.get(record.encoded_record, key) not in ["", nil] ->
-        true
-
-      true ->
-        false
+      key in @fields_not_shown_in_ui -> false
+      present?(record, key) -> true
+      present?(record.encoded_record, key) -> true
+      present?(validated_record, key) -> true
+      true -> false
     end
   end
+
+  defp present?(nil, _key), do: false
+  defp present?(layer, key), do: Map.get(layer, key) not in ["", nil]
 
   defp maybe_transform_value(value, key) do
     if @transformers[key] do
