@@ -204,6 +204,36 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
     end
 
     @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 attaches no error log when there is nothing to report",
+         %{
+           actor: actor
+         } do
+      validation_response =
+        validation_response_fixture(
+          %{type: :not_validated},
+          "test/support/fixtures/files/not_validated_without_errors.csv"
+        )
+
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert {:ok, validation_response} =
+               validation_response.id
+               |> ValidationResponse.get_by_id()
+               |> Ash.load([:error_log])
+
+      assert validation_response.rows_validated_count == 4
+      assert validation_response.rows_invalid_count == 0
+      assert validation_response.rows_error_count == 0
+
+      # the log only ever held its header row, so it must not be attached
+      assert is_nil(validation_response.error_log)
+    end
+
+    @tag capture_log: true
     test "ValidationResponseHandler.perform/1 has set the correct :affected_collections on validated_record and :validation_responses on collection",
          %{
            validation_response: validation_response,

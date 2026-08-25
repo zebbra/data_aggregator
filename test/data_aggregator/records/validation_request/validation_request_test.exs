@@ -239,8 +239,7 @@ defmodule DataAggregator.ValidationRequestTest do
       collection
       |> vrrs()
       |> Enum.each(fn vrr ->
-        Ash.update!(vrr, %{data: with_previous_attribute_set(vrr.data)},
-          action: :update,
+        ValidationRequestRecord.update!(vrr, %{data: with_previous_attribute_set(vrr.data)},
           tenant: collection,
           authorize?: false
         )
