@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     :collection_attributes_and_headers,
     :record_attributes_and_headers,
     :encoded_attributes_and_headers,
+    :attribute_names,
     :file
   ]
 
@@ -64,6 +65,7 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "lifeStage",
     "nameAccordingTo",
     "occurrenceStatus",
+    "organismID",
     "organismQuantity",
     "organismQuantityType",
     "partOfOrganism",
@@ -91,7 +93,6 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "coordinateUncertaintyInMeters",
     "country",
     "countryCode",
-    "county",
     "decimalLatitude",
     "decimalLongitude",
     "georeferencedBy",
@@ -111,6 +112,7 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "placeOfOrigin",
     "pointRadiusSpatialFit",
     "specifyLocality",
+    "stateProvince",
     "swissCoordinatesLv03_E",
     "swissCoordinatesLv03_N",
     "swissCoordinatesLv95_E",
@@ -148,6 +150,7 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
       collection_attributes_and_headers: collection_attrs_and_headers,
       record_attributes_and_headers: record_attrs_and_headers,
       encoded_attributes_and_headers: encoded_attrs_and_headers,
+      attribute_names: attribute_names(collection_attrs_and_headers, record_attrs_and_headers),
       file: file
     }
   end
@@ -176,5 +179,24 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
       end)
 
     {collection_attributes_and_headers, record_attributes_and_headers, encoded_attributes_and_headers}
+  end
+
+  # The attributes behind each group, used by the validation request to detect whether
+  # a record changed -- independently of the header labels those attributes carry.
+  @spec attribute_names(Keyword.t(), Keyword.t()) :: %{String.t() => MapSet.t(String.t())}
+  defp attribute_names(collection_attributes_and_headers, record_attributes_and_headers) do
+    record_attribute_names = attribute_name_set(record_attributes_and_headers)
+
+    %{
+      "collection_data" => attribute_name_set(collection_attributes_and_headers),
+      "record_data" => record_attribute_names,
+      # mirrors the record group, only the header labels differ
+      "encoded_data" => record_attribute_names
+    }
+  end
+
+  @spec attribute_name_set(Keyword.t()) :: MapSet.t(String.t())
+  defp attribute_name_set(attributes_and_headers) do
+    attributes_and_headers |> Keyword.keys() |> MapSet.new(&to_string/1)
   end
 end

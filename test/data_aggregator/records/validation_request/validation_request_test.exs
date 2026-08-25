@@ -123,7 +123,7 @@ defmodule DataAggregator.ValidationRequestTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 200
+      assert DataFrame.n_columns(data_frame) == 202
     end
 
     test "run/1 successful", %{
@@ -225,6 +225,45 @@ defmodule DataAggregator.ValidationRequestTest do
       validation_request2 =
         ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
 
+      assert validation_request2.sent_for_validation_count == 0
+    end
+
+    test "run/1 tolerates validation data stored with a previous attribute set", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      # Rewrite the stored payloads into the shape a previous header allow-list produced:
+      # `county` was still sent, `organismID` and `stateProvince` were not yet.
+      collection
+      |> vrrs()
+      |> Enum.each(fn vrr ->
+        Ash.update!(vrr, %{data: with_previous_attribute_set(vrr.data)},
+          action: :update,
+          tenant: collection,
+          authorize?: false
+        )
+      end)
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: validation_request.records_query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      # nothing about the records changed, only the set of attributes we send
       assert validation_request2.sent_for_validation_count == 0
     end
 
@@ -335,5 +374,24 @@ defmodule DataAggregator.ValidationRequestTest do
 
       assert persisted.state == :failed
     end
+  end
+
+  defp vrrs(collection), do: ValidationRequestRecord.read!(page: false, tenant: collection)
+
+  # Simulates data stored before `organismID` and `stateProvince` were added to, and
+  # `county` was removed from, the validation file.
+  defp with_previous_attribute_set(data) do
+    %{
+      data
+      | "record_data" => previous_entries(data["record_data"], "county"),
+        "encoded_data" => previous_entries(data["encoded_data"], "encoded county")
+    }
+  end
+
+  defp previous_entries(entries, county_header) do
+    entries
+    |> Enum.reject(&(&1["attr"] in ["org_organism_id", "loc_state_province"] and &1["value"] in [nil, ""]))
+    |> Enum.concat([%{"attr" => "loc_county", "value" => "Nyon", "header" => county_header}])
+    |> Enum.sort_by(& &1["header"])
   end
 end

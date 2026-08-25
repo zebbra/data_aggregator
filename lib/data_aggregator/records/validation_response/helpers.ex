@@ -16,6 +16,24 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
   require Logger
 
+  # Terms no longer part of the validation request, so they must not reach the
+  # validation layer even if a center still returns them.
+  @denied_headers ["county"]
+
+  # Prefix the validation request file uses for the columns of the encoding layer.
+  @encoded_header_prefix "encoded "
+
+  # Written once when the log file is opened; every write then appends value-only rows,
+  # so the log keeps a single header row no matter how many chunks contribute errors.
+  @error_log_headers [
+    {:catalog_number, "catalogNumber"},
+    {:scientific_name, "scientificName"},
+    {:occurrence_id, "occurrenceID"},
+    {:field, "field"},
+    {:value, "value"},
+    {:message, "message"}
+  ]
+
   @type validation_response_result ::
           [{map(), [Ash.Error.t()]}]
 
@@ -117,6 +135,90 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
   def get_header_attribute_name_pairs(:not_validated),
     do: [{:code, "collectionCode"}, {:mte_catalog_number, "catalogNumber"}, {:validation_annotation, "annotation"}]
+
+  @doc """
+  The CSV headers of a validation response that are not ingested.
+
+  Dropping them early matters: an unknown header reaches the changeset as a plain string
+  key and fails every single row with `NoSuchInput`.
+  """
+  @spec ignored_headers([String.t()], atom()) :: [String.t()]
+  def ignored_headers(headers, type) do
+    known_headers = known_headers(type)
+
+    Enum.reject(headers, &MapSet.member?(known_headers, &1))
+  end
+
+  @spec known_headers(atom()) :: MapSet.t(String.t())
+  defp known_headers(type) do
+    type
+    |> get_header_attribute_name_pairs()
+    |> Enum.map(fn {_attribute, dwc_field} -> dwc_field end)
+    |> Enum.concat(get_collection_attributes(type))
+    |> Enum.reject(&(&1 in @denied_headers))
+    |> MapSet.new()
+  end
+
+  @doc """
+  Removes the ignored headers from every row of the chunk.
+  """
+  @spec reject_ignored_headers_from_chunk({[map()], integer()}, [String.t()]) ::
+          {[map()], integer()}
+  def reject_ignored_headers_from_chunk(chunk, []), do: chunk
+
+  def reject_ignored_headers_from_chunk({rows, index}, ignored_headers) do
+    ignored_headers = MapSet.new(ignored_headers)
+
+    rows =
+      Enum.map(
+        rows,
+        &Map.reject(&1, fn {header, _value} -> MapSet.member?(ignored_headers, header) end)
+      )
+
+    {rows, index}
+  end
+
+  @doc """
+  Builds the error log entries describing which CSV columns were ignored. The `encoded `
+  columns are reported as a single entry, as a full request file carries one per term.
+  """
+  @spec ignored_header_errors([String.t()]) :: [validation_response_error()]
+  def ignored_header_errors([]), do: []
+
+  def ignored_header_errors(ignored_headers) do
+    {encoded_headers, other_headers} =
+      Enum.split_with(ignored_headers, &String.starts_with?(&1, @encoded_header_prefix))
+
+    encoded_errors =
+      if encoded_headers == [] do
+        []
+      else
+        [
+          ignored_header_error(
+            "#{@encoded_header_prefix}*",
+            "#{length(encoded_headers)} column(s) of the encoding layer were ignored, only the raw values are ingested."
+          )
+        ]
+      end
+
+    encoded_errors ++
+      Enum.map(
+        other_headers,
+        &ignored_header_error(&1, "Column is not part of the validation and was ignored.")
+      )
+  end
+
+  @spec ignored_header_error(String.t(), String.t()) :: validation_response_error()
+  defp ignored_header_error(header, message) do
+    %{
+      catalog_number: "",
+      scientific_name: "",
+      occurrence_id: "",
+      field: header,
+      value: "",
+      message: message
+    }
+  end
 
   # expects a map with record data and returns the extracted collection
   @spec collection_from_row(map()) :: Collection.t() | nil
@@ -240,11 +342,15 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
       directory_path <>
         "/validation_response_error_log-#{validation_response.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
 
-    {path,
-     File.open!(path, [
-       :write,
-       :utf8
-     ])}
+    file = File.open!(path, [:write, :utf8])
+
+    FlatFileUtils.store_on_disk!(
+      [Enum.map(@error_log_headers, fn {_key, header} -> header end)],
+      file,
+      false
+    )
+
+    {path, file}
   end
 
   @doc """
@@ -259,14 +365,22 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
       end)
       |> List.flatten()
 
-    FlatFileUtils.store_local_file(file, errors,
-      catalog_number: "catalogNumber",
-      scientific_name: "scientificName",
-      occurrence_id: "occurrenceID",
-      field: "field",
-      value: "value",
-      message: "message"
-    )
+    write_normalized_errors(file, errors)
+  end
+
+  @doc """
+  Writes already normalized errors or notices to the error log CSV file.
+  """
+  @spec write_normalized_errors(any(), [validation_response_error()]) :: :ok
+  def write_normalized_errors(_file, []), do: :ok
+
+  def write_normalized_errors(file, errors) do
+    rows =
+      Enum.map(errors, fn error ->
+        Enum.map(@error_log_headers, fn {key, _} -> Map.get(error, key) end)
+      end)
+
+    FlatFileUtils.store_on_disk!(rows, file, false)
 
     :ok
   end
@@ -274,14 +388,16 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @doc """
   Uploads the error log file to S3 and updates the ValidationResponse with the attachment.
   """
-  @spec upload_error_log_file!(String.t(), ValidationResponse.t()) :: ValidationResponse.t()
-  def upload_error_log_file!(path, validation_response) do
+  @spec upload_error_log_file!(String.t(), ValidationResponse.t(), non_neg_integer()) ::
+          ValidationResponse.t()
+  def upload_error_log_file!(path, validation_response, notice_count \\ 0) do
     upload_fn = fn ->
       attachment = FlatFileUtils.store_on_s3!(path, nil)
 
       case Explorer.DataFrame.from_csv(path, infer_schema_length: 0) do
         {:ok, df} ->
-          amount_of_errors = Explorer.DataFrame.n_rows(df)
+          # notices (e.g. ignored columns) share the log file but are not row errors
+          amount_of_errors = max(Explorer.DataFrame.n_rows(df) - notice_count, 0)
 
           Logger.warning(
             "#{amount_of_errors} errors occured while validating. Adding errors as file to `ValidationResponse.error_log`"
