@@ -74,7 +74,10 @@ defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
       description """
       Creates or updates a `ValidatedRecord` from the given `params`.
 
-      The record is associated with the given `DataAggregator.Records.ValidationResponse`
+      The record is associated with the given `DataAggregator.Records.ValidationResponse`.
+
+      Deliberately does NOT run `SetOptionalAttributes`: that keeps terms missing from the
+      response file out of the changeset, so their previous validated value is preserved.
       """
 
       argument :record, :struct, allow_nil?: true

@@ -1,0 +1,3 @@
+collectionCode,catalogNumber,scientificName,organismID,stateProvince,county,encoded scientificName,someUnknownColumn
+Z,GBIFCH00993760,Anergates atratulus Schenk,ORG-1,Vaud,Nyon,Anergates atratulus,ignore me
+Z,GBIFCH00993778,Anergates atratulus Schenk,ORG-2,Genève,Nyon,Anergates atratulus,ignore me
