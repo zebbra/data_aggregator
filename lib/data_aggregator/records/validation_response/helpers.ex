@@ -41,7 +41,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
           catalog_number: String.t(),
           occurrence_id: String.t(),
           scientific_name: String.t(),
-          field: atom(),
+          field: atom() | String.t(),
           value: String.t(),
           message: String.t()
         }
@@ -390,28 +390,16 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   """
   @spec upload_error_log_file!(String.t(), ValidationResponse.t(), non_neg_integer()) ::
           ValidationResponse.t()
-  def upload_error_log_file!(path, validation_response, notice_count \\ 0) do
+  def upload_error_log_file!(path, validation_response, notice_count) do
     upload_fn = fn ->
-      attachment = FlatFileUtils.store_on_s3!(path, nil)
-
       case Explorer.DataFrame.from_csv(path, infer_schema_length: 0) do
         {:ok, df} ->
-          # notices (e.g. ignored columns) share the log file but are not row errors
-          amount_of_errors = max(Explorer.DataFrame.n_rows(df) - notice_count, 0)
-
-          Logger.warning(
-            "#{amount_of_errors} errors occured while validating. Adding errors as file to `ValidationResponse.error_log`"
+          maybe_attach_error_log!(
+            path,
+            validation_response,
+            Explorer.DataFrame.n_rows(df),
+            notice_count
           )
-
-          validation_response =
-            validation_response
-            |> ValidationResponse.update!(%{rows_error_count: amount_of_errors})
-            |> ValidationResponse.update_error_log!(attachment)
-
-          # remove file from local tmp dir, as it is now stored on s3
-          File.rm!(path)
-
-          validation_response
 
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
@@ -427,6 +415,43 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     else
       upload_fn.()
     end
+  end
+
+  # Nothing but the header row: no errors, no notices, so there is nothing worth attaching.
+  @spec maybe_attach_error_log!(
+          String.t(),
+          ValidationResponse.t(),
+          non_neg_integer(),
+          non_neg_integer()
+        ) ::
+          ValidationResponse.t()
+  defp maybe_attach_error_log!(path, validation_response, 0, _notice_count) do
+    Logger.debug("No errors were found while validating, so no error log is attached.")
+
+    File.rm!(path)
+
+    validation_response
+  end
+
+  defp maybe_attach_error_log!(path, validation_response, row_count, notice_count) do
+    attachment = FlatFileUtils.store_on_s3!(path, nil)
+
+    # notices (e.g. ignored columns) share the log file but are not row errors
+    amount_of_errors = max(row_count - notice_count, 0)
+
+    Logger.warning(
+      "#{amount_of_errors} errors occured while validating. Adding errors as file to `ValidationResponse.error_log`"
+    )
+
+    validation_response =
+      validation_response
+      |> ValidationResponse.update!(%{rows_error_count: amount_of_errors})
+      |> ValidationResponse.update_error_log!(attachment)
+
+    # remove file from local tmp dir, as it is now stored on s3
+    File.rm!(path)
+
+    validation_response
   end
 
   @doc """
