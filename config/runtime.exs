@@ -93,6 +93,7 @@ case System.get_env("WAFFLE_STORAGE") do
 
     config :ex_aws,
       debug_requests: System.get_env("AWS_DEBUG_REQUESTS") in ~w(true 1),
+      region: System.get_env("AWS_REGION", "us-east-1"),
       access_key_id: get_env!.("AWS_ACCESS_KEY_ID"),
       secret_access_key: get_env!.("AWS_SECRET_ACCESS_KEY"),
       s3: [
@@ -102,7 +103,7 @@ case System.get_env("WAFFLE_STORAGE") do
       ]
 
     config :waffle,
-      storage: Waffle.Storage.S3,
+      storage: DataAggregator.Files.S3Storage,
       bucket: waffle_s3_bucket
 
     Logger.info("Waffle configured to use S3 storage: #{waffle_s3_uri}")
