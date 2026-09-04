@@ -109,7 +109,7 @@ defmodule DataAggregator.ValidationRequestTest do
       {:ok, validation_request} =
         Collection.validate(validation_request, tenant: validation_request.collection)
 
-      %{body: body} = Req.get!(validation_request.attachment.url)
+      %{body: body} = Req.get!(validation_request.attachment.url, decoders: [:zip])
 
       {file_name, file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"validation.csv" end)
