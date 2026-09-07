@@ -204,7 +204,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
       assert Explorer.DataFrame.n_columns(data_frame) == 6
 
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert Explorer.DataFrame.n_rows(data_frame) == 3
       data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
 
       # check if all updated records have the correct validation_status
@@ -284,10 +284,60 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
       assert record.tax_taxon_id_ch == 123_456
       assert record.oth_swiss_species_center == "infofauna"
     end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 ingests organismID and stateProvince but ignores county",
+         %{
+           collection: collection,
+           actor: actor
+         } do
+      validation_response =
+        validation_response_fixture(
+          %{},
+          "test/support/fixtures/files/validated_edited_attributes.csv"
+        )
+
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert validation_response.state == :done
+      assert validation_response.rows_validated_count == 2
+      assert validation_response.rows_error_count == 0
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      record = Enum.find(validated_records, &(&1.mte_catalog_number == "GBIFCH00993760"))
+
+      assert record.org_organism_id == "ORG-1"
+      assert record.loc_state_province == "Vaud"
+
+      # county is no longer part of the validation and must not reach the validation layer
+      assert is_nil(record.loc_county)
+
+      # the ignored columns are reported once, but do not count as row errors
+      assert {:ok, data_frame} =
+               Explorer.DataFrame.from_csv(validation_response.error_log.url,
+                 infer_schema_length: 0
+               )
+
+      assert data_frame |> Explorer.DataFrame.pull("field") |> Explorer.Series.to_list() ==
+               ["encoded *", "county", "someUnknownColumn"]
+    end
   end
 
   defp expected_errors do
     [
+      %{
+        "catalogNumber" => nil,
+        "field" => "county",
+        "message" => "Column is not part of the validation and was ignored.",
+        "occurrenceID" => nil,
+        "scientificName" => nil,
+        "value" => nil
+      },
       %{
         "catalogNumber" => nil,
         "field" => nil,

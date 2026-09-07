@@ -261,7 +261,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     previous_data = previous_data(encoded_record)
     current_data = current_data(encoded_record, validation_file, collection)
 
-    if previous_data == current_data do
+    attribute_names = validation_file.attribute_names
+
+    if comparable(previous_data, attribute_names) == comparable(current_data, attribute_names) do
       Logger.debug("Validation Request: No changes detected. No data will be sent for validation.")
 
       {:not_changed, previous_data}
@@ -276,6 +278,31 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   @spec previous_data(EncodedRecord.t()) :: map() | nil
   defp previous_data(%{record: %{validation_request_record: %{data: data}}}), do: data
   defp previous_data(_), do: nil
+
+  # Compares content instead of payload shape: only currently sent attributes, blanks
+  # dropped. Tolerates data stored by an earlier header allow-list, so no backfill.
+  @spec comparable(map() | nil, %{String.t() => MapSet.t(String.t())}) :: map() | nil
+  defp comparable(nil, _attribute_names), do: nil
+
+  defp comparable(data, attribute_names) when is_map(data) do
+    Map.new(attribute_names, fn {group, names} ->
+      {group, comparable_group(Map.get(data, group), names)}
+    end)
+  end
+
+  @spec comparable_group(list(map()) | nil, MapSet.t(String.t())) :: map()
+  defp comparable_group(entries, names) when is_list(entries) do
+    for %{"attr" => attr, "value" => value} <- entries,
+        MapSet.member?(names, attr),
+        not blank?(value),
+        into: %{},
+        do: {attr, value}
+  end
+
+  defp comparable_group(_entries, _names), do: %{}
+
+  @spec blank?(any()) :: boolean()
+  defp blank?(value), do: value in [nil, ""]
 
   # returns the attributes, values and headers for further processing towards a validation request
   @spec current_data(EncodedRecord.t(), ValidationFile.t(), Collection.t()) :: map()
