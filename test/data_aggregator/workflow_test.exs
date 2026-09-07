@@ -579,7 +579,7 @@ defmodule DataAggregator.WorkflowTest do
       end
 
       # Check that the right amount of records were exported to the csv file
-      %{body: body} = Req.get!(validation_request.attachment_url)
+      %{body: body} = Req.get!(validation_request.attachment_url, decoders: [:zip])
 
       {_, file_content} = Enum.at(body, 0)
 

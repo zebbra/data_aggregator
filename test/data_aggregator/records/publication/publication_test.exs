@@ -229,7 +229,7 @@ defmodule DataAggregator.PublicationTest do
     } do
       {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
 
-      %{body: body} = Req.get!(publication.attachment.url)
+      %{body: body} = Req.get!(publication.attachment.url, decoders: [:zip])
 
       # validating if the core file is correctly created
       {core_file_name, core_file_content} =
@@ -352,7 +352,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_1} =
         Collection.publish(publication_1, tenant: publication_1.collection)
 
-      %{body: body} = Req.get!(publication_1.attachment.url)
+      %{body: body} = Req.get!(publication_1.attachment.url, decoders: [:zip])
 
       # validate core file from first publication
       {_core_file_name, core_file_content} =
@@ -389,7 +389,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_2} =
         Collection.publish(publication_2, tenant: publication_2.collection)
 
-      %{body: body} = Req.get!(publication_2.attachment.url)
+      %{body: body} = Req.get!(publication_2.attachment.url, decoders: [:zip])
 
       # validate core file from second publication
       {_core_file_name, core_file_content} =
@@ -429,7 +429,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_3} =
         Collection.publish(publication_3, tenant: publication_3.collection)
 
-      %{body: body} = Req.get!(publication_3.attachment.url)
+      %{body: body} = Req.get!(publication_3.attachment.url, decoders: [:zip])
 
       # validate core file from third publication
       {_core_file_name, core_file_content} =
@@ -500,7 +500,7 @@ defmodule DataAggregator.PublicationTest do
 
       {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
 
-      %{body: body} = Req.get!(publication.attachment.url)
+      %{body: body} = Req.get!(publication.attachment.url, decoders: [:zip])
 
       # validating if the core file is correctly created
       {core_file_name, core_file_content} =

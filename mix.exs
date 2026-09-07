@@ -298,11 +298,11 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:hackney, "~> 1.24"},
+      {:hackney, "~> 4.7"},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.6.2"},
+      {:req, "~> 0.7.4"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
@@ -312,9 +312,9 @@ defmodule DataAggregator.MixProject do
       # Data Processing and Parsing
       {:explorer, "~> 0.10.0"},
       {:csv, "~> 3.2"},
-      {:waffle, "~> 1.1.9"},
-      {:ex_aws, "~> 2.5.4"},
-      {:ex_aws_s3, "~> 2.0"},
+      {:waffle, "~> 2.0"},
+      {:ex_aws, "~> 2.7"},
+      {:ex_aws_s3, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
@@ -324,7 +324,7 @@ defmodule DataAggregator.MixProject do
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:sentry, "~> 11.0"},
+      {:sentry, "~> 13.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:recon, "~> 2.5", only: :dev},

@@ -51,7 +51,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   """
   @spec fetch_file_from_url(String.t()) :: String.t()
   def fetch_file_from_url(url) do
-    %{body: dwca_file} = Req.get!(url)
+    %{body: dwca_file} = Req.get!(url, decoders: [:zip])
 
     dwca_file
   end

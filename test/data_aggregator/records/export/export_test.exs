@@ -300,7 +300,7 @@ defmodule DataAggregator.ExportTest do
 
       case Collection.export(export, tenant: collection) do
         {:ok, result} ->
-          %{body: body} = Req.get!(result.attachment.url)
+          %{body: body} = Req.get!(result.attachment.url, decoders: [:zip])
 
           {_, file_content} = Enum.at(body, 0)
 
@@ -474,7 +474,7 @@ defmodule DataAggregator.ExportTest do
       export = Ash.load!(export, [:collection])
       {:ok, export} = Collection.export(export, tenant: export.collection)
 
-      %{body: body} = Req.get!(export.attachment.url)
+      %{body: body} = Req.get!(export.attachment.url, decoders: [:zip])
 
       {_, file_content} = Enum.at(body, 0)
 
