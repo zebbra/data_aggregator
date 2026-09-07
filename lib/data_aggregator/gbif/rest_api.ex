@@ -70,23 +70,6 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
-  Search for occurrences in the GBIF API. Returns a list of occurrences.
-  """
-  @spec search_for_occurrences(String.t(), String.t()) :: Api.response()
-  def search_for_occurrences(catalog_number, dataset_key) do
-    [params: [{:catalogNumber, catalog_number}, {:datasetKey, dataset_key}]]
-    # TODO: extract attaching cache (and other middlewres) to separate helper
-    #  module (DataAggregator.Api.Helpers) to have it resusable and not
-    #  poluting all api client functions
-    |> Req.new()
-    |> HttpDiskCache.attach()
-    |> Req.get(
-      url: search_occurrence_url(),
-      max_cache_age_seconds: @hour
-    )
-  end
-
-  @doc """
   Get a single entity (collection or institution) from the GrSciColl API, according to its key
   """
   @spec get_grscicoll_entity(String.t(), :collection | :institution | :dataset) ::

@@ -123,7 +123,20 @@ defmodule DataAggregator.MixProject do
   defp before_closing_body_tag(_), do: ""
 
   defp extras do
-    Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+    project_extras() ++ Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+  end
+
+  # Root level documents referenced from the README, which is used as the
+  # @moduledoc of DataAggregator. They must be listed as extras so ExDoc can
+  # resolve the links to them.
+  defp project_extras do
+    [
+      "CONTRIBUTING.md",
+      "CODE_OF_CONDUCT.md",
+      "SECURITY.md",
+      "LICENSE-IMPLICATIONS.md",
+      {:LICENSE, [title: "License"]}
+    ]
   end
 
   defp groups_for_extras do
@@ -133,7 +146,14 @@ defmodule DataAggregator.MixProject do
         "docs/deployment.md"
       ],
       Ash: "docs/api.md",
-      Guides: ~r'docs/guides'
+      Guides: ~r'docs/guides',
+      Project: [
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+        "LICENSE-IMPLICATIONS.md",
+        "LICENSE"
+      ]
     ]
   end
 
@@ -209,7 +229,7 @@ defmodule DataAggregator.MixProject do
     [
       {:oban_web, "~> 2.0"},
       {:ash_oban, "~> 0.6"},
-      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:usage_rules, "~> 1.2", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
       {:bandit, "~> 1.12"},
@@ -220,7 +240,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_live_view, "~> 1.1.14"},
       {:phoenix_storybook, "~> 1.2"},
       {:tidewave, "~> 0.4", only: [:dev]},
-      {:live_debugger, "~> 0.3", only: [:dev]},
+      {:live_debugger, "~> 1.0", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
@@ -248,7 +268,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-      {:git_ops, "~> 2.8.0", only: [:dev]},
+      {:git_ops, "~> 2.10.0", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 2.1", only: [:test, :bench]},
@@ -258,7 +278,7 @@ defmodule DataAggregator.MixProject do
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.5.1", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -278,7 +298,7 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:hackney, "~> 1.24"},
+      {:hackney, "~> 4.7"},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
@@ -292,9 +312,9 @@ defmodule DataAggregator.MixProject do
       # Data Processing and Parsing
       {:explorer, "~> 0.10.0"},
       {:csv, "~> 3.2"},
-      {:waffle, "~> 1.1.9"},
-      {:ex_aws, "~> 2.5.4"},
-      {:ex_aws_s3, "~> 2.0"},
+      {:waffle, "~> 2.0"},
+      {:ex_aws, "~> 2.7"},
+      {:ex_aws_s3, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
@@ -304,7 +324,7 @@ defmodule DataAggregator.MixProject do
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:sentry, "~> 11.0"},
+      {:sentry, "~> 13.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:recon, "~> 2.5", only: :dev},

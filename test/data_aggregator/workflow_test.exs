@@ -442,8 +442,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, publication_updated (3x -> publishing, in_publication, published)
-      expected_length = 6 * 4
+      # import, publication_updated (2x -> publishing, published)
+      expected_length = 6 * 3
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -586,7 +586,7 @@ defmodule DataAggregator.WorkflowTest do
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
 
       assert DataFrame.n_rows(data_frame) == 6
-      assert DataFrame.n_columns(data_frame) == 202
+      assert DataFrame.n_columns(data_frame) == 200
 
       # no new records versions should have been created
       assert_encode_versions(actor, tenant)

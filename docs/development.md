@@ -86,7 +86,7 @@ The project is structured in a way that the code is separated into different fol
 - Run `mix deps.get && mix compile --force && mix git_hooks.install` to work with the project specific git hooks
 - Run `docker compose up` in one of your terminals, to start services around our application - if there are any
 - Run `mix setup` to install and setup dependencies
-- Add some users with ``
+- Add some users with ''
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser to see the app and start developing.

@@ -359,12 +359,6 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.EnqueueEncoder
     end
 
-    action :enqueue_publication_verifier, :map do
-      argument :published_record, :struct, allow_nil?: false
-
-      run Record.Actions.EnqueuePublicationVerifier
-    end
-
     action :bulk_import, :map do
       description """
       Imports multiple records using `Ash.bulk_create/3`.
@@ -384,12 +378,6 @@ defmodule DataAggregator.Records.Record do
       argument :catalog, :atom, allow_nil?: false
 
       run Encoding.Actions.EncodeRecord
-    end
-
-    update :check_if_published do
-      require_atomic? false
-
-      change Changes.CheckIfPublished
     end
 
     update :set_imported do
@@ -493,8 +481,6 @@ defmodule DataAggregator.Records.Record do
     define :update_publication_status, args: [:status]
     define :update_validation_status, args: [:status]
     define :set_validation_status_not_validated, args: [:annotation]
-    define :check_if_published
-    define :enqueue_publication_verifier, args: [:published_record]
     define :update_last_validation_started_at
     define :add_images, args: [:images]
   end
@@ -504,7 +490,7 @@ defmodule DataAggregator.Records.Record do
       authorize_if always()
     end
 
-    bypass action([:bulk_import, :import, :encode, :enqueue_publication_verifier]) do
+    bypass action([:bulk_import, :import, :encode]) do
       authorize_if always()
     end
 

@@ -1513,7 +1513,7 @@ msgid "close"
 msgstr "schließen"
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:123
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:269
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:273
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr "Auf GBIF anzeigen"
@@ -4441,36 +4441,36 @@ msgid "that hold sensitive information and where publication rules will be appli
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:142
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:281
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:285
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:423
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:442
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:426
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:445
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:429
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:448
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:432
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:451
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:420
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:439
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No MIDS Level: Not enough metadata available. See the guide for recommendations."
@@ -5598,23 +5598,11 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Publication failed. Process should be started again."
 msgstr "Veröffentlichung fehlgeschlagen. Der Prozess sollte erneut gestartet werden"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:372
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Publication in progress."
-msgstr "Veröffentlichung läuft"
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:375
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is now in the publication pipeline - no further action required."
 msgstr "Der Eintrag ist in Veröffentlichung - keine weitere Aktion erforderlich"
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:378
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Record publication was successful."
-msgstr "Die Veröffentlichung ist"
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:384
 #, elixir-autogen, elixir-format, fuzzy
@@ -5826,3 +5814,15 @@ msgstr ""
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Failed to load the publication summary. Please close the modal and try again."
 msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:372
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 24 hours - no further action required."
+msgstr "Veröffentlichung läuft. Sobald das Archiv an GBIF übergeben wurde, wird der Eintrag innerhalb von 24 Stunden als veröffentlicht markiert - keine weitere Aktion erforderlich"
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:378
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "The record has been handed to GBIF as part of a published archive."
+msgstr "Der Eintrag wurde als Teil eines veröffentlichten Archivs an GBIF übergeben"

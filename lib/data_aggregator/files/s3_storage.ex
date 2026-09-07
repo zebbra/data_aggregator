@@ -6,7 +6,7 @@ defmodule DataAggregator.Files.S3Storage do
   See https://github.com/zebbra/data_aggregator/issues/1099
   """
 
-  @behaviour Waffle.StorageBehavior
+  @behaviour Waffle.Storage
 
   alias ExAws.S3
   alias ExAws.S3.Upload

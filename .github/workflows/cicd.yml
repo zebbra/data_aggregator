@@ -62,7 +62,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             deps
@@ -80,7 +80,7 @@ jobs:
       - run: mix dialyzer --plt
 
       - name: Save cache
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         if: steps.cache.outputs.cache-hit != 'true'
         with:
           path: |
@@ -111,7 +111,7 @@ jobs:
     steps:
       - name: Get token for gh app Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v4
+        uses: peter-murray/workflow-application-token-action@v5
         with:
           application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
           application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
@@ -129,7 +129,7 @@ jobs:
 
       - name: Generate image tags
         id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@v6.1.0
         with:
           images: |
             quay.io/zebbra/data_aggregator
@@ -145,7 +145,7 @@ jobs:
 
       - name: Login to quay.io
         if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.2.0
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
@@ -182,7 +182,7 @@ jobs:
     steps:
       - name: Get token for gh app Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v4
+        uses: peter-murray/workflow-application-token-action@v5
         with:
           application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
           application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}

@@ -189,6 +189,41 @@ defmodule DataAggregator.PublicationTest do
       ]
     end
 
+    test "publish/1 finalizes the records to :published without asking GBIF", %{
+      publication: publication
+    } do
+      # the grace period is 0 in test and Oban runs inline, so the finalizer runs on insert
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
+
+      statuses =
+        Record
+        |> Ash.Query.filter(publication_status != :not_published)
+        |> Ash.read!(tenant: publication.collection)
+        |> Enum.map(& &1.publication_status)
+        |> Enum.uniq()
+
+      assert statuses == [:published]
+      refute :in_publication in statuses
+    end
+
+    test "publish/1 does not publish the gbifID", %{publication: publication} do
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
+
+      %{body: body} = Req.get!(publication.attachment.url)
+
+      {_name, core_file_content} =
+        Enum.find(body, fn {name, _content} -> name == ~c"core.csv" end)
+
+      {_name, meta_file_content} =
+        Enum.find(body, fn {name, _content} -> name == ~c"meta.xml" end)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      # see docs/adr/0001-publication-is-asserted-not-verified.md
+      refute "gbifID" in data_frame.names
+      refute to_string(meta_file_content) =~ "gbifID"
+    end
+
     test "publish/1 successful", %{
       publication: publication
     } do

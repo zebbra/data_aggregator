@@ -34,6 +34,6 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
   end
 
   defp insert_job(%Collection{id: id}) do
-    Collection.Workers.EncodingStatePoller.schedule_next(id)
+    Collection.Workers.EncodingStatePoller.start(id)
   end
 end

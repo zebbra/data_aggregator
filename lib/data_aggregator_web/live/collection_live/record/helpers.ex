@@ -14,11 +14,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   @transformers Schema.dwc_transformers()
   @fields_not_shown_in_ui [
-    :loc_decimal_presence,
-    :loc_swiss_coordinates_95_presence,
-    :loc_swiss_coordinates_03_presence,
-    :eve_event_date_presence
-  ]
+                            :loc_decimal_presence,
+                            :loc_swiss_coordinates_95_presence,
+                            :loc_swiss_coordinates_03_presence,
+                            :eve_event_date_presence
+                          ] ++ Schema.unexportable_attribute_names()
 
   def busy?(action, busy_action), do: action == busy_action
 

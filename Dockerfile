@@ -71,9 +71,6 @@ RUN mix assets.deploy
 RUN mix compile
 RUN mix sentry.package_source_code
 
-# Generate documentation
-RUN mix docs
-
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/
 

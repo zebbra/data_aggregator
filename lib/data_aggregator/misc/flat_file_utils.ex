@@ -29,7 +29,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   }
 
   map_data_to_headers(record_data, header_fields, transformers)
-
+  ```
   @doc \"""
     Maps a given map of data to the given Keyword list of headers to get a map with a label as key and the value as value
     input:
