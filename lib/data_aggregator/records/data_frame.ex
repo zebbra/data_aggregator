@@ -9,7 +9,7 @@ defmodule DataAggregator.Records.DataFrame do
 
   @csv_exts ~w(.csv .tsv .txt)
   # disable schema inference
-  @csv_read_opts [parse_dates: true, infer_schema_length: 0]
+  @csv_read_opts [parse_dates: true, infer_schema_length: 0, encoding: "utf8-lossy"]
   @csv_write_opts []
   @csv_delimiters [",", ";", "|", "\t"]
 
@@ -198,12 +198,14 @@ defmodule DataAggregator.Records.DataFrame do
         |> Explorer.DataFrame.summarise_with(fn lf ->
           [n: Explorer.Series.size(lf[first_col])]
         end)
-        |> Explorer.DataFrame.compute()
+        |> Explorer.DataFrame.collect()
         |> Explorer.DataFrame.pull("n")
         |> Explorer.Series.first()
 
       {:ok, rows}
     end
+  rescue
+    error -> {:error, error}
   end
 
   def maybe_parse_polaris_error(error) when is_exception(error),

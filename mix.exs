@@ -238,13 +238,13 @@ defmodule DataAggregator.MixProject do
       {:phoenix_html, "~> 4.3"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:phoenix_live_view, "~> 1.1.14"},
-      {:phoenix_storybook, "~> 1.2"},
+      {:phoenix_storybook, "~> 1.3"},
       {:tidewave, "~> 0.4", only: [:dev]},
       {:live_debugger, "~> 1.0", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.10"},
+      {:ash, "~> 3.0"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.8", override: true},
@@ -310,7 +310,7 @@ defmodule DataAggregator.MixProject do
       {:castore, "~> 1.0"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.10.0"},
+      {:explorer, "~> 0.12.0"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 2.0"},
       {:ex_aws, "~> 2.7"},

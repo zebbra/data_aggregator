@@ -17,6 +17,7 @@ config :ash, :use_all_identities_in_manage_relationship?, false
 
 # prevent deprecated warning for wrong usage of timestamp dateformat
 config :ash, :utc_datetime_type, :naive_datetime
+config :ash, default_string_length_count: :codepoints
 
 config :ash_oban, pro?: false
 
