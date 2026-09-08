@@ -22,7 +22,7 @@ defmodule DataAggregator.PublicationTest do
 
   describe "publication tests" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
@@ -103,7 +103,7 @@ defmodule DataAggregator.PublicationTest do
       encoded_record_fixture(%{record: record4})
       encoded_record_fixture(%{record: record5})
       encoded_record_append_1 = encoded_record_fixture(%{record: record_append_1})
-      encoded_record_append_1 |> Ash.update!(%{tax_taxon_id: 4762}) |> Map.get(:tax_taxon_id)
+      encoded_record_append_1 |> Ash.update!(%{tax_taxon_id: "4762"}) |> Map.get(:tax_taxon_id)
       encoded_record_fixture(%{record: record_append_2})
       encoded_record_fixture(%{record: record_append_3})
 
@@ -189,19 +189,54 @@ defmodule DataAggregator.PublicationTest do
       ]
     end
 
+    test "publish/1 finalizes the records to :published without asking GBIF", %{
+      publication: publication
+    } do
+      # the grace period is 0 in test and Oban runs inline, so the finalizer runs on insert
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
+
+      statuses =
+        Record
+        |> Ash.Query.filter(publication_status != :not_published)
+        |> Ash.read!(tenant: publication.collection)
+        |> Enum.map(& &1.publication_status)
+        |> Enum.uniq()
+
+      assert statuses == [:published]
+      refute :in_publication in statuses
+    end
+
+    test "publish/1 does not publish the gbifID", %{publication: publication} do
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
+
+      %{body: body} = Req.get!(publication.attachment.url)
+
+      {_name, core_file_content} =
+        Enum.find(body, fn {name, _content} -> name == ~c"core.csv" end)
+
+      {_name, meta_file_content} =
+        Enum.find(body, fn {name, _content} -> name == ~c"meta.xml" end)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      # see docs/adr/0001-publication-is-asserted-not-verified.md
+      refute "gbifID" in data_frame.names
+      refute to_string(meta_file_content) =~ "gbifID"
+    end
+
     test "publish/1 successful", %{
       publication: publication
     } do
       {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
 
-      %{body: body} = Req.get!(publication.attachment.url)
+      %{body: body} = Req.get!(publication.attachment.url, decoders: [:zip])
 
       # validating if the core file is correctly created
       {core_file_name, core_file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      assert core_file_name
+      assert core_file_content
 
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
 
@@ -317,7 +352,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_1} =
         Collection.publish(publication_1, tenant: publication_1.collection)
 
-      %{body: body} = Req.get!(publication_1.attachment.url)
+      %{body: body} = Req.get!(publication_1.attachment.url, decoders: [:zip])
 
       # validate core file from first publication
       {_core_file_name, core_file_content} =
@@ -339,7 +374,7 @@ defmodule DataAggregator.PublicationTest do
       assert length(published_records) == 1
 
       # default publication is on layer 'validation' so the value saved in published_records are encoded_record values
-      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == "4762"
       rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
@@ -354,7 +389,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_2} =
         Collection.publish(publication_2, tenant: publication_2.collection)
 
-      %{body: body} = Req.get!(publication_2.attachment.url)
+      %{body: body} = Req.get!(publication_2.attachment.url, decoders: [:zip])
 
       # validate core file from second publication
       {_core_file_name, core_file_content} =
@@ -376,7 +411,7 @@ defmodule DataAggregator.PublicationTest do
       assert length(published_records) == 3
 
       # the record published first should still use the value from encoded record
-      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == "4762"
       rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
@@ -394,7 +429,7 @@ defmodule DataAggregator.PublicationTest do
       {:ok, publication_3} =
         Collection.publish(publication_3, tenant: publication_3.collection)
 
-      %{body: body} = Req.get!(publication_3.attachment.url)
+      %{body: body} = Req.get!(publication_3.attachment.url, decoders: [:zip])
 
       # validate core file from third publication
       {_core_file_name, core_file_content} =
@@ -430,27 +465,34 @@ defmodule DataAggregator.PublicationTest do
       assert_lists_equal(expected, transformed_attributes)
     end
 
-    test "publish/1 succesful with publication rules", %{
+    test "publish/1 succesful with publication rules (coordinate obfuscation)", %{
       publication: publication,
       records: records
     } do
-      expect_correct_swiss_species_api_call(2)
+      expect_correct_swiss_species_api_call(3)
 
       update_record_fixtures!(Enum.at(records, 0), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_decimal_latitude: 48.27606815,
         loc_decimal_longitude: 10.408043484
       })
 
       update_record_fixtures!(Enum.at(records, 1), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_country: "Switzerland",
-        loc_decimal_latitude: 49.27606815,
-        loc_decimal_longitude: 11.408043484
+        loc_decimal_latitude: 47.585812203,
+        loc_decimal_longitude: 9.166888228
+      })
+
+      update_record_fixtures!(Enum.at(records, 2), %{
+        tax_taxon_id: "4762",
+        loc_country: "Switzerland",
+        loc_decimal_latitude: 47.585812401,
+        loc_decimal_longitude: 9.166874938
       })
 
       update_record_fixtures!(Enum.at(records, 3), %{
-        tax_taxon_id: 4762,
+        tax_taxon_id: "4762",
         loc_country: "Switzerland",
         loc_decimal_latitude: 47.27606815,
         loc_decimal_longitude: 9.408043484
@@ -458,14 +500,14 @@ defmodule DataAggregator.PublicationTest do
 
       {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
 
-      %{body: body} = Req.get!(publication.attachment.url)
+      %{body: body} = Req.get!(publication.attachment.url, decoders: [:zip])
 
       # validating if the core file is correctly created
       {core_file_name, core_file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      assert core_file_name
+      assert core_file_content
 
       assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
 
@@ -484,30 +526,36 @@ defmodule DataAggregator.PublicationTest do
           rows,
           &Map.take(&1, [
             "decimalLongitude",
-            "decimalLatitude"
+            "decimalLatitude",
+            "coordinateUncertaintyInMeters"
           ])
         )
 
       expected = [
         %{
           "decimalLatitude" => 48.27606815,
-          "decimalLongitude" => 10.408043484
+          "decimalLongitude" => 10.408043484,
+          "coordinateUncertaintyInMeters" => 5000.0
         },
         %{
-          "decimalLatitude" => 49.28,
-          "decimalLongitude" => 11.41
+          "decimalLatitude" => 47.5898085,
+          "decimalLongitude" => 9.2002562,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
-          "decimalLatitude" => 47.27606815,
-          "decimalLongitude" => 9.408043484
+          "decimalLatitude" => 47.5907987,
+          "decimalLongitude" => 9.1338001,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
-          "decimalLatitude" => 47.28,
-          "decimalLongitude" => 9.41
+          "decimalLatitude" => 47.2719116,
+          "decimalLongitude" => 9.3880537,
+          "coordinateUncertaintyInMeters" => 3535.0
         },
         %{
           "decimalLatitude" => nil,
-          "decimalLongitude" => nil
+          "decimalLongitude" => nil,
+          "coordinateUncertaintyInMeters" => nil
         }
       ]
 

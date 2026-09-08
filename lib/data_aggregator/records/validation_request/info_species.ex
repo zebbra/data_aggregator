@@ -8,32 +8,32 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Mailer
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   require Logger
 
-  @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
+  @doc """
+  Notifies the infospecies center by mail about the validation request.
+  """
+  @spec notify(ValidationRequest.t(), pos_integer()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
-  def notify(%ValidationRequest{} = validation_request, query) do
+  def notify(validation_request, count) do
     with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(validation_request.collection.grscicoll_institution_key) do
       notification =
         %{
-          count: to_string(Ash.count!(query)),
-          dwca_file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
+          count: to_string(count),
+          file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
           institution: institution_name,
-          date: get_date_time_now(),
-          # for now we use institution_name as owner, because we don't have this
-          # on the grscicoll collection
+          date: get_date_time(),
           owner: institution_name,
-          center: validation_request.center
+          center: validation_request.center,
+          collection_code: validation_request.collection.code
         }
 
-      notify_infospecies(query, notification)
+      notify_infospecies(notification)
 
       {:ok, validation_request}
     else
@@ -53,7 +53,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
         {:ok, Map.get(institution, "code", "") <> " - " <> Map.get(institution, "name", "")}
 
       {:error, _error} ->
-        Logger.debug("Error fetching institution with key: #{key}")
+        Logger.warning("Error fetching institution with key: #{key}")
         # we swallow the error here, because we don't want to abort the process
         # of notifying the infospecies centers
         {:ok, "Unknown institution"}
@@ -61,54 +61,42 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   end
 
   defp get_message_body(notification) do
-    "institution: " <>
-      notification.institution <>
-      "owner: " <>
-      notification.owner <>
-      ", date: " <>
-      notification.date <>
-      ", count: " <>
-      notification.count <>
-      ", link: " <> notification.dwca_file_link
+    "This automatic email is reaching the #{notification.center} centre either because there are new records available for validation or because the original data has been updated for the dataset #{notification.collection_code} of the #{notification.institution}. \n\n" <>
+      "Number of records in the requested validation: #{notification.count} \n" <>
+      "Time stamp of the requested validation: #{notification.date} \n\n" <>
+      "Link to download the dataset: #{notification.file_link} \n\n" <>
+      "Please follow the conventions established with GBIF.ch to ensure smooth data flow.\n\n" <>
+      "Regards,\n" <>
+      "The GBIF.ch team"
   end
 
-  @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
-  defp notify_infospecies(query, notification) do
-    Logger.info("Notifying infospecies center: #{inspect(notification)}")
+  @spec notify_infospecies(map()) :: :ok
+  defp notify_infospecies(notification) do
+    Logger.debug("Notifying infospecies center: #{inspect(notification)}")
 
-    {:ok, _to_mails} = InfospeciesCenters.get_center_emails(notification.center)
+    {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 
-    email =
-      new()
-      |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
-      # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
-      #    want to send the email to the infospecies centers directly
-      |> to(["data@gbif.ch"])
-      |> subject("New records available for validation")
-      |> text_body(get_message_body(notification))
+    case new()
+         |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
+         |> to(to_mails)
+         |> subject("DAGI: New requested validation for #{notification.collection_code}")
+         |> text_body(get_message_body(notification))
+         |> Mailer.deliver() do
+      {:ok, result} ->
+        Logger.info(
+          "[Validation request infospecies center notification] Mail sent successful with result: #{inspect(result)}"
+        )
 
-    Mailer.deliver(email)
-
-    if Records.execute_async?() do
-      Task.start(fn -> update_records_validation_started_at(query) end)
-    else
-      update_records_validation_started_at(query)
+      {:error, error} ->
+        Logger.error(
+          "[Validation request infospecies center notification] Mail sending failed with error: #{inspect(error)}"
+        )
     end
 
     :ok
   end
 
-  defp update_records_validation_started_at(query) do
-    query
-    |> Ash.stream!()
-    |> Enum.each(&process_record(&1))
-  end
-
-  defp process_record(record) do
-    Record.update_last_validation_started_at!(record)
-  end
-
-  defp get_date_time_now do
+  defp get_date_time do
     DateTime.utc_now()
     |> DateTime.shift_zone!("Europe/Zurich")
     |> Cldr.DateTime.to_string!(format: :short)

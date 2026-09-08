@@ -45,6 +45,7 @@ defmodule DataAggregator.Records.Record.Image do
       require_atomic? false
 
       change Changes.RemoveAssociatedMedia
+      change cascade_destroy(:attachment)
     end
   end
 

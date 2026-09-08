@@ -75,7 +75,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
 
         Logger.error(msg)
 
-        {:ok, error}
+        {:error, error}
     end
   end
 end

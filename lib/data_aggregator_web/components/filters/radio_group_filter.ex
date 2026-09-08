@@ -12,8 +12,10 @@ defmodule DataAggregatorWeb.Filters.RadioGroupFilter do
     target={@target}
     options={[
       [key: ~t"Any"m, value: ""],
-      [key: ~t"Endangered"m, value: "true"],
-      [key: ~t"Safe"m, value: "false"]
+      [key: ~t"Threatened"m, value: "threatened"],
+      [key: ~t"Less threatened"m, value: "less_threatened"],
+      [key: ~t"Extinct (or nearly)"m, value: "extinct"],
+      [key: ~t"Uncertain data"m, value: "uncertain_data"]
     ]}
     top_level
   />

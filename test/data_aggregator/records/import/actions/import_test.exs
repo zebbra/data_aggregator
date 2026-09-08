@@ -32,17 +32,24 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     [collection: collection]
   end
 
-  setup %{collection: collection, path: path} do
-    import =
-      collection
-      |> Import.create_from_path!(path, tenant: collection)
-      |> Import.update_mapping!(@valid_mapping)
+  setup context do
+    if path = context[:path] do
+      collection = context.collection
 
-    [import: import, path: path]
+      import =
+        collection
+        |> Import.create_from_path!(path, tenant: collection)
+        |> Import.update_mapping!(@valid_mapping)
+
+      [import: import, path: path]
+    else
+      :ok
+    end
   end
 
   describe "DataAggregator.Records.Import.import/1" do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
+    @tag capture_log: true
     test "succeeds with a valid file", %{import: import, collection: collection} do
       assert import.rows_count == 18
 
@@ -53,8 +60,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :imported
       assert import.records_count == 18
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 18
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 18
@@ -62,10 +69,11 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.import_progress == 1.0
 
       assert record = Record |> Ash.Query.set_tenant(collection) |> Ash.read!() |> hd()
-      assert record.eve_event_date != nil
+      assert record.eve_event_date
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
+    @tag capture_log: true
     test "updates collections.records_count after import", %{
       collection: collection,
       import: import
@@ -76,6 +84,17 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       collection = Collection.get_by_id!(collection.id)
       assert collection.records_count == 18
+    end
+
+    @tag path: "test/support/fixtures/files/invalid_field_format.txt"
+    test "aborts the import when the file has no usable header row",
+         %{import: import} do
+      {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
+
+      assert {:ok, import} = result
+      assert import.state == :failed
+      assert logs =~ "No records imported!"
+      assert logs =~ "_duplicated_0"
     end
 
     @tag path: "test/support/fixtures/files/invalid-records-small.csv"
@@ -91,8 +110,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :failed
       assert import.records_count == 0
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0
@@ -128,8 +147,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert import.state == :failed
       assert import.records_count == 0
-      assert import.started_at != nil
-      assert import.finished_at != nil
+      assert import.started_at
+      assert import.finished_at
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0
@@ -156,6 +175,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag capture_log: true
     test "imports columns with same order as provided by the import file", %{
       import: import,
       path: path
@@ -163,7 +183,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert {:ok, import} = Import.import(import, tenant: import.collection)
 
       column_names = Enum.map(import.columns, & &1.name)
-      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
+      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order!(path)
 
       collection = Collection.get_by_id!(import.collection_id)
 
@@ -198,33 +218,22 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_invalid_count == 0
     end
 
-    @tag path: "test/support/fixtures/files/invalid-format.csv"
-    test "imports columns with invalid row format and still adds indicative error to import", %{
-      import: import
+    test "rejects a file with invalid row format with an indicative error", %{
+      collection: collection
     } do
-      custom_mapping = [
-        %{name: "verbatimIdentification", mapped_to: "tax_scientific_name"},
-        %{name: "catalogNumber", mapped_to: "mte_catalog_number"}
-      ]
+      path = "test/support/fixtures/files/invalid-format.csv"
 
-      import = Import.update_mapping!(import, custom_mapping)
+      assert {:error, error} =
+               Import.create_from_path(collection, path, tenant: collection)
 
-      assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
-      assert {:ok, import} = result
+      message = Exception.message(error)
 
-      collection = Collection.get_by_id!(import.collection_id)
+      assert message =~ "Invalid value provided for path"
+      assert message =~ "for field 'DTB_STATUT'"
+      assert message =~ "Please verify your data"
 
+      collection = Collection.get_by_id!(collection.id)
       assert collection.records_count == 0
-
-      assert logs =~ "Found 1/1 invalid rows. Adding error to changeset"
-
-      assert logs =~
-               "2 errors occured while importing. Adding errors as file to `import.error_log`"
-
-      assert import.state == :failed
-      assert import.records_count == 0
-      assert import.rows_imported_count == 0
-      assert import.rows_invalid_count == 0
     end
   end
 end

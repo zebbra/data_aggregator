@@ -12,6 +12,7 @@ failed --> running: run
 failed --> running: set_running
 running --> failed: cancel_validation_request
 queued --> running: set_running
+queued --> failed: set_failed
 queued --> failed: cancel_validation_request
 pending --> running: run
 pending --> running: set_running

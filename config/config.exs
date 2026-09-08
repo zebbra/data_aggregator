@@ -17,6 +17,9 @@ config :ash, :use_all_identities_in_manage_relationship?, false
 
 # prevent deprecated warning for wrong usage of timestamp dateformat
 config :ash, :utc_datetime_type, :naive_datetime
+config :ash, default_string_length_count: :codepoints
+
+config :ash_oban, pro?: false
 
 # AshPagify global configuration
 config :ash_pagify,
@@ -55,21 +58,28 @@ config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 
 # Configure Oban job queues
 config :data_aggregator, Oban,
+  notifier: Oban.Notifiers.PG,
   repo: DataAggregator.Repo,
   plugins: [
-    {Oban.Plugins.Pruner, max_age: 5, limit: 10_000, interval: 1_000 * 60},
-    {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)}
+    {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},
+    {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)},
+    {Oban.Plugins.Cron,
+     crontab: [
+       # safety net for records left in `:publishing` because their finalizer job was lost
+       {"0 * * * *", DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweeper}
+     ]}
   ],
   queues: [
     imports: 1,
     encoders: 5,
     exports: 1,
     publications: 1,
-    publication_verifications: 1,
+    publication_finalizations: 1,
     extractions: 1,
     mappings: 1,
     validation_responses: 1,
-    validation_requests: 1
+    validation_requests: 1,
+    attachment_deletion: 1
   ]
 
 config :data_aggregator, :ash_uuid,
@@ -143,6 +153,11 @@ config :phoenix, :filter_parameters, ["password", "account_token"]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# Req v0.6 stopped auto-decoding archive bodies. Restore ZIP decoding
+# (kept alongside the built-in json/json_api decoders) so responses for
+# DwC-A / export archives come back as [{filename, content}] tuples.
+config :req, default_options: [decoders: [:json, :json_api, :zip]]
 
 # Configure error reporting using Sentry. The Sentry DSN is configured
 # dynamically based on the SENTRY_DSN environment variable.

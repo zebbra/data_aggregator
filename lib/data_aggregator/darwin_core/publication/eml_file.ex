@@ -9,7 +9,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.PublicationLicenseType
 
-  @spec create(Collection.t(), PublicationLicenseType.t(), String.t()) ::
+  @spec create(Collection.t(), PublicationLicenseType.t() | nil, String.t()) ::
           {:ok, String.t()} | {:error, any()}
   def create(collection, license, path) do
     with false <- collection.grscicoll_reference == nil,
@@ -129,6 +129,8 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   defp intellectual_rights(:cc_by_nc),
     do:
       "This work is licensed under a <ulink url=\"https://creativecommons.org/licenses/by-nc/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY-NC) 4.0 License</citetitle></ulink>. "
+
+  defp intellectual_rights(_), do: ""
 
   defp contacts(meta_data) do
     case persons(meta_data, "contact") do

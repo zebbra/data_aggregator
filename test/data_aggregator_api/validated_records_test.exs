@@ -164,7 +164,7 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
 
-      assert not is_nil(data)
+      assert data
       assert data["id"] == validated_record.id
     end
 
@@ -230,7 +230,7 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
       error = Enum.at(errors, 0)
 
       # Assert on the response
-      assert not is_nil(error)
+      assert error
       assert length(errors) == 1
       assert error["code"] == "not_found"
       assert error["detail"] =~ "No validated_records record found with "

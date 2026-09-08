@@ -153,7 +153,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
       |> Ash.count!()
 
     %{
-      records_count_not_validated: origin_records_count_not_validated,
+      records_count_not_validated: origin_records_not_validated,
       records_count_not_encoded: origin_records_count_not_encoded,
       records_count_not_published: origin_records_count_not_published
     } = socket.assigns
@@ -162,7 +162,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     |> assign(:collection, collection)
     |> assign(
       :records_count_not_validated,
-      AsyncResult.ok(origin_records_count_not_validated, count_not_validated)
+      AsyncResult.ok(origin_records_not_validated, count_not_validated)
     )
     |> assign(
       :records_count_not_encoded,

@@ -17,6 +17,8 @@ defmodule DataAggregator.Records.Collection do
   alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponseCollection
   alias DataAggregator.Records.Validations
 
   @type t :: %Collection{}
@@ -104,6 +106,15 @@ defmodule DataAggregator.Records.Collection do
     has_many :exports, DataAggregator.Records.Export, public?: true
     has_many :records, DataAggregator.Records.Record, public?: true
     has_many :image_uploads, DataAggregator.Records.ImageUpload, public?: true
+    has_many :validation_requests, DataAggregator.Records.ValidationRequest, public?: true
+    has_many :publications, DataAggregator.Records.Publication, public?: true
+
+    many_to_many :validation_responses, ValidationResponse do
+      through ValidationResponseCollection
+      source_attribute_on_join_resource :collection_id
+      destination_attribute_on_join_resource :validation_response_id
+      public? true
+    end
   end
 
   calculations do
@@ -141,7 +152,7 @@ defmodule DataAggregator.Records.Collection do
       transition :set_exporting, from: [:idle], to: :exporting
       transition :set_encoding, from: [:idle], to: :encoding
       transition :set_publishing, from: [:idle], to: :publishing
-      transition :set_validating, from: [:idle, :publishing], to: :validating
+      transition :set_validating, from: [:idle, :publishing, :queued], to: :validating
       transition :set_deleting, from: [:idle], to: :deleting
 
       transition :set_idle,
@@ -155,7 +166,6 @@ defmodule DataAggregator.Records.Collection do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
@@ -171,6 +181,7 @@ defmodule DataAggregator.Records.Collection do
 
     update :update_import_mapping do
       accept [:import_mapping]
+      require_atomic? false
     end
 
     update :touch do
@@ -272,13 +283,11 @@ defmodule DataAggregator.Records.Collection do
     end
 
     destroy :destroy do
-      accept []
-
       primary? true
       require_atomic? false
-
       change Changes.SetDeleting
-      change Changes.DeleteAllMedia
+
+      change Changes.BulkSoftDeleteAttachments
     end
 
     action :create_endpoint, :map do
@@ -311,7 +320,6 @@ defmodule DataAggregator.Records.Collection do
     # creates the validation request resources and enqueues it to the validation request queue
     action :start_validations, :map do
       argument :collection, :struct, allow_nil?: false
-      argument :query, :map, allow_nil?: false
 
       run Actions.StartValidations
     end
@@ -347,13 +355,14 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
+    define :get_by_code, action: :read, get_by: [:code]
     define :touch
     define :enqueue_encoding, args: [:query]
     define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :validate, args: [:validation_request]
-    define :start_validations, args: [:collection, :query]
+    define :start_validations, args: [:collection]
     define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping
@@ -375,7 +384,7 @@ defmodule DataAggregator.Records.Collection do
       authorize_if always()
     end
 
-    policy action(:cancel_action) do
+    policy action([:cancel_action, :destroy]) do
       forbid_unless with_role("admin")
     end
 
@@ -386,7 +395,7 @@ defmodule DataAggregator.Records.Collection do
     end
 
     policy_group with_role("collection_administrator") do
-      policy action_type([:create, :update, :destroy]) do
+      policy action_type([:create, :update]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
@@ -415,6 +424,7 @@ defmodule DataAggregator.Records.Collection do
 
   postgres do
     table "collections"
+
     repo DataAggregator.Repo
   end
 

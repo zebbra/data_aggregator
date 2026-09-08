@@ -85,7 +85,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   defp maybe_suffix_required(name, false), do: name
 
   def invalid?(nil), do: false
-  def invalid?(import), do: length(import.missing_mappings) > 0
+  def invalid?(import), do: not Enum.empty?(import.missing_mappings)
 
   def can_run?(nil), do: false
   def can_run?(import), do: invalid?(import) == false and import.state in [:pending]

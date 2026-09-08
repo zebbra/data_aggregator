@@ -89,7 +89,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   def activity_feed_element(%{activity: activity} = assigns)
-      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_publication_status] do
+      when activity.name in [
+             :set_encoded,
+             :set_encoding_failed,
+             :update_validation_status,
+             :update_publication_status,
+             :set_validation_status_not_validated
+           ] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -134,6 +140,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_validation_status,
+              :set_validation_status_not_validated,
               :update_publication_status,
               :add_image_url
             ] do
@@ -184,6 +191,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     >
       {badge_text(@activity.name, @activity.content)}
     </.badge>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name in [:set_validation_status_not_validated] do
+    ~H"""
+    <span class="font-medium">
+      {text(@activity.name, @activity.content)}
+    </span>
+    <.badge
+      :if={badge_text(@activity.name, @activity.content)}
+      color={badge_color(@activity.name, @activity.content)}
+    >
+      {badge_text(@activity.name, @activity.content)}
+    </.badge>
+    <span class="font-medium"></span>
     """
   end
 
@@ -262,13 +284,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     keys =
       changes
       |> Map.keys()
-      |> Enum.map(&String.to_existing_atom/1)
+      |> Enum.map(&to_string/1)
 
     catalogs = Catalog.get_catalogs()
 
     catalog_name =
       Enum.reduce_while(catalogs, nil, fn catalog, _ ->
-        catalog_output_dwc_attributes = Catalog.get_output_dwc_attributes(catalog)
+        catalog_output_dwc_attributes =
+          catalog
+          |> Catalog.get_output_dwc_attributes()
+          |> Enum.map(&Atom.to_string/1)
 
         if Enum.all?(keys, &Enum.member?(catalog_output_dwc_attributes, &1)) do
           {:halt, catalog}
@@ -311,7 +336,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "not_published" -> "hero-question-mark-circle-solid"
       "publishing" -> "hero-cog-6-tooth-solid"
       "in_publication" -> "hero-globe-alt-solid"
-      "published" -> "hero-check-solid"
+      "published" -> "hero-check-circle-solid"
       "publication_failed" -> "hero-x-mark-solid"
       "stale" -> "hero-exclamation-triangle-solid"
       _ -> "hero-globe-alt"
@@ -320,15 +345,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_lookup(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> "hero-question-mark-circle-solid"
-      "validating" -> "hero-cog-6-tooth-solid"
-      "in_validation" -> "hero-check-badge-solid"
-      "validated" -> "hero-check-solid"
-      "validation_failed" -> "hero-x-mark-solid"
-      "stale" -> "hero-exclamation-triangle-solid"
+      "unknown" -> "hero-question-mark-circle-solid"
+      "requested" -> "hero-cog-6-tooth-solid"
+      "validated" -> "hero-check-circle-solid"
       _ -> "hero-check-badge"
     end
   end
+
+  def icon_lookup(:set_validation_status_not_validated, _), do: "hero-exclamation-triangle-solid"
 
   def icon_lookup(:add_image_url, _), do: "hero-photo"
 
@@ -342,22 +366,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:update_publication_status, content) do
     case content["publication_status"] do
       "not_published" ->
-        ~t"No publication information available. Publish the dataset to see the status"m
+        ~t"No publication information available. Publish the dataset to see the status."m
 
       "publishing" ->
-        ~t"Publication in progress"m
+        ~t"Publication in progress. Once the archive has been handed to GBIF the record is marked as published within 6 hours - no further action required."m
 
       "in_publication" ->
-        ~t"Record is now in the publication pipeline - no further action required"m
+        ~t"Record is now in the publication pipeline - no further action required."m
 
       "published" ->
-        ~t"Record publication was successful"m
+        ~t"The record has been handed to GBIF as part of a published archive."m
 
       "publication_failed" ->
-        ~t"Publication failed. Process should be started again"m
+        ~t"Publication failed. Process should be started again."m
 
       "stale" ->
-        ~t"Record was changed after publishing it and has to be republished"m
+        ~t"Record was changed after publishing it and has to be republished."m
 
       _ ->
         nil
@@ -366,23 +390,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_tooltip(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" ->
-        ~t"No validation information available. Validate the dataset to see the status"m
+      "unknown" ->
+        ~t"No validation information available. Validate the dataset to see the status."m
 
-      "validating" ->
-        ~t"Validation in progress"m
-
-      "in_validation" ->
-        ~t"Record is now in the validation pipeline - no further action required"m
+      "requested" ->
+        ~t"Validation in progress."m
 
       "validated" ->
-        ~t"Record validation was successful"m
+        ~t"The record has been successfully validated."m
 
-      "validation_failed" ->
-        ~t"Validation failed. Process should be started again"m
+      _ ->
+        nil
+    end
+  end
 
-      "stale" ->
-        ~t"Record data changed after validating it and has to be revalidated"m
+  def icon_tooltip(:set_validation_status_not_validated, content) do
+    case content["validation_status"] do
+      "not_validated" ->
+        ~t"Record was rejected. It will not be validated by InfoSpecies Centers."m
 
       _ ->
         nil
@@ -412,14 +437,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp text(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> ~t"The validation status is now"m
-      "validating" -> ~t"The validation status is now"m
-      "in_validation" -> ~t"The validation status is now"m
-      "validated" -> ~t"The validation status is now"m
-      "validation_failed" -> ~t"The validation status is now"m
-      "stale" -> ~t"The validation status is now"m
-      _ -> ~t"Validation status was updated"m
+      "unknown" ->
+        ~t"The validation status is"m
+
+      "requested" ->
+        ~t"The validation status is"m
+
+      "validated" ->
+        ~t"The record has been successfully validated. The validation status of the record has changed to"m
+
+      _ ->
+        ~t"Validation status was updated"m
     end
+  end
+
+  defp text(:set_validation_status_not_validated, content) do
+    mgettext(
+      "The validation of the record has been processed: %{annotation}. The validation status of the record has changed to",
+      annotation: content["validation_annotation"]
+    )
   end
 
   defp text(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
@@ -443,15 +479,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def badge_text(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> ~t"Not Validated"m
-      "validating" -> ~t"Validating"m
-      "in_validation" -> ~t"In Validation"m
+      "unknown" -> ~t"Unknown"m
+      "requested" -> ~t"Requested"m
       "validated" -> ~t"Validated"m
-      "validation_failed" -> ~t"Failed"m
-      "stale" -> ~t"Stale"m
-      _ -> nil
+      unhandled_status -> unhandled_status
     end
   end
+
+  def badge_text(:set_validation_status_not_validated, _), do: ~t"Not Validated"m
 
   def badge_text(_, _), do: nil
 
@@ -474,15 +509,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def badge_color(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> "gray"
-      "validating" -> "blue"
-      "in_validation" -> "blue"
+      "unknown" -> "gray"
+      "requested" -> "blue"
       "validated" -> "green"
-      "validation_failed" -> "red"
-      "stale" -> "orange"
-      _ -> "green"
+      _ -> "gray"
     end
   end
+
+  def badge_color(:set_validation_status_not_validated, _), do: "orange"
 
   def badge_color(:add_image_url, _), do: "green"
 

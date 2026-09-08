@@ -13,6 +13,7 @@ defmodule DataAggregator.ExportTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Workers.Exporter
+  alias DataAggregator.Records.Record
   alias Explorer.DataFrame
 
   describe "export crud tests" do
@@ -86,7 +87,7 @@ defmodule DataAggregator.ExportTest do
       export = export_fixture()
       assert :ok = Export.destroy(export, tenant: export.collection)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         Export.get_by_id!(export.id, tenant: export.collection)
       end
     end
@@ -217,7 +218,7 @@ defmodule DataAggregator.ExportTest do
       "tax_family" => "Famille"
     }
 
-    @default_mapping Map.new(Schema.prefixed_attribute_names(), &{to_string(&1), to_string(&1)})
+    @default_mapping Map.new(Schema.exportable_attribute_names(), &{to_string(&1), to_string(&1)})
 
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
@@ -238,13 +239,48 @@ defmodule DataAggregator.ExportTest do
       # those two should be exported
       exportable_record(collection, %{
         extra_data: %{"Custom Attribute" => "Value 1"},
-        mte_verbatim_label: "foo\nbar"
+        mte_verbatim_label: "foo\nbar",
+        validation_annotation: "Annotation 1"
       })
 
       exportable_record(collection, %{
         extra_data: %{"Custom Attribute" => "Value 2"},
-        mte_verbatim_label: nil
+        mte_verbatim_label: nil,
+        validation_annotation: "Annotation 2"
       })
+
+      exportable_record_with_encoded_record(
+        collection,
+        %{
+          extra_data: %{"Custom Attribute" => "Value 3"},
+          mte_verbatim_label: "foo\nbar",
+          validation_annotation: "Annotation 3"
+        },
+        %{
+          tax_scientific_name: "Encoded Name",
+          tax_family: "Encoded Family",
+          mte_verbatim_label: "encoded verbatim label"
+        }
+      )
+
+      validated_record =
+        exportable_record_with_validated_record(
+          collection,
+          %{
+            extra_data: %{"Custom Attribute" => "Value 4"},
+            mte_verbatim_label: "raw label",
+            tax_scientific_name: "Raw Name",
+            validation_annotation: "Annotation 4"
+          },
+          %{
+            tax_scientific_name: "Validated Name",
+            tax_family: "Validated Family",
+            mte_verbatim_label: nil
+          }
+        )
+
+      # The validation logic clears the annotation, so we need to set it again
+      Record.update!(validated_record.record, %{validation_annotation: "Annotation 4"})
 
       # this one should not be exported
       unexportable_record(collection_other)
@@ -264,7 +300,7 @@ defmodule DataAggregator.ExportTest do
 
       case Collection.export(export, tenant: collection) do
         {:ok, result} ->
-          %{body: body} = Req.get!(result.attachment.url)
+          %{body: body} = Req.get!(result.attachment.url, decoders: [:zip])
 
           {_, file_content} = Enum.at(body, 0)
 
@@ -285,8 +321,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == @default_mapping
-      assert Explorer.DataFrame.n_columns(data_frame) == Enum.count(Map.keys(@default_mapping))
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == Enum.count(Map.keys(@default_mapping))
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: @valid_custom_mapping
@@ -297,10 +333,10 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == @valid_custom_mapping
-      assert Explorer.DataFrame.n_columns(data_frame) == 2
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 2
+      assert DataFrame.n_rows(data_frame) == 4
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), [
+      assert_lists_equal(DataFrame.names(data_frame), [
         "Famille",
         "Numéro scientifique GBIF"
       ])
@@ -319,33 +355,35 @@ defmodule DataAggregator.ExportTest do
                "Custom Attribute" => "Custom Attribute"
              }
 
-      assert columns = Explorer.DataFrame.names(data_frame)
+      assert columns = DataFrame.names(data_frame)
 
-      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
-      assert Enum.member?(columns, "Scientific Name - collection")
-      assert Enum.member?(columns, "Custom Attribute")
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 3
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 4
 
       custom_attribute_values =
         data_frame
-        |> Explorer.DataFrame.to_rows()
+        |> DataFrame.to_rows()
         |> Enum.map(&Map.get(&1, "Custom Attribute"))
 
-      assert custom_attribute_values == ["Value 1", "Value 2"]
+      assert custom_attribute_values == ["Value 1", "Value 2", "Value 3", "Value 4"]
     end
 
     @tag mapping: nil
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "transforms values according to the transformers", %{data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
         Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
 
       expected = [
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000}
       ]
@@ -357,14 +395,16 @@ defmodule DataAggregator.ExportTest do
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "replaces linebreaks", %{data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
         Enum.map(rows, &Map.take(&1, ["verbatimLabel"]))
 
       expected = [
         %{"verbatimLabel" => "foo bar"},
-        %{"verbatimLabel" => nil}
+        %{"verbatimLabel" => nil},
+        %{"verbatimLabel" => "foo bar"},
+        %{"verbatimLabel" => "raw label"}
       ]
 
       assert expected == transformed_attributes
@@ -374,7 +414,7 @@ defmodule DataAggregator.ExportTest do
     @tag data_layer: :raw
     @tag header_source: :dwc_attributes
     test "gets values from collection", %{export: export, data_frame: data_frame} do
-      rows = Explorer.DataFrame.to_rows(data_frame)
+      rows = DataFrame.to_rows(data_frame)
 
       collection_attributes =
         Enum.map(
@@ -405,6 +445,22 @@ defmodule DataAggregator.ExportTest do
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
           "gbifDOI" => nil
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
         }
       ]
 
@@ -418,12 +474,12 @@ defmodule DataAggregator.ExportTest do
       export = Ash.load!(export, [:collection])
       {:ok, export} = Collection.export(export, tenant: export.collection)
 
-      %{body: body} = Req.get!(export.attachment.url)
+      %{body: body} = Req.get!(export.attachment.url, decoders: [:zip])
 
       {_, file_content} = Enum.at(body, 0)
 
       assert {:ok, %DataFrame{} = new_data_frame} = DataFrame.load_csv(file_content)
-      new_rows = Explorer.DataFrame.to_rows(new_data_frame)
+      new_rows = DataFrame.to_rows(new_data_frame)
 
       collection_attributes =
         Enum.map(
@@ -439,6 +495,22 @@ defmodule DataAggregator.ExportTest do
         )
 
       expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
+        },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
           "collectionCode" => "Z",
@@ -474,14 +546,14 @@ defmodule DataAggregator.ExportTest do
                "Custom Attribute" => "Custom Attribute"
              }
 
-      assert columns = Explorer.DataFrame.names(data_frame)
+      assert columns = DataFrame.names(data_frame)
 
-      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
-      assert Enum.member?(columns, "Scientific Name - collection")
-      assert Enum.member?(columns, "Custom Attribute")
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 3
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: nil
@@ -493,10 +565,22 @@ defmodule DataAggregator.ExportTest do
     } do
       assert export.mapping == expected_dwc_attribute_mapping()
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 303
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      validation_annotation_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.get(&1, "validation_annotation"))
+
+      assert validation_annotation_values == [
+               "Annotation 1",
+               "Annotation 2",
+               "Annotation 3",
+               "Annotation 4"
+             ]
+
+      assert DataFrame.n_columns(data_frame) == 306
+      assert DataFrame.n_rows(data_frame) == 4
     end
 
     @tag mapping: nil
@@ -506,12 +590,101 @@ defmodule DataAggregator.ExportTest do
       export: export,
       data_frame: data_frame
     } do
-      assert export.mapping == expected_dwc_attribute_mapping()
+      assert export.mapping ==
+               Map.delete(expected_dwc_attribute_mapping(), "validation_annotation")
 
-      assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
+      assert_lists_equal(
+        DataFrame.names(data_frame),
+        expected_dwc_column_headers() -- ["validation_annotation"]
+      )
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 303
-      assert Explorer.DataFrame.n_rows(data_frame) == 2
+      encoded_attribute_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.take(&1, ["verbatimLabel", "scientificName", "family"]))
+
+      assert encoded_attribute_values == [
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => "foo bar"
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Bradyphus Burmeister, 1866",
+                 "verbatimLabel" => nil
+               },
+               %{
+                 "family" => "Encoded Family",
+                 "scientificName" => "Encoded Name",
+                 "verbatimLabel" => "encoded verbatim label"
+               },
+               %{
+                 "family" => "Bradypodidae",
+                 "scientificName" => "Raw Name",
+                 "verbatimLabel" => "raw label"
+               }
+             ]
+
+      assert DataFrame.n_columns(data_frame) == 305
+      assert DataFrame.n_rows(data_frame) == 4
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :validated
+    @tag header_source: :collection_mapping
+    test "export records with datalayer :validated, header_source :collection_mapping", %{
+      export: export,
+      data_frame: data_frame
+    } do
+      # ensure custom mapping is also exported
+      assert export.mapping == %{
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection",
+               "Custom Attribute" => "Custom Attribute"
+             }
+
+      assert columns = DataFrame.names(data_frame)
+
+      assert "Numéro scientifique GBIF - collection" in columns
+      assert "Scientific Name - collection" in columns
+      assert "Custom Attribute" in columns
+
+      assert DataFrame.n_columns(data_frame) == 3
+      assert DataFrame.n_rows(data_frame) == 1
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :validated
+    @tag header_source: :dwc_attributes
+    test "export records with datalayer :validated, header_source :dwc_attributes", %{
+      export: export,
+      data_frame: data_frame
+    } do
+      assert export.mapping ==
+               Map.delete(expected_dwc_attribute_mapping(), "validation_annotation")
+
+      assert_lists_equal(
+        DataFrame.names(data_frame),
+        expected_dwc_column_headers() -- ["validation_annotation"]
+      )
+
+      validated_attribute_values =
+        data_frame
+        |> DataFrame.to_rows()
+        |> Enum.map(&Map.take(&1, ["verbatimLabel", "scientificName", "family"]))
+
+      # only export validated values, fallback to raw or encoded does not happen here -> verbatimLabel is nil
+      assert validated_attribute_values == [
+               %{
+                 "family" => "Validated Family",
+                 "scientificName" => "Validated Name",
+                 "verbatimLabel" => nil
+               }
+             ]
+
+      assert DataFrame.n_columns(data_frame) == 305
+      assert DataFrame.n_rows(data_frame) == 1
     end
   end
 end

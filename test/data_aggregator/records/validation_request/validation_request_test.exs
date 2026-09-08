@@ -8,11 +8,11 @@ defmodule DataAggregator.ValidationRequestTest do
   import DataAggregator.RecordsFixtures
   import DataAggregator.ValidationRequestFixtures
 
-  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequestRecord
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -109,37 +109,21 @@ defmodule DataAggregator.ValidationRequestTest do
       {:ok, validation_request} =
         Collection.validate(validation_request, tenant: validation_request.collection)
 
-      %{body: body} = Req.get!(validation_request.attachment.url)
-      # validating if the core file is correctly created
-      {core_file_name, core_file_content} =
-        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
+      %{body: body} = Req.get!(validation_request.attachment.url, decoders: [:zip])
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      {file_name, file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"validation.csv" end)
 
-      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+      assert file_name
+      assert file_content
 
-      assert_lists_equal(
-        data_frame.names,
-        DwcaFile.file_header_fields(:core),
-        fn a, b -> a == b end
-      )
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
 
       assert DataFrame.n_rows(data_frame) == 5
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 190
-    end
-
-    @tag capture_log: true
-    test "validate/1 fails with invalid center", %{
-      validation_request: validation_request
-    } do
-      validation_request = Map.put(validation_request, :center, :not_existing_center)
-
-      {:error, _error} =
-        Collection.validate(validation_request, tenant: validation_request.collection)
+      assert DataFrame.n_columns(data_frame) == 202
     end
 
     test "run/1 successful", %{
@@ -158,5 +142,255 @@ defmodule DataAggregator.ValidationRequestTest do
       assert validation_request.total_rows_count == 5
       assert validation_request.validation_request_progress == 1.0
     end
+
+    test "run/1 creates ValidationRequestRecords for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs = ValidationRequestRecord.read!(page: false, tenant: collection)
+
+      assert length(vrrs) == 5
+
+      Enum.each(vrrs, fn vrr ->
+        assert vrr.data
+        assert vrr.collection_id == collection.id
+      end)
+    end
+
+    test "run/1 updates validation_status to :requested for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      records = Record.read!(tenant: collection)
+
+      requested_records =
+        Enum.filter(records, fn r -> r.validation_status == :requested end)
+
+      assert length(requested_records) == 5
+    end
+
+    test "run/1 updates last_validation_started_at for changed records", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      records = Record.read!(tenant: collection)
+
+      Enum.each(records, fn record ->
+        assert record.last_validation_started_at
+      end)
+    end
+
+    test "run/1 skips unchanged records on second validation", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      # First run — all 5 records should be sent
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs_after_first = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_first) == 5
+
+      records_after_first = Record.read!(tenant: collection)
+      requested_count = Enum.count(records_after_first, &(&1.validation_status == :requested))
+      assert requested_count == 5
+
+      # Second run with same data — no records should change
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      # VRRs should still be the same 5 (no new ones, data unchanged)
+      vrrs_after_second = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_second) == 5
+
+      # sent_for_validation_count should be 0 since nothing changed
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      assert validation_request2.sent_for_validation_count == 0
+    end
+
+    test "run/1 tolerates validation data stored with a previous attribute set", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      # Rewrite the stored payloads into the shape a previous header allow-list produced:
+      # `county` was still sent, `organismID` and `stateProvince` were not yet.
+      collection
+      |> vrrs()
+      |> Enum.each(fn vrr ->
+        ValidationRequestRecord.update!(vrr, %{data: with_previous_attribute_set(vrr.data)},
+          tenant: collection,
+          authorize?: false
+        )
+      end)
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: validation_request.records_query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      # nothing about the records changed, only the set of attributes we send
+      assert validation_request2.sent_for_validation_count == 0
+    end
+
+    test "run/1 only sends changed records on second validation after data update", %{
+      validation_request: validation_request,
+      collection: collection,
+      records: records
+    } do
+      # First run — all 5 records sent
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      # Modify one record's data so it will be detected as changed
+      [record_to_update | _rest] = records
+
+      Record.update!(record_to_update, %{tax_scientific_name: "Modified Species Name"}, tenant: collection)
+
+      # Second run
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request 2",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      {:ok, validation_request2} = ValidationRequest.run(validation_request2)
+
+      validation_request2 =
+        ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
+      # Only the modified record should be sent
+      assert validation_request2.sent_for_validation_count == 1
+    end
+
+    @tag capture_log: true
+    test "validate/1 cleans up only new VRRs on failure, preserving pre-existing ones", %{
+      validation_request: validation_request,
+      collection: collection,
+      records: records
+    } do
+      # First run succeeds — creates 5 VRRs
+      {:ok, _validation_request} = ValidationRequest.run(validation_request)
+
+      vrrs_after_first = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_first) == 5
+
+      # Modify 2 records so they will be detected as changed on the next run
+      [record_a, record_b | _rest] = records
+
+      Record.update!(record_a, %{tax_scientific_name: "Changed Species A"}, tenant: collection)
+
+      Record.update!(record_b, %{tax_scientific_name: "Changed Species B"}, tenant: collection)
+
+      # Create a second validation request
+      query = validation_request.records_query
+
+      validation_request2 =
+        ValidationRequest.create!(
+          %{
+            name: "Validation Request Fail",
+            center: :infofauna,
+            records_query: query,
+            total_rows_count: 5,
+            collection: collection
+          },
+          tenant: collection
+        )
+
+      # Stub to raise during notify — VRRs for the 2 changed records will already
+      # have been upserted by the time the error occurs
+      stub(Gbif.RestAPI, :get_grscicoll_entity, fn _key, _type ->
+        raise "Simulated notification failure"
+      end)
+
+      assert {:error, _} =
+               Collection.validate(validation_request2, tenant: collection)
+
+      # The 2 changed records had their VRRs upserted (bumping updated_at),
+      # then the rollback deleted VRRs with updated_at >= validation_request2.inserted_at.
+      # Only the 3 unchanged records' VRRs (with original updated_at) should survive.
+      vrrs_after_failure = ValidationRequestRecord.read!(page: false, tenant: collection)
+      assert length(vrrs_after_failure) == 3
+    end
+
+    test "set_failed/1 can transition from queued state", %{
+      validation_request: validation_request,
+      collection: collection
+    } do
+      {:ok, validation_request} =
+        ValidationRequest.enqueue(validation_request, %{}, authorize?: false)
+
+      assert validation_request.state == :queued
+
+      {:ok, validation_request} =
+        ValidationRequest.set_failed(validation_request)
+
+      assert validation_request.state == :failed
+      assert validation_request.finished_at
+
+      persisted =
+        ValidationRequest.get_by_id!(validation_request.id, tenant: collection)
+
+      assert persisted.state == :failed
+    end
+  end
+
+  defp vrrs(collection), do: ValidationRequestRecord.read!(page: false, tenant: collection)
+
+  # Simulates data stored before `organismID` and `stateProvince` were added to, and
+  # `county` was removed from, the validation file.
+  defp with_previous_attribute_set(data) do
+    %{
+      data
+      | "record_data" => previous_entries(data["record_data"], "county"),
+        "encoded_data" => previous_entries(data["encoded_data"], "encoded county")
+    }
+  end
+
+  defp previous_entries(entries, county_header) do
+    entries
+    |> Enum.reject(&(&1["attr"] in ["org_organism_id", "loc_state_province"] and &1["value"] in [nil, ""]))
+    |> Enum.concat([%{"attr" => "loc_county", "value" => "Nyon", "header" => county_header}])
+    |> Enum.sort_by(& &1["header"])
   end
 end

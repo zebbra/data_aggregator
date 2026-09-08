@@ -10,15 +10,15 @@ defmodule DataAggregator.EncodingFixtures do
 
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
   require Logger
 
   @encoded_record_defaults %{
     mte_catalog_number: "encoded_record1",
-    tax_scientific_name: "Oenanthea Pallas",
+    tax_scientific_name: "Anergates atratulus",
     tax_kingdom: "Animalia",
-    tax_taxon_id: 2_435_194
+    tax_taxon_id: "2_435_194"
   }
 
   @doc """
@@ -50,12 +50,12 @@ defmodule DataAggregator.EncodingFixtures do
     Record.create!(params, tenant: params.collection)
   end
 
-  #### GBIF Taxonomy API Encoding ####
+  #### CoL Taxonomy API Encoding ####
 
   @doc """
-    Generate a record for gbif_taxonomy encoding, which will lead to an invalid match type
+    Generate a record for col_taxonomy encoding, which will lead to an invalid match type
   """
-  def record_fixture_for_encoding_gbif_taxonomy_invalid(attrs \\ %{}) do
+  def record_fixture_for_encoding_col_taxonomy_invalid(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
@@ -67,16 +67,18 @@ defmodule DataAggregator.EncodingFixtures do
     Record.create!(params, tenant: params.collection)
   end
 
-  #### GBIF Taxonomy API Encoding ####
+  #### CoL Taxonomy API Encoding ####
 
   @doc """
-    Generate a record for gbif_iucn_redlist encoding with an extincted species
+    Generate a record for iucn_redlist encoding with an extincted species
   """
-  def record_fixture_for_encoding_gbif_iucn_redlist_extinct(attrs \\ %{}) do
+  def record_fixture_for_encoding_iucn_redlist_extinct(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:tax_taxon_id, 2_496_198)
+      |> Map.put(:tax_taxon_id, "2_496_198")
+      |> Map.put(:tax_specific_epithet, "atratulus")
+      |> Map.put(:tax_genus, "Anergates")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
@@ -85,13 +87,14 @@ defmodule DataAggregator.EncodingFixtures do
   end
 
   @doc """
-    Generate a record for gbif_iucn_redlist encoding with an not evaluated species
+    Generate a record for iucn_redlist encoding with an not evaluated species
   """
-  def record_fixture_for_encoding_gbif_iucn_redlist_not_evaluated(attrs \\ %{}) do
+  def record_fixture_for_encoding_iucn_redlist_not_evaluated(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:tax_taxon_id, 2_496_298)
+      |> Map.put(:tax_taxon_id, "2_496_298")
+      |> Map.put(:tax_scientific_name, "something_unknown")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
@@ -102,13 +105,14 @@ defmodule DataAggregator.EncodingFixtures do
   #### Swiss Species Catalog Encoding ####
 
   @doc """
-    Generate a invalid record for swiss_species encoding
+    Generate a invalid record for swiss_species encoding (no matching scientific name)
   """
   def record_fixture_for_encoding_swiss_species_invalid(attrs \\ %{}) do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:tax_taxon_id, 0)
+      |> Map.put(:tax_taxon_id, "0")
+      |> Map.put(:tax_scientific_name, "NonExistent Species Name")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
@@ -117,20 +121,19 @@ defmodule DataAggregator.EncodingFixtures do
   end
 
   @doc """
-    Generate a correct record for swiss_species encoding
+    Generate a correct record for swiss_species encoding using SwissSpeciesRegistry
   """
   def expect_correct_swiss_species_api_call(number \\ 1) do
-    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
+    expect(SwissSpeciesRegistry, :get_by_scientific_name, number, fn _scientific_name ->
       {:ok,
-       %SwissSpecies{
-         id: "spc_02vSBcLj4G1ReRVJNXDLVo",
+       %SwissSpeciesRegistry{
+         id: "ssr_02vSBcLj4G1ReRVJNXDLVo",
          taxon_id_ch: 15_311,
-         accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
-         usage_key: 2_435_194,
-         accepted_usage_key: 1_669_856,
+         accepted_name_usage: "Enantiulus dentigerus (Verhoeff, 1901)",
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          rank: "SPECIES",
-         center: "infofauna"
+         center: :infofauna,
+         status: "accepted"
        }}
     end)
   end
@@ -139,10 +142,25 @@ defmodule DataAggregator.EncodingFixtures do
     Generate a failing api call for swiss_species encoding
   """
   def expect_failing_swiss_species_api_call(number \\ 1) do
-    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
+    expect(SwissSpeciesRegistry, :get_by_scientific_name, number, fn _scientific_name ->
       Logger.warning("unknown error occured")
 
       {:error, %Ash.Error.Unknown{}}
+    end)
+  end
+
+  def generate_missing_information_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpeciesRegistry, :get_by_scientific_name, number, fn _scientific_name ->
+      {:ok,
+       %SwissSpeciesRegistry{
+         id: "ssr_02vSBcLj4G1ReRVJNXDLVo",
+         taxon_id_ch: 15_311,
+         accepted_name_usage: "Enantiulus dentigerus (Verhoeff, 1901)",
+         scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+         rank: "SPECIES",
+         center: nil,
+         status: "accepted"
+       }}
     end)
   end
 

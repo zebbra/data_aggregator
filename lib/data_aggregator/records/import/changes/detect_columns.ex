@@ -37,27 +37,27 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
     end
   end
 
-  def column_order(filename) when is_binary(filename) do
-    with {:ok, df} <- Records.DataFrame.from_file(filename) do
-      Explorer.DataFrame.names(df)
+  def column_order!(filename) when is_binary(filename) do
+    case Records.DataFrame.column_names(filename) do
+      {:ok, names} -> names
+      {:error, error} -> raise error
     end
   end
 
-  def column_order(%Explorer.DataFrame{} = df) do
+  def column_order!(%Explorer.DataFrame{} = df) do
     Explorer.DataFrame.names(df)
   end
 
   defp detect_columns(filename) do
     Logger.debug("Detecting columns for file #{inspect(filename)} ...")
 
-    with {:ok, df} <- Records.DataFrame.from_file(filename) do
-      order = column_order(df)
+    with {:ok, ldf} <- Records.DataFrame.from_file(filename, lazy: true) do
+      dtypes = Explorer.DataFrame.dtypes(ldf)
 
       columns =
-        df
-        |> Explorer.DataFrame.dtypes()
-        |> Enum.map(&build_column/1)
-        |> sort_columns(order)
+        ldf
+        |> Explorer.DataFrame.names()
+        |> Enum.map(&build_column({&1, dtypes[&1]}))
 
       Logger.debug("Detected #{length(columns)} in import file #{inspect(filename)}")
 
@@ -71,8 +71,4 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   defp build_column({name, {:datetime, _}}), do: %Import.Column{name: name, type: :date}
   defp build_column({name, {:naive_datetime, _}}), do: %Import.Column{name: name, type: :date}
   defp build_column({name, type}), do: %Import.Column{name: name, type: type}
-
-  defp sort_columns(columns, order) do
-    Enum.map(order, fn name -> Enum.find(columns, &(&1.name == name)) end)
-  end
 end

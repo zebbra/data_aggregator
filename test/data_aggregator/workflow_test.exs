@@ -5,8 +5,11 @@ defmodule DataAggregator.WorkflowTest do
   use Mimic
 
   import DataAggregator.AccountsFixtures, only: [user_fixture: 0]
-  import DataAggregator.EncodingFixtures, only: [expect_correct_swiss_species_api_call: 0]
 
+  import DataAggregator.EncodingFixtures,
+    only: [expect_correct_swiss_species_api_call: 0, expect_correct_swiss_species_api_call: 1]
+
+  alias DataAggregator.CatalogOfLife, as: CoL
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
   alias DataAggregator.Records.Collection
@@ -20,6 +23,7 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
   alias DataAggregator.Taxonomy.Catalog
+  alias Explorer.DataFrame
 
   require Ash.Query
 
@@ -74,17 +78,18 @@ defmodule DataAggregator.WorkflowTest do
   ]
 
   @validation_state_lookup %{
-    :not_published => :not_validated,
-    :publishing => :validating,
-    :in_publication => :in_validation,
+    :not_published => :unknown,
+    :publishing => :unknown,
+    :in_publication => :requested,
     :published => :validated,
-    :publication_failed => :validation_failed,
-    :stale => :stale
+    :publication_failed => :unknown,
+    :stale => :unknown
   }
 
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+    stub_with(CoL.RestAPI, CoL.RestAPIStub)
 
     collection =
       Collection.create!(%{
@@ -123,6 +128,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag capture_log: true
     test "import workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -139,29 +145,29 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :imported, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -181,21 +187,21 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :publishing, validation_status: :validating},
+        %{state: :imported, publication_status: :publishing, validation_status: :unknown},
         %{
           state: :imported,
           publication_status: :in_publication,
-          validation_status: :in_validation
+          validation_status: :requested
         },
         %{state: :imported, publication_status: :published, validation_status: :validated},
         %{
           state: :imported,
           publication_status: :publication_failed,
-          validation_status: :validation_failed
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :stale, validation_status: :stale}
+        %{state: :imported, publication_status: :stale, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -221,13 +227,15 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale}
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        # validation status changes back to :unknown on import
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        # validation status changes back to :unknown on import
+        %{state: :imported, publication_status: :stale, validation_status: :unknown}
       ]
 
       assert_states_equal(expected, records)
@@ -257,6 +265,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag capture_log: true
     test "encoding workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -273,29 +282,29 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :imported, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -310,12 +319,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert we detected all changes
@@ -365,22 +374,27 @@ defmodule DataAggregator.WorkflowTest do
       [publication: publication, actor: actor, records: records]
     end
 
+    @tag capture_log: true
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
       actor: actor,
       collection: tenant
     } do
+      # Expect additional SwissSpecies API calls during publication for coordinate obfuscation
+      # All 6 records have Switzerland as country and will get taxon_ids druing encoding
+      expect_correct_swiss_species_api_call(6)
+
       # Sanity check
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -405,12 +419,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -428,8 +442,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, publication_updated (3x -> publishing, in_publication, published)
-      expected_length = 6 * 4
+      # import, publication_updated (2x -> publishing, published)
+      expected_length = 6 * 3
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -468,7 +482,7 @@ defmodule DataAggregator.WorkflowTest do
       # record
       query = %{
         collection: %{id: %{eq: collection.id}},
-        tax_kingdom: %{is_nil: false}
+        encoded_record: %{tax_kingdom: %{is_nil: false}}
         # encoded_record: %{swiss_species: %{center: %{eq: "infofauna"}}}
       }
 
@@ -486,6 +500,7 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
+    @tag capture_log: true
     test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,
@@ -496,12 +511,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -517,7 +532,10 @@ defmodule DataAggregator.WorkflowTest do
         user_id: actor.id
       })
 
-      validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: tenant)
+      validation_request =
+        validation_request.id
+        |> ValidationRequest.get_by_id!(tenant: tenant)
+        |> Ash.load!([:attachment_url, :attachment])
 
       assert validation_request.state == :done
       assert validation_request.processed_rows_count == 6
@@ -526,12 +544,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation}
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested}
       ]
 
       # assert that the records are in the correct state
@@ -549,8 +567,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, validation_updated (2x -> validating, and in_validation)
-      expected_length = 6 * 3
+      # import, validation_updated (12 because it changed twice)
+      expected_length = 6 * 2
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -559,6 +577,16 @@ defmodule DataAggregator.WorkflowTest do
         assert version.user_id == actor.id
         assert version.version_action_name in [:import, :update_validation_status]
       end
+
+      # Check that the right amount of records were exported to the csv file
+      %{body: body} = Req.get!(validation_request.attachment_url, decoders: [:zip])
+
+      {_, file_content} = Enum.at(body, 0)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
+
+      assert DataFrame.n_rows(data_frame) == 6
+      assert DataFrame.n_columns(data_frame) == 202
 
       # no new records versions should have been created
       assert_encode_versions(actor, tenant)
@@ -734,108 +762,45 @@ defmodule DataAggregator.WorkflowTest do
       end)
 
     expected = [
-      tax_taxon_id: %{
-        name: "taxonID",
-        imported: "-",
-        encoded: 2_435_194,
-        category_name: "tax"
-      },
-      tax_scientific_name: %{
-        name: "scientificName",
-        imported: "Anergates atratulus (Schenck, 1852)",
-        encoded: "Oenanthe Vieillot, 1816",
-        category_name: "tax"
-      },
-      tax_family: %{
-        name: "family",
-        imported: "-",
-        encoded: "Muscicapidae",
-        category_name: "tax"
-      },
-      tax_genus: %{
-        name: "genus",
-        imported: "Anergates",
-        encoded: "Oenanthe",
-        category_name: "tax"
-      },
-      tax_order: %{
-        name: "order",
-        imported: "-",
-        encoded: "Passeriformes",
-        category_name: "tax"
-      },
-      loc_continent: %{
-        name: "continent",
-        imported: "-",
-        encoded: "Europe",
-        category_name: "loc"
-      },
-      tax_accepted_name_usage: %{
-        name: "acceptedNameUsage",
-        imported: "-",
-        encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
-        category_name: "tax"
-      },
-      tax_class: %{
-        name: "class",
-        imported: "-",
-        encoded: "Aves",
-        category_name: "tax"
-      },
-      tax_phylum: %{
-        name: "phylum",
-        imported: "-",
-        encoded: "Chordata",
-        category_name: "tax"
-      },
-      tax_taxon_id_ch: %{
-        name: "taxonIdCH",
-        imported: "-",
-        encoded: 15_311,
-        category_name: "tax"
-      },
-      iucn_redlist_category: %{
-        name: :iucn_redlist_category,
-        imported: "-",
-        encoded: "EX",
-        category_name: "iucn"
-      },
-      loc_country_code: %{
-        name: "countryCode",
-        imported: "ch",
-        encoded: "CH",
-        category_name: "loc"
-      },
-      tax_accepted_name_usage_id: %{
-        name: "acceptedNameUsageID",
-        imported: "-",
-        encoded: "1669856",
-        category_name: "tax"
-      },
-      eve_event_date: %{
-        name: "eventDate",
-        imported: "2025-01-01/2025-01-20",
-        encoded: "1907-06-06",
-        category_name: "eve"
-      },
-      oth_swiss_species_center: %{
-        name: "swissSpeciesCenter",
-        imported: "-",
-        encoded: "infofauna",
-        category_name: "oth"
-      },
-      oth_swiss_species_registered: %{
-        name: "swissSpeciesRegistered",
-        imported: "-",
-        encoded: true,
-        category_name: "oth"
-      },
-      oth_swiss_species_registered_at: %{
-        name: "swissSpeciesRegisteredAt",
-        imported: "-",
-        encoded: "test",
-        category_name: "oth"
-      }
+      {:tax_taxon_rank, %{category_name: "tax", encoded: "species", imported: "SPECIES", name: "taxonRank"}},
+      {:tax_taxon_id, %{category_name: "tax", encoded: "DY5M", imported: "-", name: "taxonID"}},
+      {:tax_scientific_name_authorship,
+       %{
+         category_name: "tax",
+         encoded: "(Schenck, 1852)",
+         imported: "Schenck",
+         name: "scientificNameAuthorship"
+       }},
+      {:tax_phylum, %{category_name: "tax", encoded: "Arthropoda", imported: "-", name: "phylum"}},
+      {:tax_order, %{category_name: "tax", encoded: "Hymenoptera", imported: "-", name: "order"}},
+      {:tax_genus, %{name: "genus", imported: "Anergates", encoded: "Tetramorium", category_name: "tax"}},
+      {:tax_family, %{name: "family", imported: "-", encoded: "Formicidae", category_name: "tax"}},
+      {:tax_domain, %{name: "domain", imported: "-", encoded: "Eukaryota", category_name: "tax"}},
+      {:tax_class, %{name: "class", imported: "-", encoded: "Insecta", category_name: "tax"}},
+      {:tax_taxon_id_ch, %{name: "taxonIdCH", imported: "-", encoded: 15_311, category_name: "tax"}},
+      {:tax_accepted_name_usage,
+       %{
+         name: "acceptedNameUsage",
+         imported: "-",
+         encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
+         category_name: "tax"
+       }},
+      {:oth_swiss_species_registered_at,
+       %{name: "swissSpeciesRegisteredAt", imported: "-", encoded: "test", category_name: "oth"}},
+      {:oth_swiss_species_registered,
+       %{name: "swissSpeciesRegistered", imported: "-", encoded: true, category_name: "oth"}},
+      {:oth_swiss_species_center,
+       %{name: "swissSpeciesCenter", imported: "-", encoded: "infofauna", category_name: "oth"}},
+      {:loc_country_code, %{name: "countryCode", imported: "ch", encoded: "CH", category_name: "loc"}},
+      {:loc_continent, %{name: "continent", imported: "-", encoded: "Europe", category_name: "loc"}},
+      {:eve_event_date,
+       %{
+         name: "eventDate",
+         imported: "2025-01-01/2025-01-20",
+         encoded: "1907-06-06",
+         category_name: "eve"
+       }},
+      {:iucn_redlist_category, %{name: :iucn_redlist_category, imported: "-", encoded: "VU", category_name: "iucn"}}
     ]
 
     assert_lists_equal(expected, changes)

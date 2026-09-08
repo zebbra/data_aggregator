@@ -4,6 +4,8 @@ defmodule DataAggregator do
              |> String.split("<!-- MDOC -->")
              |> Enum.fetch!(1)
 
+  @external_resource "README.md"
+
   @app :data_aggregator
 
   def app_dir, do: Application.app_dir(@app)

@@ -6,8 +6,10 @@ defmodule DataAggregator.ExportFixtures do
 
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   @export_defaults %{
     name: "gbif.org - Export",
@@ -55,6 +57,42 @@ defmodule DataAggregator.ExportFixtures do
     Record.create!(params, tenant: params.collection)
   end
 
+  def exportable_record_with_encoded_record(collection, attrs \\ %{}, encoded_record_attrs \\ %{}) do
+    record =
+      exportable_record(collection, attrs)
+
+    params =
+      exportable_record_attrs()
+      |> Map.merge(encoded_record_attrs)
+      |> Map.put(:record, record)
+
+    encoded_record =
+      EncodedRecord.create!(
+        params,
+        tenant: collection,
+        load: [:collection, :record]
+      )
+
+    EncodedRecord.update(encoded_record, encoded_record_attrs)
+  end
+
+  def exportable_record_with_validated_record(collection, attrs \\ %{}, validated_record_attrs \\ %{}) do
+    record =
+      exportable_record(collection, attrs)
+
+    validated_record_params =
+      exportable_record_attrs()
+      |> Map.merge(validated_record_attrs)
+      |> Map.put(:record, record)
+      |> Map.put(:collection, collection)
+
+    ValidatedRecord.validate!(
+      validated_record_params,
+      tenant: collection,
+      load: [:collection, :record]
+    )
+  end
+
   def exportable_record_attrs do
     %{
       mte_catalog_number: "MHNG-MAM-8.085-#{Uniq.UUID.uuid7(:slug)}",
@@ -63,7 +101,7 @@ defmodule DataAggregator.ExportFixtures do
       tax_family: "Bradypodidae",
       tax_genus: "Bradypus",
       tax_kingdom: "Animalia",
-      tax_taxon_id: 2_435_194,
+      tax_taxon_id: "2_435_194",
       loc_decimal_latitude: 46.8182,
       loc_decimal_longitude: 640_000.0,
       ext_assertions: %{"1": 1}
@@ -222,7 +260,6 @@ defmodule DataAggregator.ExportFixtures do
       "samplingProtocol",
       "organismQuantityType",
       "gbifDOI",
-      "gbifID",
       "gbifCHID",
       "license",
       "footprintWKT",
@@ -385,7 +422,11 @@ defmodule DataAggregator.ExportFixtures do
       "individualCount",
       "associatedOrganisms",
       "associatedReferences",
-      "disposition"
+      "disposition",
+      "subclass",
+      "domain",
+      "subkingdom",
+      "validation_annotation"
     ]
   end
 
@@ -615,7 +656,6 @@ defmodule DataAggregator.ExportFixtures do
       "oth_date_available" => "dateAvailable",
       "oth_gbif_ch_id" => "gbifCHID",
       "oth_gbif_doi" => "gbifDOI",
-      "oth_gbif_id" => "gbifID",
       "oth_information_withheld" => "informationWithheld",
       "oth_institution_id" => "institutionID",
       "oth_language" => "language",
@@ -693,7 +733,11 @@ defmodule DataAggregator.ExportFixtures do
       "occ_individual_count" => "individualCount",
       "occ_occurrence_remarks" => "occurrenceRemarks",
       "occ_vitality" => "vitality",
-      "org_associated_organisms" => "associatedOrganisms"
+      "org_associated_organisms" => "associatedOrganisms",
+      "tax_domain" => "domain",
+      "tax_subclass" => "subclass",
+      "tax_subkingdom" => "subkingdom",
+      "validation_annotation" => "validation_annotation"
     }
   end
 end

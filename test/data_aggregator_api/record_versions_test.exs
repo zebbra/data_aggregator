@@ -59,12 +59,12 @@ defmodule DataAggregatorApi.RecordVersionsTest do
 
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
-      assert length(data) > 0
+      refute Enum.empty?(data)
 
       # Get the first record version
       record_version = Enum.at(data, 0)
-      assert not is_nil(record_version)
-      assert not is_nil(record_version["id"])
+      assert record_version
+      assert record_version["id"]
     end
 
     test "filters record versions by record id", %{

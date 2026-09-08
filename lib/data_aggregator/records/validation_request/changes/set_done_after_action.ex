@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.SetDoneAfterAction do
     Changeset.after_action(changeset, &set_done/2)
   end
 
-  defp set_done(_changeset, publication) do
-    ValidationRequest.set_done(publication)
+  defp set_done(_changeset, vr) do
+    ValidationRequest.set_done(vr)
   end
 end

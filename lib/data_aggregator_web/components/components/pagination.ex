@@ -123,12 +123,11 @@ defmodule DataAggregatorWeb.Components.Pagination do
     if number == current_limit, do: "active"
   end
 
-  defp showing_to(%AshPagify.Meta{current_limit: limit, current_offset: offset, total_count: total})
-       when limit + offset > total do
+  defp showing_to(%Meta{current_limit: limit, current_offset: offset, total_count: total}) when limit + offset > total do
     total
   end
 
-  defp showing_to(%AshPagify.Meta{current_limit: limit, current_offset: offset}) do
+  defp showing_to(%Meta{current_limit: limit, current_offset: offset}) do
     limit + offset
   end
 end

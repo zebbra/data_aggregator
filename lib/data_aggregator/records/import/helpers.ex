@@ -96,10 +96,12 @@ defmodule DataAggregator.Records.Import.Helpers do
   """
   @spec upload_error_log_file!(String.t(), Import.t()) :: :ok
   def upload_error_log_file!(path, import) do
-    upload_fn = fn ->
-      attachment = FlatFileUtils.store_on_s3!(path)
+    import = Ash.load!(import, [:collection], lazy?: true)
 
-      case Explorer.DataFrame.from_csv(path) do
+    upload_fn = fn ->
+      attachment = FlatFileUtils.store_on_s3!(path, import.collection)
+
+      case Explorer.DataFrame.from_csv(path, infer_schema_length: 0) do
         {:ok, df} ->
           amount_of_errors = Explorer.DataFrame.n_rows(df)
 

@@ -9,7 +9,6 @@ defmodule DataAggregator.Gbif.RestAPI do
   alias DataAggregator.Accounts.User
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Types.Api
 
   require Logger
@@ -67,23 +66,6 @@ defmodule DataAggregator.Gbif.RestAPI do
     Req.delete(
       url: create_endpoint_url(registration) <> "/" <> to_string(endpoint_key),
       auth: gbif_auth()
-    )
-  end
-
-  @doc """
-  Search for occurrences in the GBIF API. Returns a list of occurrences.
-  """
-  @spec search_for_occurrences(String.t(), String.t()) :: Api.response()
-  def search_for_occurrences(catalog_number, dataset_key) do
-    [params: [{:catalogNumber, catalog_number}, {:datasetKey, dataset_key}]]
-    # TODO: extract attaching cache (and other middlewres) to separate helper
-    #  module (DataAggregator.Api.Helpers) to have it resusable and not
-    #  poluting all api client functions
-    |> Req.new()
-    |> HttpDiskCache.attach()
-    |> Req.get(
-      url: search_occurrence_url(),
-      max_cache_age_seconds: @hour
     )
   end
 
@@ -204,6 +186,14 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get a species from the GBIF V2 API by a given scientific_name
+  """
+  @spec get_species_by_scientific_name(String.t()) :: Api.response()
+  def get_species_by_scientific_name(scientific_name) do
+    get_matching_species(scientificName: scientific_name)
+  end
+
+  @doc """
   Get one collection from the GrSciColl API, according to its key
   """
   @spec get_one_collection(String.t()) :: Api.response_body()
@@ -250,40 +240,6 @@ defmodule DataAggregator.Gbif.RestAPI do
       url: gbif_species_api_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
       max_cache_age_seconds: @month
     )
-  end
-
-  @doc """
-  We notify infospecies about the processed validation and its result
-  """
-  @spec notify_infospecies_with_validation_result(ValidationResponse.t()) :: Api.response()
-  def notify_infospecies_with_validation_result(validation) do
-    Logger.info("Notifying infospecies about validation result")
-
-    Req.post(
-      url: infospecies_validation_notification_url(),
-      json: notify_infospecies_with_validation_result_params(validation)
-    )
-  end
-
-  @spec notify_infospecies_with_validation_result_params(ValidationResponse.t()) :: map()
-  defp notify_infospecies_with_validation_result_params(%ValidationResponse{error_log_id: nil} = validation_response),
-    do: %{
-      "source_file" => validation_response.file_url,
-      "success_count" => validation_response.rows_validated_count,
-      "error_count" => validation_response.rows_invalid_count,
-      "error_log_url" => ""
-    }
-
-  @spec notify_infospecies_with_validation_result_params(ValidationResponse.t()) :: map()
-  defp notify_infospecies_with_validation_result_params(validation_response) do
-    validation_response = Ash.load!(validation_response, [:error_log], lazy?: true)
-    error_log = Ash.load!(validation_response.error_log, [:url], lazy?: true)
-
-    %{
-      "success_count" => validation_response.rows_validated_count,
-      "error_count" => validation_response.rows_invalid_count,
-      "error_log_url" => error_log.url
-    }
   end
 
   defp registration_params(dataset_name) do

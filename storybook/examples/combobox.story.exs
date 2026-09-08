@@ -4,29 +4,10 @@ defmodule Storybook.Examples.Combobox do
   use DataAggregatorWeb.Components
   use DataAggregatorWeb.Blocks
 
+  alias DataAggregatorWeb.StorybookSchemas.ComboboxForm
+
   def doc do
     "An example of how to use comboboxes."
-  end
-
-  defmodule Form do
-    @moduledoc false
-    use Ecto.Schema
-
-    import Ecto.Changeset
-
-    @primary_key false
-    embedded_schema do
-      field :assignee, :string
-      field :users, {:array, :string}
-    end
-
-    def changeset(%__MODULE__{} = form, params \\ %{}) do
-      form
-      |> cast(params, [:assignee])
-      |> cast(params, [:users])
-      |> validate_required([:assignee])
-      |> validate_required([:users])
-    end
   end
 
   @options [
@@ -75,7 +56,7 @@ defmodule Storybook.Examples.Combobox do
      |> assign(:users, [])
      |> assign(options: @options)
      |> assign(search_options: @search_options)
-     |> assign(:changeset, Form.changeset(%Form{}))}
+     |> assign(:changeset, ComboboxForm.changeset(%ComboboxForm{}))}
   end
 
   @impl true
@@ -339,14 +320,14 @@ defmodule Storybook.Examples.Combobox do
 
   @impl true
   def handle_event("validate", %{"form" => params}, socket) do
-    {:noreply, assign(socket, :changeset, Form.changeset(%Form{}, params))}
+    {:noreply, assign(socket, :changeset, ComboboxForm.changeset(%ComboboxForm{}, params))}
   end
 
   @impl true
   def handle_event("save", %{"form" => params}, socket) do
     result =
-      %Form{}
-      |> Form.changeset(params)
+      %ComboboxForm{}
+      |> ComboboxForm.changeset(params)
       |> Ecto.Changeset.apply_action(:create)
 
     case result do

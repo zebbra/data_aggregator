@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.Router do
   use AshAuthentication.Phoenix.Router
 
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+  import Oban.Web.Router
   import PhoenixStorybook.Router
 
   alias AshAuthentication.Phoenix.Overrides.Default
@@ -66,7 +67,7 @@ defmodule DataAggregatorWeb.Router do
     ]
 
     ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
-      live "/set_password", AdministrationLive.SetPassword, :index
+      live "/set_password", AdministrationLive.User.SetPassword, :index
     end
 
     ash_authentication_live_session :no_terms_accepted, on_mount: no_terms_required_hooks do
@@ -95,12 +96,29 @@ defmodule DataAggregatorWeb.Router do
       on_mount:
         default_hooks ++
           [{DataAggregatorWeb.LiveUserAuth, :live_collection_administrator_required}] do
-      live "/administration", AdministrationLive.Index, :index
-      live "/administration/new", AdministrationLive.Index, :new
-      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
+      live "/administration/users", AdministrationLive.User.Index, :index
+      live "/administration/users/new", AdministrationLive.User.Index, :new
+      live "/administration/users/:user_id/edit", AdministrationLive.User.Index, :edit
 
       live "/datasets/new", CollectionLive.Index, :new
       live "/datasets/:id/edit", CollectionLive.Index, :edit
+    end
+
+    ash_authentication_live_session :admin_required,
+      on_mount:
+        default_hooks ++
+          [{DataAggregatorWeb.LiveUserAuth, :live_admin_required}] do
+      live "/administration/validation_responses",
+           AdministrationLive.ValidationResponse.Index,
+           :index
+
+      live "/administration/validation_responses/new",
+           AdministrationLive.ValidationResponse.Index,
+           :new
+
+      live "/administration/validation_responses/:id/summary",
+           AdministrationLive.ValidationResponse.Index,
+           :summary
     end
 
     ash_authentication_live_session :data_digitizer_required,
@@ -186,6 +204,12 @@ defmodule DataAggregatorWeb.Router do
         ]
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+
+    scope "/" do
+      pipe_through [:locale, :browser]
+
+      oban_dashboard("/oban")
     end
   end
 end

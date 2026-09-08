@@ -26,11 +26,13 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     header_source = export.header_source
 
     mapping =
-      get_mapping(
-        export.mapping,
+      export.mapping
+      |> get_mapping(
         export.collection.import_mapping,
         header_source
       )
+      |> ensure_validation_annotation(data_layer, header_source)
+      |> reject_unexportable()
 
     header_labels = get_header_labels(mapping)
     headers = Enum.map(header_labels, fn {_, v} -> v end)
@@ -40,6 +42,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     load =
       case data_layer do
         :encoded -> [:encoded_record]
+        :validated -> [:validated_record]
         _ -> []
       end
 
@@ -47,22 +50,15 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
       query
       |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: load)
       |> Task.async_stream(
-        fn record ->
-          record
-          |> map_record(mapping, data_layer)
-          |> DwcaFile.use_data_from_collection(export.collection)
-          |> FlatFileUtils.map_data_to_headers(
-            header_labels,
-            Schema.dwc_transformers()
-          )
-        end,
+        &transform_record(&1, mapping, data_layer, export.collection, header_labels),
         timeout: to_timeout(second: 30)
       )
       |> Stream.map(fn {:ok, record} -> record end)
+      |> Stream.reject(&is_nil/1)
       |> Counter.count_each(counter)
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
-      |> FlatFileUtils.store_on_s3!()
+      |> FlatFileUtils.store_on_s3!(export.collection)
 
     Counter.stop(counter)
 
@@ -82,6 +78,28 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     directory
   end
 
+  # transform a record for export based on the data layer
+  @spec transform_record(Record.t(), map(), atom(), any(), list()) :: map()
+  defp transform_record(record, mapping, :validated, _collection, header_labels) do
+    case record.validated_record do
+      nil ->
+        Logger.info("Record with id #{record.id} has no validated record, don't return data")
+        nil
+
+      _ ->
+        record
+        |> map_record(mapping, :validated)
+        |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+    end
+  end
+
+  defp transform_record(record, mapping, data_layer, collection, header_labels) do
+    record
+    |> map_record(mapping, data_layer)
+    |> DwcaFile.use_data_from_collection(collection)
+    |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+  end
+
   # map the record to the given mapping
   @spec map_record(Record.t(), map(), atom()) :: map()
 
@@ -89,13 +107,15 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  defp map_record(record, mapping, :encoded) do
-    map_layers(record, mapping)
+  defp map_record(record, mapping, :encoded) when record.encoded_record == nil do
+    Logger.info(
+      "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
+    )
+
+    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  # map all layers of the record to a single map for exporting the record consoliated.
-  @spec map_layers(Record.t(), map()) :: map()
-  defp map_layers(record, mapping) when record.encoded_record != nil do
+  defp map_record(record, mapping, :encoded) do
     raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
 
     encoded_layer =
@@ -104,16 +124,26 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     Map.merge(raw_layer, encoded_layer)
   end
 
-  defp map_layers(record, mapping) when record.encoded_record == nil do
-    Logger.info(
-      "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
-    )
-
-    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+  defp map_record(record, mapping, :validated) do
+    record.validated_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
+
+  defp ensure_validation_annotation(mapping, :raw, :dwc_attributes) do
+    label =
+      mapping["validation_annotation"] || mapping[:validation_annotation] ||
+        "validation_annotation"
+
+    mapping
+    |> Map.delete("validation_annotation")
+    |> Map.put(:validation_annotation, label)
+  end
+
+  defp ensure_validation_annotation(mapping, _, _), do: mapping
 
   # returns the mapping according to the given header source and if a collection- or export-mapping is given.
   @spec get_mapping(map(), list(), atom()) :: map()
+  defp get_mapping(export_mapping, collection_mapping, header_source)
+
   defp get_mapping(export_mapping, _collection_mapping, :custom_selection) when export_mapping != nil, do: export_mapping
 
   defp get_mapping(_export_mapping, collection_mapping, :collection_mapping) when collection_mapping != nil,
@@ -141,6 +171,17 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
 
   defp get_default_mapping do
     Map.new(Schema.prefixed_attribute_names(), fn name -> {name, name} end)
+  end
+
+  # Applied to every header source, including a hand picked `:custom_selection`, so these
+  # attributes can never leave the system through an export. The generated mappings are atom
+  # keyed while a stored `:custom_selection` mapping comes back from the database string
+  # keyed, so both spellings have to go.
+  defp reject_unexportable(mapping) do
+    unexportable =
+      Enum.flat_map(Schema.unexportable_attribute_names(), &[&1, Atom.to_string(&1)])
+
+    Map.drop(mapping, unexportable)
   end
 
   defp get_data_attributes(mapping) do

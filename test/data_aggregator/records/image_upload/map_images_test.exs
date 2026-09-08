@@ -172,9 +172,9 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
       )
 
     assert %Attachment{} = image_upload.upload_log
-    assert image_upload.upload_log.url != nil
+    assert image_upload.upload_log.url
 
-    df = Explorer.DataFrame.from_csv!(image_upload.upload_log.url)
+    df = Explorer.DataFrame.from_csv!(image_upload.upload_log.url, infer_schema_length: 0)
 
     assert Explorer.DataFrame.n_columns(df) == 4
     assert Explorer.DataFrame.n_rows(df) == 4

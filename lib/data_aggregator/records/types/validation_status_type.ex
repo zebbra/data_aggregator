@@ -5,11 +5,10 @@ defmodule DataAggregator.Records.ValidationStatusType do
 
   use Ash.Type.Enum,
     values: [
-      :not_validated,
+      :unknown,
       :validating,
-      :in_validation,
+      :requested,
       :validated,
-      :validation_failed,
-      :stale
+      :not_validated
     ]
 end

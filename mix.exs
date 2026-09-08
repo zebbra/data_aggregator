@@ -5,11 +5,23 @@ defmodule DataAggregator.MixProject do
     System.get_env("APP_VERSION") || "0.0.42"
   end
 
+  def cli do
+    [
+      preferred_envs: [
+        "test.watch": :test,
+        "bench.seed": :bench,
+        "bench.run": :bench,
+        "bench.run.single": :bench,
+        "bench.report": :bench
+      ]
+    ]
+  end
+
   def project do
     [
       app: :data_aggregator,
       version: version(),
-      elixir: "~> 1.18",
+      elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -17,9 +29,6 @@ defmodule DataAggregator.MixProject do
       aliases: aliases(),
       package: package(),
       deps: deps(),
-      preferred_cli_env: [
-        "test.watch": :test
-      ],
 
       # Dialyzer
       dialyzer: [
@@ -32,7 +41,8 @@ defmodule DataAggregator.MixProject do
       name: "Data Aggregator",
       source_url: "https://github.com/zebbra/data_aggregator",
       homepage_url: "https://github.com/zebbra/data_aggregator",
-      docs: docs()
+      docs: docs(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -51,6 +61,7 @@ defmodule DataAggregator.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:bench), do: ["lib", "test/support/fixtures/stubs"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Hex package manager configuration.
@@ -112,7 +123,20 @@ defmodule DataAggregator.MixProject do
   defp before_closing_body_tag(_), do: ""
 
   defp extras do
-    Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+    project_extras() ++ Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
+  end
+
+  # Root level documents referenced from the README, which is used as the
+  # @moduledoc of DataAggregator. They must be listed as extras so ExDoc can
+  # resolve the links to them.
+  defp project_extras do
+    [
+      "CONTRIBUTING.md",
+      "CODE_OF_CONDUCT.md",
+      "SECURITY.md",
+      "LICENSE-IMPLICATIONS.md",
+      {:LICENSE, [title: "License"]}
+    ]
   end
 
   defp groups_for_extras do
@@ -122,7 +146,14 @@ defmodule DataAggregator.MixProject do
         "docs/deployment.md"
       ],
       Ash: "docs/api.md",
-      Guides: ~r'docs/guides'
+      Guides: ~r'docs/guides',
+      Project: [
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+        "LICENSE-IMPLICATIONS.md",
+        "LICENSE"
+      ]
     ]
   end
 
@@ -196,34 +227,37 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:oban_web, "~> 2.0"},
+      {:ash_oban, "~> 0.6"},
+      {:usage_rules, "~> 1.2", only: [:dev]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
-      {:bandit, "~> 1.7.0"},
-      {:phoenix, "~> 1.7.14"},
+      {:bandit, "~> 1.12"},
+      {:phoenix, "~> 1.8.1"},
       {:phoenix_ecto, "~> 4.6"},
-      {:phoenix_html, "~> 4.1"},
-      {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 1.0.17"},
-      {:phoenix_storybook, "~> 0.8.0"},
-      {:tidewave, "~> 0.1", only: :dev},
-      {:live_debugger, "~> 0.2.0", only: :dev},
+      {:phoenix_html, "~> 4.3"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.1.14"},
+      {:phoenix_storybook, "~> 1.3"},
+      {:tidewave, "~> 0.4", only: [:dev]},
+      {:live_debugger, "~> 1.0", only: [:dev]},
+      {:lazy_html, ">= 0.1.0", only: :test},
 
       # Ash Framework
-      {:ash, "~> 3.4", override: true},
+      {:ash, "~> 3.0"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      {:ash_postgres, "~> 2.4", override: true},
+      {:ash_postgres, "~> 2.8", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.4"},
       {:ash_pagify, "~> 1.4"},
       {:ash_authentication, "~> 4.0"},
-      {:ash_authentication_phoenix, "~> 2.0"},
+      {:ash_authentication_phoenix, "~> 2.10"},
 
       # Database and Ecto
-      {:ecto, "~> 3.11"},
-      {:ecto_sql, "~> 3.11"},
+      {:ecto, "~> 3.13"},
+      {:ecto_sql, "~> 3.13"},
       {:ecto_dev_logger, "~> 0.11"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
@@ -234,17 +268,17 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-      {:git_ops, "~> 2.8.0", only: [:dev]},
+      {:git_ops, "~> 2.10.0", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 1.11", only: :test},
-      {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:mimic, "~> 2.1", only: [:test, :bench]},
+      {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
       {:ex_machina, "~> 2.8.0", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.5.1", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -255,7 +289,7 @@ defmodule DataAggregator.MixProject do
        override: true},
 
       # Internationalization and Localization
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 0.26"},
       {:ex_cldr, "~> 2.37"},
       {:ex_cldr_dates_times, "~> 2.20"},
       {:ex_cldr_numbers, "~> 2.31"},
@@ -264,33 +298,33 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:hackney, "~> 1.24"},
+      {:hackney, "~> 4.7"},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.5.0"},
+      {:req, "~> 0.7.4"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
       {:gen_smtp, "~> 1.1"},
+      {:castore, "~> 1.0"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.10.0"},
+      {:explorer, "~> 0.12.0"},
       {:csv, "~> 3.2"},
-      {:waffle, "~> 1.1.9"},
-      {:ex_aws, "~> 2.5.4"},
-      {:ex_aws_s3, "~> 2.0"},
+      {:waffle, "~> 2.0"},
+      {:ex_aws, "~> 2.7"},
+      {:ex_aws_s3, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
-
       # Background Jobs
-      {:oban, "~> 2.17"},
+      {:oban, "~> 2.0"},
       {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:sentry, "~> 10.6"},
+      {:sentry, "~> 13.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:recon, "~> 2.5", only: :dev},
@@ -304,11 +338,7 @@ defmodule DataAggregator.MixProject do
       {:sourceror, "~> 1.7", only: [:dev, :test]},
 
       # Documentation
-      {:ex_doc, "~> 0.35", runtime: false},
-
-      # Livebook Widgets
-      {:kino, "~> 0.12", only: :dev},
-      {:kino_explorer, "~> 0.1", only: :dev}
+      {:ex_doc, "~> 0.35", runtime: false}
     ]
   end
 
@@ -354,6 +384,15 @@ defmodule DataAggregator.MixProject do
         "repo.drop",
         "repo.setup"
       ],
+      "repo.bench.setup": [
+        "repo.create --quiet",
+        "repo.migrate --quiet",
+        "run priv/repo/catalogs/init.exs"
+      ],
+      "repo.bench.reset": [
+        "repo.drop",
+        "repo.bench.setup"
+      ],
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
@@ -389,7 +428,7 @@ defmodule DataAggregator.MixProject do
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
-        "cmd cd assets && npm install"
+        "cmd --cd assets npm install"
       ],
       "assets.build": [
         "tailwind data_aggregator",
@@ -407,7 +446,7 @@ defmodule DataAggregator.MixProject do
         # "compile --all-warnings --warnings-as-errors",
         "format --check-formatted",
         "credo --strict",
-        "deps.audit",
+        "deps.audit --ignore-file .mix_audit.ignore",
         "gettext.lint",
         "repo.lint",
         "dialyzer"
@@ -420,6 +459,9 @@ defmodule DataAggregator.MixProject do
         "ash_state_machine.generate_flow_charts --format md",
         "repo.erd",
         "docs"
+      ],
+      "agents.sync": [
+        "usage_rules.sync AGENTS.md --all --link-to-folder usage-rules"
       ]
     ]
   end

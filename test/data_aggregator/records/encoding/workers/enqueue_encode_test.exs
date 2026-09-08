@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()
-      invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
+      invalid_record = record_fixture_for_encoding_col_taxonomy_invalid()
 
       [
         correct_record: correct_record,

@@ -9,15 +9,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
   alias DataAggregator.Taxonomy.Catalog
 
   @transformers Schema.dwc_transformers()
   @fields_not_shown_in_ui [
-    :loc_decimal_presence,
-    :loc_swiss_coordinates_95_presence,
-    :loc_swiss_coordinates_03_presence,
-    :eve_event_date_presence
-  ]
+                            :loc_decimal_presence,
+                            :loc_swiss_coordinates_95_presence,
+                            :loc_swiss_coordinates_03_presence,
+                            :eve_event_date_presence
+                          ] ++ Schema.unexportable_attribute_names()
 
   def busy?(action, busy_action), do: action == busy_action
 
@@ -59,6 +60,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     record = Ash.load!(record, :encoded_record, lazy?: true)
     output_dwc_fields = Catalog.get_all_output_dwc_attributes()
 
+    validated_record =
+      case ValidatedRecord.get_by_record(record.id, tenant: collection) do
+        {:ok, validated_record} -> validated_record
+        _ -> nil
+      end
+
     collection_attributes =
       Schema.collection_attributes()
       |> Enum.map(fn attribute ->
@@ -66,13 +73,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
           name: attribute.dwc_field,
           category_name: "oth",
           imported: Map.get(collection, attribute.collection_field),
-          encoded: "-"
+          encoded: "-",
+          validated: "-"
         }
       end)
       |> Enum.filter(fn %{imported: value} -> value not in ["", nil] end)
 
     Schema.prefixed_attribute_names()
-    |> Enum.filter(&should_show_attribute?(&1, record, output_dwc_fields))
+    |> Enum.filter(&should_show_attribute?(&1, record, validated_record))
     |> Enum.map(fn key ->
       imported_value =
         record
@@ -91,33 +99,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
           encoded_value
         end
 
+      validated_value =
+        case validated_record do
+          nil -> "-"
+          _ -> validated_record |> Map.get(key) |> maybe_transform_value(key)
+        end
+
       %{
         name: get_dwc_field(key),
         category_name: key |> Atom.to_string() |> String.split("_") |> List.first(),
         imported: imported_value,
-        encoded: encoded_value
+        encoded: encoded_value,
+        validated: validated_value
       }
     end)
     |> Enum.concat(collection_attributes)
     |> by_category()
   end
 
-  defp should_show_attribute?(key, record, output_dwc_fields) do
+  def show_validation_badge?(record) do
+    record.validation_status == :validated ||
+      (record.encoded_record.oth_swiss_species_center != "Out of Scope" &&
+         record.encoded_record.oth_swiss_species_registered == true &&
+         record.state == :encoded)
+  end
+
+  # Gating on the raw layer alone would hide values that only exist further down the
+  # pipeline, such as a validated organismID on a record imported without one.
+  defp should_show_attribute?(key, record, validated_record) do
     cond do
-      key in @fields_not_shown_in_ui ->
-        false
-
-      Map.get(record, key) not in ["", nil] ->
-        true
-
-      Enum.member?(output_dwc_fields, key) and
-          Map.get(record.encoded_record, key) not in ["", nil] ->
-        true
-
-      true ->
-        false
+      key in @fields_not_shown_in_ui -> false
+      present?(record, key) -> true
+      present?(record.encoded_record, key) -> true
+      present?(validated_record, key) -> true
+      true -> false
     end
   end
+
+  defp present?(nil, _key), do: false
+  defp present?(layer, key), do: Map.get(layer, key) not in ["", nil]
 
   defp maybe_transform_value(value, key) do
     if @transformers[key] do
@@ -234,10 +254,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   end
 
   def count_from_query(query, collection) do
-    Record
-    |> AshPagify.query_for_filters_map(query)
-    |> Ash.Query.set_tenant(collection)
-    |> Ash.count!()
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(query)
+      |> Ash.Query.set_tenant(collection)
+
+    Ash.count!(%{query | sort: []})
   end
 
   @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()

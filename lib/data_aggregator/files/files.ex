@@ -4,12 +4,12 @@ defmodule DataAggregator.Files do
 
   ## Usage
 
-  Use `DataAggregator.Files.Attachment.import_from_path/1` to import a file from the local filesystem:
+  Use `DataAggregator.Files.Attachment.import_from_path/2` to import a file from the local filesystem:
 
   ```elixir
   alias DataAggregator.Files.Attachment
 
-  {:ok, attachment} = Attachment.import_from_path("/path/to/file.csv")
+  {:ok, attachment} = Attachment.import_from_path("/path/to/file.csv", collection)
   ```
 
   The `DataAggregator.Files.Attachment` struct contains the following calculations:

@@ -1,9 +1,9 @@
 catalogs = [
-  :gbif_taxonomy,
-  :swiss_species,
+  :col_taxonomy,
   :geo_reverse,
   :geo_forward,
-  :gbif_iucn_redlist,
+  :swiss_species,
+  :iucn_redlist,
   :relate_images,
   :convert_dates
 ]
@@ -24,11 +24,11 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
   def translate_catalog(catalog) do
     case catalog do
-      :gbif_taxonomy -> "GBIF Taxonomy"
-      :swiss_species -> "Swiss Species"
+      :col_taxonomy -> "CoL Taxonomy"
       :geo_reverse -> "Geo Reverse"
       :geo_forward -> "Geo Forward"
-      :gbif_iucn_redlist -> "GBIF IUCN Redlist"
+      :swiss_species -> "Swiss Species"
+      :iucn_redlist -> "IUCN Redlist"
       :relate_images -> "Relate Images"
       :convert_dates -> "Date Conversion"
       _ -> "Unknown Catalog"
@@ -37,7 +37,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
   def get_input_attributes(catalog) do
     case catalog do
-      :gbif_taxonomy ->
+      :col_taxonomy ->
         [
           {:tax_scientific_name, :name},
           {:tax_kingdom, :kingdom},
@@ -47,17 +47,17 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_family, :family}
         ]
 
-      :gbif_iucn_redlist ->
-        [{:tax_taxon_id, nil}]
-
-      :swiss_species ->
-        [{:tax_taxon_id, :tax_taxon_id}]
-
       :geo_reverse ->
         []
 
       :geo_forward ->
         []
+
+      :swiss_species ->
+        [{:tax_scientific_name, :tax_scientific_name}]
+
+      :iucn_redlist ->
+        [{:tax_scientific_name, nil}]
 
       :relate_images ->
         []
@@ -84,34 +84,25 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
   def get_output_attributes(catalog) do
     case catalog do
-      :gbif_taxonomy ->
+      :col_taxonomy ->
         [
-          {:tax_kingdom, :kingdom},
-          {:tax_phylum, :phylum},
-          {:tax_class, :class},
-          {:tax_family, :family},
-          {:tax_order, :order},
-          {:tax_genus, :genus},
-          {:tax_scientific_name, :scientificName},
-          {:tax_taxon_id, :key},
-          {:tax_taxon_id, :acceptedUsageKey}
-        ]
-
-      :gbif_iucn_redlist ->
-        [
-          {:iucn_redlist_category, "code"}
-        ]
-
-      :swiss_species ->
-        [
-          {:tax_taxon_id_ch, :taxon_id_ch},
-          {:tax_accepted_name_usage, :accepted_name},
-          {:tax_accepted_name_usage_id, :accepted_usage_key},
-          {:tax_scientific_name, :scientific_name},
-          {:tax_taxon_rank, :rank},
-          {:oth_swiss_species_center, :center},
-          {:oth_swiss_species_registered_at, :registered_at},
-          {:oth_swiss_species_registered, :registered}
+          {:tax_taxon_id, :tax_taxon_id},
+          {:tax_scientific_name, :tax_scientific_name},
+          {:tax_taxon_rank, :tax_taxon_rank},
+          {:tax_scientific_name_authorship, :tax_scientific_name_authorship},
+          {:tax_taxon_id, :tax_taxon_id},
+          {:tax_taxon_id, :tax_taxon_id},
+          {:tax_taxon_id, :tax_taxon_id},
+          {:tax_taxon_id, :tax_taxon_id},
+          {:tax_domain, :tax_domain},
+          {:tax_kingdom, :tax_kingdom},
+          {:tax_subkingdom, :tax_subkingdom},
+          {:tax_phylum, :tax_phylum},
+          {:tax_class, :tax_class},
+          {:tax_subclass, :tax_subclass},
+          {:tax_order, :tax_order},
+          {:tax_family, :tax_family},
+          {:tax_genus, :tax_genus}
         ]
 
       :geo_reverse ->
@@ -135,6 +126,21 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"}
+        ]
+
+      :swiss_species ->
+        [
+          {:tax_taxon_id_ch, :taxon_id_ch},
+          {:tax_accepted_name_usage, :accepted_name_usage},
+          {:tax_taxon_rank, :rank},
+          {:oth_swiss_species_center, :center},
+          {:oth_swiss_species_registered_at, :registered_at},
+          {:oth_swiss_species_registered, :registered}
+        ]
+
+      :iucn_redlist ->
+        [
+          {:iucn_redlist_category, :iucn_redlist_category}
         ]
 
       :relate_images ->

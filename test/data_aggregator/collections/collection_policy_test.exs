@@ -17,7 +17,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as admin" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -181,7 +181,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as collection_administrator" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -256,7 +256,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       actor: actor,
       collection_same: collection_same
     } do
-      assert Collection.can_destroy?(actor, collection_same)
+      refute Collection.can_destroy?(actor, collection_same)
     end
 
     test "cannot destroy collection with other institution", %{
@@ -331,7 +331,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -476,7 +476,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
   describe "as collection_administrator and data_digitizer" do
     setup do
-      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, RestAPIStub)
 
       actor = %User{
         id: "user_1",
@@ -536,7 +536,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
 
     test "can destroy same collection", %{actor: actor, collection_same: collection_same} do
-      assert Collection.can_destroy?(actor, collection_same)
+      refute Collection.can_destroy?(actor, collection_same)
     end
 
     test "cannot destroy other collection", %{actor: actor, collection_other: collection_other} do

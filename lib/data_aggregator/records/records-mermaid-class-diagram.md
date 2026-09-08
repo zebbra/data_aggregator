@@ -24,6 +24,9 @@ classDiagram
         Export[] exports
         Record[] records
         ImageUpload[] image_uploads
+        ValidationRequest[] validation_requests
+        Publication[] publications
+        ValidationResponse[] validation_responses
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -47,13 +50,13 @@ classDiagram
         export(Struct export)
         publish(Struct publication)
         validate(Struct validation_request)
-        start_validations(Struct collection, Map query)
+        start_validations(Struct collection)
     }
     class EncodedRecord {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -239,6 +242,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -280,7 +286,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -361,11 +367,13 @@ classDiagram
         UUID collection_id
         Record record
         SwissSpecies[] swiss_species
+        SwissSpeciesRegistry swiss_species_registry
         Collection collection
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_return_minimal_fields(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {
@@ -401,14 +409,13 @@ classDiagram
         DataLayerType data_layer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -422,6 +429,7 @@ classDiagram
         set_exported()
         update_attachment(Struct attachment)
         cancel_export()
+        destroy()
     }
     class Import {
         UUID id
@@ -435,12 +443,12 @@ classDiagram
         Integer rows_invalid_count
         Integer rows_imported_count
         Integer rows_error_count
+        Atom state
         UUID collection_id
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
         UUID error_log_id
-        Atom state
         Integer records_count
         Collection collection
         User created_by
@@ -449,7 +457,6 @@ classDiagram
         Attachment error_log
         Record[] records
         update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
-        destroy()
         read()
         active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
@@ -464,6 +471,7 @@ classDiagram
         set_imported()
         update_error_log(Struct error_log)
         cancel_import()
+        destroy()
     }
     class Record {
         UUID import_id
@@ -491,12 +499,12 @@ classDiagram
         String error_message
         Integer invalid_files_count
         Atom mapping_identifier
+        Atom state
         UUID collection_id
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
         UUID upload_log_id
-        Atom state
         Float mapping_progress
         Collection collection
         User created_by
@@ -544,15 +552,14 @@ classDiagram
         PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
         update(String name, UtcDatetime published_at, UtcDatetime started_at, UtcDatetime finished_at, ...)
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime published_at, UtcDatetime started_at, ...)
@@ -564,12 +571,13 @@ classDiagram
         set_done()
         update_attachment(Struct attachment)
         cancel_publication()
+        destroy()
     }
     class PublishedRecord {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -755,6 +763,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -796,7 +807,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -874,15 +885,16 @@ classDiagram
         Publication publication
         Record record
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
-        create(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        create(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        by_publication(String publication_id)
     }
     class Record {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -1068,6 +1080,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -1109,7 +1124,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -1183,12 +1198,13 @@ classDiagram
         PublicationStatusType publication_status
         ValidationStatusType validation_status
         String iucn_redlist_category
+        String validation_annotation
         UtcDatetime last_validation_started_at
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UUID collection_id
         Atom state
+        UUID collection_id
         Boolean full_text_search
         Float full_text_search_rank
         Tsquery tsquery
@@ -1205,22 +1221,23 @@ classDiagram
         Attachment[] image_attachments
         EncodedRecord encoded_record
         PublishedRecord published_record
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        ValidationRequestRecord validation_request_record
+        ValidatedRecord validated_record
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         encoding()
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
-        enqueue_publication_verifier(Struct published_record)
         bulk_import(Struct import, Term rows)
         encode(Term record, Atom catalog)
-        check_if_published(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         update_publication_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_validation_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        set_validation_status_not_validated(String annotation, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_last_validation_started_at()
         add_images(Struct[] images, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
@@ -1283,34 +1300,36 @@ classDiagram
         Map records_query
         Integer processed_rows_count
         Integer total_rows_count
+        Integer sent_for_validation_count
         Atom center
-        PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID collection_id
         UUID started_by_id
         UUID attachment_id
-        Atom state
         Collection collection
         User started_by
         Attachment attachment
         update(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
-        destroy()
         read()
         active()
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
         enqueue(UUID started_by_id)
         add_validation_request_progress(Integer processed_rows)
+        set_total_rows_count(Integer total_rows_count)
+        add_sent_for_validation_progress(Integer processed_rows)
         set_running()
         set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
         cancel_validation_request()
+        destroy()
     }
     class ValidationResponse {
         UUID id
-        String file_url
+        ValidationResponseType type
         Integer rows_count
         Integer rows_invalid_count
         Integer rows_validated_count
@@ -1319,20 +1338,26 @@ classDiagram
         UtcDatetime finished_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         UUID attachment_id
         UUID error_log_id
-        UUID collection_id
-        Atom state
+        UUID created_by_id
+        UUID started_by_id
         Attachment attachment
         Attachment error_log
-        Collection collection
-        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
-        destroy()
+        User created_by
+        User started_by
+        Collection[] affected_collections
+        update(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         read()
-        create(Struct collection, String file_url)
-        enqueue()
+        add_affected_collection(Struct collection)
+        destroy()
+        create(ValidationResponseType type)
+        create_from_path(String path, String filename, UUID created_by_id, ValidationResponseType type)
+        enqueue(UUID started_by_id)
         set_running()
-        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        set_failed(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        set_cancelled(ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
@@ -1343,7 +1368,7 @@ classDiagram
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -1529,6 +1554,9 @@ classDiagram
         String loc_water_body
         String loc_higher_geography_id
         String loc_location_id
+        String tax_subclass
+        String tax_subkingdom
+        String tax_domain
         String tax_taxon_remarks
         String tax_nomenclatural_status
         String tax_taxonomic_status
@@ -1570,7 +1598,7 @@ classDiagram
         String tax_parent_name_usage_id
         String tax_scientific_name_id
         Integer tax_identifier
-        Integer tax_taxon_id
+        String tax_taxon_id
         String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
@@ -1646,11 +1674,31 @@ classDiagram
         Record record
         Collection collection
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         validate(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         bulk_validate(Term rows)
+    }
+    class ValidationRequestRecord {
+        UUID id
+        Map data
+        UUID record_id
+        UUID collection_id
+        UUID validation_request_id
+        Record record
+        Collection collection
+        ValidationRequest validation_request
+        update(Map data, UUID record_id, UUID collection_id, UUID validation_request_id)
+        destroy()
+        read()
+        create(Struct collection, Struct record, Map data, UUID record_id, ...)
+        bulk_upsert(Map data, UUID record_id, UUID validation_request_id)
+    }
+    class ValidationResponseCollection {
+        destroy()
+        read()
+        create(UUID validation_response_id, UUID collection_id)
     }
 
     User -- Version
@@ -1660,6 +1708,7 @@ classDiagram
     User -- Publication
     User -- Version
     User -- ValidationRequest
+    User -- ValidationResponse
     Attachment -- Export
     Attachment -- ImageUpload
     Attachment -- Import
@@ -1679,11 +1728,14 @@ classDiagram
     Collection -- Record
     Collection -- Image
     Collection -- ValidationRequest
+    Collection -- ValidationRequestRecord
     Collection -- ValidationResponse
     Collection -- ValidatedRecord
+    Collection -- ValidationResponseCollection
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
+    EncodedRecord -- SwissSpeciesRegistry
     RecordEncodingResult -- Record
     ImageUpload -- Image
     Import -- Record
@@ -1693,6 +1745,9 @@ classDiagram
     PublishedRecord -- Record
     Record -- Image
     Record -- Version
+    Record -- ValidationRequestRecord
     Record -- ValidatedRecord
+    ValidationRequest -- ValidationRequestRecord
+    ValidationResponse -- ValidationResponseCollection
 
 ```

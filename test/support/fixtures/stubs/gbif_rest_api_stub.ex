@@ -149,93 +149,6 @@ defmodule DataAggregator.Gbif.RestAPIStub do
     {:ok, %{status: 204, body: ""}}
   end
 
-  def search_for_occurrences(catalog_number, dataset_key) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "offset" => 0,
-         "limit" => 20,
-         "endOfRecords" => true,
-         "count" => 1,
-         "results" => [
-           %{
-             "key" => 2_283_918_090,
-             "datasetKey" => dataset_key,
-             "publishingOrgKey" => "1354d651-e529-4a8e-95be-faa807639461",
-             "installationKey" => "dc9d8bd0-3c20-4fba-b7ff-26d654817ea7",
-             "hostingOrganizationKey" => "23e067c0-a255-11da-beae-b8a03c50a862",
-             "publishingCountry" => "CH",
-             "protocol" => "EML",
-             "lastCrawled" => "2023-01-08T02:10:37.928+00:00",
-             "lastParsed" => "2024-01-24T20:52:36.178+00:00",
-             "crawlId" => 208,
-             "extensions" => {},
-             "basisOfRecord" => "PRESERVED_SPECIMEN",
-             "occurrenceStatus" => "PRESENT",
-             "lifeStage" => "Adult",
-             "taxonKey" => 4_450_058,
-             "kingdomKey" => 1,
-             "phylumKey" => 54,
-             "classKey" => 216,
-             "orderKey" => 1470,
-             "familyKey" => 4_449_504,
-             "genusKey" => 4_406_598,
-             "speciesKey" => 4_450_058,
-             "acceptedTaxonKey" => 4_450_058,
-             "scientificName" => "Aplocnemus impressus (Marsham, 1802)",
-             "acceptedScientificName" => "Aplocnemus impressus (Marsham, 1802)",
-             "kingdom" => "Animalia",
-             "phylum" => "Arthropoda",
-             "order" => "Coleoptera",
-             "family" => "Dasytidae",
-             "genus" => "Aplocnemus",
-             "species" => "Aplocnemus impressus",
-             "genericName" => "Aplocnemus",
-             "specificEpithet" => "impressus",
-             "taxonRank" => "SPECIES",
-             "taxonomicStatus" => "ACCEPTED",
-             "iucnRedListCategory" => "NE",
-             "decimalLatitude" => 46.74473,
-             "decimalLongitude" => 6.48989,
-             "coordinateUncertaintyInMeters" => 3535.0,
-             "elevation" => 600.0,
-             "continent" => "EUROPE",
-             "stateProvince" => "Vd",
-             "year" => 2017,
-             "month" => 3,
-             "day" => 23,
-             "eventDate" => "2017-03-23",
-             "startDayOfYear" => 82,
-             "endDayOfYear" => 82,
-             "institutionKey" => "3e879cad-48a9-428f-848d-1c0d1a6ba94b",
-             "isInCluster" => false,
-             "datasetID" => "INVERT",
-             "datasetName" => "Invertebrate collections",
-             "recordedBy" => "Braulin Gaspard",
-             "identifiedBy" => "Chittaro Yannick",
-             "samplingProtocol" => "Interception trap",
-             "geodeticDatum" => "WGS84",
-             "class" => "Insecta",
-             "countryCode" => "CH",
-             "recordedByIDs" => [],
-             "identifiedByIDs" => [],
-             "gbifRegion" => "EUROPE",
-             "country" => "Switzerland",
-             "identifier" => catalog_number,
-             "catalogNumber" => catalog_number,
-             "organismID" => "GBIFCH00642967",
-             "institutionCode" => "MZL",
-             "ownerInstitutionCode" => "MZL",
-             "materialSampleID" => "GBIFCH00642967",
-             "gbifID" => "2283918090",
-             "occurrenceID" => catalog_number
-           }
-         ]
-       }
-     }}
-  end
-
   @spec get_grscicoll_entity(String.t(), atom()) :: Api.response_body()
   def get_grscicoll_entity(key, _kind) do
     {:ok,
@@ -1486,64 +1399,80 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
-  def get_iucn_redlist_category("2496298") do
+  @spec get_species_by_scientific_name(String.t()) :: Api.response()
+  def get_species_by_scientific_name("something_unknown") do
     {:ok,
      %Req.Response{
        status: 200,
-       headers: %{
-         "accept-ranges" => ["bytes"],
-         "age" => ["0"],
-         "cache-control" => ["public, max-age=3601"],
-         "connection" => ["keep-alive"],
-         "content-type" => ["application/json"],
-         "date" => ["Thu, 12 Sep 2024 19:05:03 GMT"],
-         "expires" => ["0"],
-         "pragma" => ["no-cache"],
-         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
-         "via" => ["1.1 varnish (Varnish/6.6)"],
-         "x-content-type-options" => ["nosniff"],
-         "x-frame-options" => ["DENY"],
-         "x-varnish" => ["383780524"],
-         "x-xss-protection" => ["1; mode=block"]
-       },
+       headers: %{},
        body: %{
-         "category" => "NOT_EVALUATED",
-         "code" => "NE",
-         "scientificName" => "Coccyzus cinereus Vieillot, 1817",
-         "taxonomicStatus" => "ACCEPTED"
-       },
-       trailers: %{},
-       private: %{}
+         "diagnostics" => %{
+           "matchType" => "NONE",
+           "issues" => [],
+           "confidence" => 100,
+           "timeTaken" => 0,
+           "timings" => %{
+             "sciNameMatch" => 1
+           }
+         }
+       }
      }}
   end
 
-  def get_iucn_redlist_category(_) do
+  def get_species_by_scientific_name(_scientific_name) do
     {:ok,
      %Req.Response{
        status: 200,
-       headers: %{
-         "accept-ranges" => ["bytes"],
-         "age" => ["0"],
-         "cache-control" => ["public, max-age=3601"],
-         "connection" => ["keep-alive"],
-         "content-type" => ["application/json"],
-         "date" => ["Fri, 07 Jun 2024 13:53:39 GMT"],
-         "expires" => ["0"],
-         "pragma" => ["no-cache"],
-         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
-         "via" => ["1.1 varnish (Varnish/6.0)"],
-         "x-content-type-options" => ["nosniff"],
-         "x-frame-options" => ["DENY"],
-         "x-varnish" => ["113873540"],
-         "x-xss-protection" => ["1; mode=block"]
-       },
+       headers: %{},
        body: %{
-         "category" => "EXTINCT",
-         "code" => "EX",
-         "iucnTaxonID" => "22690059",
-         "scientificName" => "Raphus cucullatus (Linnaeus, 1758)",
-         "taxonomicStatus" => "ACCEPTED",
-         "usageKey" => 176_619_915
+         "additionalStatus" => [
+           %{
+             "clbDatasetKey" => "53131",
+             "datasetAlias" => "IUCN",
+             "datasetKey" => "19491596-35ae-4a91-9a98-85cf505f1bd3",
+             "sourceId" => "1285",
+             "status" => "VULNERABLE",
+             "statusCode" => "VU"
+           }
+         ],
+         "classification" => [
+           %{"key" => "1", "name" => "Animalia", "rank" => "KINGDOM"},
+           %{"key" => "54", "name" => "Arthropoda", "rank" => "PHYLUM"},
+           %{"key" => "216", "name" => "Insecta", "rank" => "CLASS"},
+           %{"key" => "1457", "name" => "Hymenoptera", "rank" => "ORDER"},
+           %{"key" => "4342", "name" => "Formicidae", "rank" => "FAMILY"},
+           %{"key" => "1314823", "name" => "Anergates", "rank" => "GENUS"},
+           %{
+             "key" => "1314824",
+             "name" => "Anergates atratulus",
+             "rank" => "SPECIES"
+           }
+         ],
+         "diagnostics" => %{
+           "confidence" => 99,
+           "matchType" => "EXACT",
+           "timeTaken" => 6,
+           "timings" => %{
+             "luceneMatch" => 6,
+             "nameNRank" => 0,
+             "nameParse" => 0,
+             "sciNameMatch" => 6
+           }
+         },
+         "synonym" => false,
+         "usage" => %{
+           "authorship" => "(Schenck, 1852)",
+           "canonicalName" => "Anergates atratulus",
+           "code" => "ZOOLOGICAL",
+           "formattedName" => "<i>Anergates</i> <i>atratulus</i> (Schenck, 1852)",
+           "genericName" => "Anergates",
+           "key" => "1314824",
+           "name" => "Anergates atratulus (Schenck, 1852)",
+           "rank" => "SPECIES",
+           "specificEpithet" => "atratulus",
+           "status" => "ACCEPTED",
+           "type" => "SCIENTIFIC"
+         }
        },
        trailers: %{},
        private: %{}

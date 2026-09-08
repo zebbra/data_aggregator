@@ -11,11 +11,14 @@ defmodule DataAggregator.Records.ValidationResponse.Actions.BulkValidate do
   require Logger
 
   @impl true
-  def run(input, _opts, %{tenant: tenant}) do
+  def run(input, _opts, %{tenant: tenant, actor: actor}) do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.validation_response_batch_size() / max_concurrency)
+    # Split the configured batch across workers so max_concurrency actually runs
+    # batches in parallel; cap at 150 because ~280 DwC attrs × 150 ≈ 42k params,
+    # safely under PG's 65535 parameter limit.
+    batch_size = min(ceil(Records.validation_response_batch_size() / max_concurrency), 150)
 
     Logger.debug("Bulk validating records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 
@@ -27,7 +30,8 @@ defmodule DataAggregator.Records.ValidationResponse.Actions.BulkValidate do
         return_records?: true,
         max_concurrency: max_concurrency,
         batch_size: batch_size,
-        tenant: tenant
+        tenant: tenant,
+        actor: actor
       )
 
     {:ok, result}

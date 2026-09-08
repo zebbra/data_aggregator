@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregator.Records.Record
   alias DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   alias DataAggregatorWeb.CollectionLive.Record.Helpers
 
@@ -96,14 +97,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   attr :state, :atom,
     required: true,
     values: [
-      :not_validated,
-      :validating,
-      :in_validation,
+      :unknown,
+      :requested,
       :validated,
-      :validation_failed,
-      :stale
+      :not_validated
     ]
 
+  attr :annotation, :string, default: nil
   attr :tooltip, :boolean, default: true
 
   def validation_state_badge(assigns) do
@@ -115,12 +115,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <.badge
       class={if @tooltip, do: "tooltip", else: nil}
-      color={ActivityFeed.badge_color(@name, @content)}
-      data-tip={if @tooltip, do: ActivityFeed.icon_tooltip(@name, @content), else: nil}
+      color={badge_color(@state)}
+      data-tip={if @tooltip, do: icon_tooltip(@state, @annotation), else: nil}
     >
-      <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
+      <.icon name={icon_lookup(@state)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        {ActivityFeed.badge_text(@name, @content)}
+        {badge_text(@state)}
       </span>
     </.badge>
     """
@@ -136,12 +136,63 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       color={swiss_species_color(@registered, @center)}
       data-tip={swiss_species_tooltip(@registered, @center)}
     >
-      <.icon name={swiss_species_icon_name(@registered, @center)} />
+      <.icon name={swiss_species_icon_name(@registered, @center)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
         {swiss_species_text(@registered, @center)}
       </span>
     </.badge>
     """
+  end
+
+  defp badge_color(state) do
+    case state do
+      :unknown -> "gray"
+      :requested -> "blue"
+      :validated -> "green"
+      :not_validated -> "orange"
+      _ -> "gray"
+    end
+  end
+
+  defp icon_tooltip(state, annotation) do
+    case state do
+      :unknown ->
+        ~t"No validation information available. Validate the dataset to see the status."m
+
+      :requested ->
+        ~t"Validation in progress."m
+
+      :validated ->
+        ~t"The record has been successfully validated."m
+
+      :not_validated ->
+        mgettext("The validation of the record has been processed: %{annotation}.",
+          annotation: annotation
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  defp icon_lookup(state) do
+    case state do
+      :unknown -> "hero-question-mark-circle-solid"
+      :requested -> "hero-cog-6-tooth-solid"
+      :validated -> "hero-check-circle-solid"
+      :not_validated -> "hero-exclamation-triangle-solid"
+      _ -> "hero-check-badge"
+    end
+  end
+
+  defp badge_text(state) do
+    case state do
+      :unknown -> ~t"Unknown"m
+      :requested -> ~t"Requested"m
+      :validated -> ~t"Validated"m
+      :not_validated -> ~t"Not Validated"m
+      unhandled_status -> unhandled_status
+    end
   end
 
   def swiss_species_text(nil, _center), do: ~t"Unknown"m
@@ -150,6 +201,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   defp swiss_species_color(nil, _center), do: "gray"
   defp swiss_species_color(false, _center), do: "blue"
+  defp swiss_species_color(true, "Out of Scope"), do: "blue"
   defp swiss_species_color(true, _center), do: "green"
 
   defp swiss_species_icon_name(nil, _center), do: "hero-question-mark-circle-solid"
@@ -162,6 +214,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   defp swiss_species_tooltip(false, _center),
     do: ~t"This species has not been registered by any Swiss species data center"m
+
+  defp swiss_species_tooltip(true, "Out of Scope"),
+    do: ~t"This species is registered but out of scope (countryCode not in CH)"m
 
   defp swiss_species_tooltip(true, center),
     do: mgettext("This species has been registered by the Swiss species data center %{center}", center: center)
@@ -195,7 +250,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  attr :record, Record, required: true
 
   def slideover_subtitle(assigns) do
     assigns = assign(assigns, :record, Ash.load!(assigns.record, :collection, lazy?: true))
@@ -206,10 +261,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         {@record.mte_catalog_number}
       </p>
       <.link
-        :if={@record.oth_gbif_id !== nil && @record.publication_status == :published}
+        :if={
+          @record.mte_catalog_number !== nil && @record.collection.code !== nil &&
+            @record.collection.gbif_dataset_key !== nil &&
+            @record.publication_status == :published
+        }
         class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
-        href={"#{gbif_base_url()}/occurrence/#{@record.oth_gbif_id}"}
+        href={gbif_occurrence_search_url(@record)}
       >
         {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
       </.link>
@@ -229,7 +288,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  # We no longer know the record's gbifID (that came from the GBIF API check we dropped), so
+  # we link to a search instead of to the occurrence itself. `dataset_key` scopes the search
+  # to this collection's dataset - catalog numbers are only unique within an institution.
+  # gbif.org expects snake_case filter parameters.
+  defp gbif_occurrence_search_url(record) do
+    query =
+      URI.encode_query(
+        catalog_number: record.mte_catalog_number,
+        collection_code: record.collection.code,
+        dataset_key: record.collection.gbif_dataset_key
+      )
+
+    "#{gbif_base_url()}/occurrence/search?#{query}"
+  end
+
+  attr :record, Record, required: true
   attr :deletable, :boolean, default: false
   attr :delete_action, :string, default: nil
   attr :rest, :global
@@ -240,33 +314,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     assigns = assign(assigns, images: images)
 
     ~H"""
-    <div class="carousel space-x-4">
-      <div :for={{image, _index} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
-        <img src={image.image_url} class="max-h-[350px] w-auto" />
-        <button
-          :if={@deletable}
-          class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
-          phx-click={JS.push(@delete_action, value: %{id: image.id})}
-          {@rest}
-        >
-          <.icon name="hero-trash-mini" class="size-5" />
-        </button>
+    <div :if={length(@images) > 0} class="p-8">
+      <div class="carousel space-x-4">
+        <div :for={{image, _} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
+          <img src={image.url} class="max-h-[350px] w-auto" />
+          <button
+            :if={@deletable and image.deletable}
+            class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
+            phx-click={JS.push(@delete_action, value: %{id: image.id})}
+            {@rest}
+          >
+            <.icon name="hero-trash-mini" class="size-5" />
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="flex w-full justify-center gap-2 py-2">
-      <a
-        :for={{image, index} <- @images}
-        :if={length(@images) > 1}
-        href={"#item-#{image.id}"}
-        class="btn btn-xs"
-      >
-        {index + 1}
-      </a>
+      <div :if={length(@images) > 1} class="flex w-full justify-center gap-2 py-2">
+        <a :for={{image, index} <- @images} href={"#item-#{image.id}"} class="btn btn-xs">
+          {index + 1}
+        </a>
+      </div>
     </div>
     """
   end
 
-  attr :record, DataAggregator.Records.Record, required: true
+  attr :record, Record, required: true
   attr :layer, :atom, required: true
 
   def elevation(assigns) do
@@ -306,10 +377,43 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
+  # gets a list of image maps containing url, id, and deletable flag from sources "uploaded images" (record.images) and "imported media" (record.encoded_record.mte_associated_media)
+  @spec build_carousel_items(Record.t()) :: [
+          {{:image, map()} | {:url, String.t()}, pos_integer()}
+        ]
   defp build_carousel_items(record) do
-    record = Ash.load!(record, images: :image_url)
+    record = Ash.load!(record, [:encoded_record, images: :image_url], lazy?: true)
 
-    Enum.with_index(record.images)
+    images = images(record)
+    associated_media = media_urls(record, images)
+
+    Enum.with_index(images ++ associated_media)
+  end
+
+  @spec media_urls(Record.t(), [map()]) :: [map()]
+  defp media_urls(record, images) do
+    media_urls = record.encoded_record.mte_associated_media
+
+    if media_urls in [nil, ""] do
+      []
+    else
+      media_urls
+      |> String.split(" | ")
+      |> Enum.with_index()
+      |> Enum.map(&%{url: elem(&1, 0), id: elem(&1, 1), deletable: false})
+      |> Enum.filter(&filter_out_duplicates(&1, images))
+    end
+  end
+
+  defp filter_out_duplicates(%{url: url}, images) do
+    Enum.any?(images, fn %{url: image_url} ->
+      url == image_url
+    end) == false
+  end
+
+  @spec images(Record.t()) :: [map()]
+  defp images(record) do
+    Enum.map(record.images, &%{url: &1.image_url, id: &1.id, deletable: true})
   end
 
   defp level_indicator(level) do

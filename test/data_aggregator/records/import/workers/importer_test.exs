@@ -46,6 +46,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag capture_log: true
     test "succeeds with a valid file", %{import: import} do
       {:ok, import} = perform_job(Importer, %{id: import.id, collection_id: import.collection_id})
 
@@ -54,6 +55,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag capture_log: true
     test "updates records_count upon import or records.destroy", %{
       collection: collection,
       import: import

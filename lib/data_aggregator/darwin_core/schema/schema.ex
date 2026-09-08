@@ -447,8 +447,8 @@ idf_attributes = [
   },
   %{
     dwc_field: "typifiedName",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://rs.tdwg.org/dwc/terms/typifiedName",
+    dwca_file: :core,
     attribute: %Attribute{
       name: :typified_name,
       type: :string,
@@ -468,7 +468,7 @@ tax_attributes = [
     dwc_field: "taxonID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/taxonID",
     dwca_file: :core,
-    attribute: %Attribute{name: :taxon_id, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :taxon_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "identifier",
@@ -715,6 +715,24 @@ tax_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/taxonRemarks",
     dwca_file: :core,
     attribute: %Attribute{name: :taxon_remarks, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "domain",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :domain, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "subkingdom",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :subkingdom, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "subclass",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :subclass, type: :string, allow_nil?: true}
   }
 ]
 
@@ -1354,8 +1372,8 @@ mte_attributes = [
   },
   %{
     dwc_field: "sampleDesignation",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/sampleDesignation",
+    dwca_file: :material_sample,
     attribute: %Attribute{name: :sample_designation, type: :string, allow_nil?: true}
   },
   %{
@@ -1753,8 +1771,8 @@ pvn_attributes = [
   },
   %{
     dwc_field: "preservationType",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/preservationType",
+    dwca_file: :preservation,
     attribute: %Attribute{name: :preservation_type, type: :string, allow_nil?: true}
   },
   %{
@@ -1808,10 +1826,15 @@ oth_attributes = [
     dwca_file: nil,
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
   },
+  # `dwca_file: nil` on purpose: the gbifID was only ever filled by the GBIF API check we
+  # no longer run, so it is not published, exported, validated or shown. The attribute stays
+  # so the existing values are retained for a possible future re-sync - do not remove it,
+  # `DataAggregator.DarwinCore.Resource.Transformers.AddAttributes` builds the record columns
+  # from this list. See `docs/adr/0001-publication-is-asserted-not-verified.md`.
   %{
     dwc_field: "gbifID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1934,8 +1957,8 @@ oth_attributes = [
   },
   %{
     dwc_field: "typeDesignatedBy",
-    dwc_link: nil,
-    dwca_file: nil,
+    dwc_link: "http://rs.gbif.org/terms/1.0/typeDesignatedBy",
+    dwca_file: :core,
     attribute: %Attribute{name: :type_designated_by, type: :string, allow_nil?: true}
   },
   %{
@@ -2138,9 +2161,6 @@ defmodule DataAggregator.DarwinCore.Schema do
   #{DataAggregator.DarwinCore.Schema.Docs.schema_docs(categories)}
   """
 
-  alias Ash.Resource.Attribute
-  alias DataAggregator.DarwinCore.Schema.Category
-  alias DataAggregator.DarwinCore.Schema.CollectionAttribute
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
   @categories categories
@@ -2175,6 +2195,29 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec prefixed_attributes() :: [Attribute.t()]
   def prefixed_attributes do
     Enum.flat_map(@categories, &Category.prefixed_attributes/1)
+  end
+
+  # Attributes we keep on the record but never hand out again. `:oth_gbif_id` was filled by
+  # the GBIF API check that used to verify publications; that check is gone, so the value is
+  # frozen at whatever it was and would only mislead. The data itself is retained for a
+  # possible future re-sync. See `docs/adr/0001-publication-is-asserted-not-verified.md`.
+  @unexportable_attribute_names [:oth_gbif_id]
+
+  @doc """
+  Returns the attribute names that must never be exported, published or sent for validation.
+
+  These attributes still exist on the record and keep their stored values - they are simply
+  never handed out again.
+  """
+  @spec unexportable_attribute_names() :: [atom()]
+  def unexportable_attribute_names, do: @unexportable_attribute_names
+
+  @doc """
+  Returns the prefixed attribute names that may be handed out through an export.
+  """
+  @spec exportable_attribute_names() :: [atom()]
+  def exportable_attribute_names do
+    Enum.reject(prefixed_attribute_names(), &(&1 in @unexportable_attribute_names))
   end
 
   @doc """
@@ -2212,9 +2255,23 @@ defmodule DataAggregator.DarwinCore.Schema do
   @doc """
   Returns a list of tuples containging the internal, prefixed attribute name and the dwc_field name
   """
-  @spec prefixed_attribute_names_and_dwc_fields() :: [atom()]
+  @spec prefixed_attribute_names_and_dwc_fields() :: [{atom(), String.t()}]
   def prefixed_attribute_names_and_dwc_fields do
     Enum.flat_map(@categories, &Category.prefixed_attribute_names_and_dwc_fields/1)
+  end
+
+  @doc """
+  Returns a list of tuples containging the internal, prefixed attribute name and the dwc_field name including collection based attributes
+  """
+  @spec prefixed_attribute_names_and_dwc_fields_and_collection_fields() :: map()
+  def prefixed_attribute_names_and_dwc_fields_and_collection_fields do
+    %{
+      record: Enum.flat_map(@categories, &Category.prefixed_attribute_names_and_dwc_fields/1),
+      collection:
+        Enum.map(@colleciton_attributes, fn attribute ->
+          {attribute.collection_field, attribute.dwc_field}
+        end)
+    }
   end
 
   @doc """
@@ -2325,7 +2382,12 @@ defmodule DataAggregator.DarwinCore.Schema do
       eve_cover_rock_in_percentage: &format_float/1,
       eve_cover_total_in_percentage: &format_float/1,
       eve_tree_layer_height_in_meters: &format_float/1,
-      oth_dynamic_properties: &format_json/1
+      oth_dynamic_properties: &format_json/1,
+      loc_swiss_coordinates_lv03_x: &format_float/1,
+      loc_swiss_coordinates_lv03_y: &format_float/1,
+      loc_swiss_coordinates_lv95_x: &format_float/1,
+      loc_swiss_coordinates_lv95_y: &format_float/1,
+      eve_sample_size_value: &format_float/1
     }
   end
 

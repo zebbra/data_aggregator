@@ -19,10 +19,10 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
     {:ok, import} = Ash.load(import, [:collection], lazy?: true)
 
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
-
-    # we have ~280 attributes and PG can handle 65535 params, to we can batch up to ~200 records
-    # batch_size = Enum.min([batch_size, 200])
+    # Split the configured batch across workers so max_concurrency actually runs
+    # batches in parallel; cap at 150 because ~280 DwC attrs × 150 ≈ 42k params,
+    # safely under PG's 65535 parameter limit.
+    batch_size = min(ceil(Records.import_batch_size() / max_concurrency), 150)
 
     Logger.info("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 

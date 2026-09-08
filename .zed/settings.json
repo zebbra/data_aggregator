@@ -5,12 +5,7 @@
 {
   "languages": {
     "Elixir": {
-      "format_on_save": {
-        "external": {
-          "command": "mix",
-          "arguments": ["format", "--stdin-filename", "{buffer_path}", "-"]
-        }
-      }
+      "format_on_save": "on"
     }
   }
 }

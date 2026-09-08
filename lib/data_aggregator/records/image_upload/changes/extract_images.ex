@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
     Changeset.before_action(changeset, &extract_images(&1, ctx), append?: true)
   end
 
-  defp extract_images(%Changeset{data: image_upload} = changeset, _ctx) do
+  defp extract_images(%Changeset{data: image_upload} = changeset, %{tenant: collection}) do
     Logger.info("Extracting images from attachment for #{inspect(image_upload.id)} ...")
 
     with %ImageUpload{} = image_upload <-
@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
          {:add_invalid_file_info, changeset} <-
            add_invalid_file_info(changeset, invalid_file_infos),
          {:attachments, attachments} <-
-           {:attachments, create_attachments(temp_path)} do
+           {:attachments, create_attachments(temp_path, collection)} do
       Changeset.manage_relationship(changeset, :image_attachments, attachments, type: :create)
     else
       {:cached_file, _} ->
@@ -156,10 +156,10 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
     file |> Path.extname() |> String.downcase()
   end
 
-  defp create_attachments(temp_path) do
+  defp create_attachments(temp_path, collection) do
     temp_path
     |> File.ls!()
-    |> Enum.map(&%{path: temp_path <> "/" <> &1, filename: &1})
+    |> Enum.map(&%{path: temp_path <> "/" <> &1, filename: &1, collection: collection})
   end
 
   defp add_error(changeset, error) do

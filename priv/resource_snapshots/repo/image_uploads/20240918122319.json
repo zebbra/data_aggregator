@@ -4,8 +4,10 @@
       "allow_nil?": false,
       "default": "fragment(\"uuid_generate_v7()\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": true,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "id",
       "type": "uuid"
@@ -14,8 +16,10 @@
       "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "inserted_at",
       "type": "utc_datetime_usec"
@@ -24,8 +28,10 @@
       "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
@@ -34,8 +40,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "started_at",
       "type": "utc_datetime"
@@ -44,8 +52,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "finished_at",
       "type": "utc_datetime"
@@ -54,8 +64,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "invalid_file_infos",
       "type": [
@@ -67,8 +79,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "mapped_images_count",
       "type": "bigint"
@@ -77,8 +91,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "unmapped_images_count",
       "type": "bigint"
@@ -87,8 +103,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "max_mapping_operations_count",
       "type": "bigint"
@@ -97,8 +115,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "current_mapping_operations_count",
       "type": "bigint"
@@ -107,8 +127,10 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "error_message",
       "type": "text"
@@ -117,8 +139,10 @@
       "allow_nil?": false,
       "default": "0",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "invalid_files_count",
       "type": "bigint"
@@ -127,19 +151,34 @@
       "allow_nil?": false,
       "default": "\"mte_catalog_number\"",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": null,
+      "scale": null,
       "size": null,
       "source": "mapping_identifier",
       "type": "text"
     },
     {
       "allow_nil?": false,
+      "default": "\"new\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
@@ -158,6 +197,7 @@
         "schema": "public",
         "table": "collections"
       },
+      "scale": null,
       "size": null,
       "source": "collection_id",
       "type": "uuid"
@@ -166,6 +206,7 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -187,6 +228,7 @@
         "schema": "public",
         "table": "users"
       },
+      "scale": null,
       "size": null,
       "source": "created_by_id",
       "type": "uuid"
@@ -195,6 +237,7 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -216,6 +259,7 @@
         "schema": "public",
         "table": "users"
       },
+      "scale": null,
       "size": null,
       "source": "started_by_id",
       "type": "uuid"
@@ -224,6 +268,7 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -245,6 +290,7 @@
         "schema": "public",
         "table": "file_attachments"
       },
+      "scale": null,
       "size": null,
       "source": "attachment_id",
       "type": "uuid"
@@ -253,6 +299,7 @@
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
+      "precision": null,
       "primary_key?": false,
       "references": {
         "deferrable": false,
@@ -274,19 +321,10 @@
         "schema": "public",
         "table": "file_attachments"
       },
+      "scale": null,
       "size": null,
       "source": "upload_log_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"new\"",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "state",
-      "type": "text"
     }
   ],
   "base_filter": null,
@@ -294,7 +332,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "20E4432BF3053B3A1A4E5223A516E17665BE8D00580D0C4973C0A69B120340E8",
+  "hash": "58AD7BAAF421812B431B473293921D58F3DAE04B564D167FA0E0FEF08F5792F4",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

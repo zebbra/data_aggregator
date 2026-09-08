@@ -9,7 +9,7 @@ import Config
 
 require Logger
 
-if config_env() in [:test] do
+if config_env() in [:test, :bench] do
   Envy.load(["config/.env.#{config_env()}"])
 end
 
@@ -54,6 +54,12 @@ if System.get_env("EXPORT_TIMEOUT") do
   config :data_aggregator, DataAggregator.Records, export_timeout: export_timeout
 end
 
+if System.get_env("PUBLICATION_GRACE_PERIOD_MINUTES") do
+  minutes = "PUBLICATION_GRACE_PERIOD_MINUTES" |> System.get_env() |> String.to_integer()
+
+  config :data_aggregator, DataAggregator.Records, publication_grace_period: to_timeout(minute: minutes)
+end
+
 if System.get_env("LAST_TERMS_UPDATE") do
   last_terms_update = "LAST_TERMS_UPDATE" |> System.get_env() |> Date.from_iso8601!()
   config :data_aggregator, DataAggregator.Accounts, last_terms_update: last_terms_update
@@ -93,6 +99,7 @@ case System.get_env("WAFFLE_STORAGE") do
 
     config :ex_aws,
       debug_requests: System.get_env("AWS_DEBUG_REQUESTS") in ~w(true 1),
+      region: System.get_env("AWS_REGION", "us-east-1"),
       access_key_id: get_env!.("AWS_ACCESS_KEY_ID"),
       secret_access_key: get_env!.("AWS_SECRET_ACCESS_KEY"),
       s3: [
@@ -102,7 +109,7 @@ case System.get_env("WAFFLE_STORAGE") do
       ]
 
     config :waffle,
-      storage: Waffle.Storage.S3,
+      storage: DataAggregator.Files.S3Storage,
       bucket: waffle_s3_bucket
 
     Logger.info("Waffle configured to use S3 storage: #{waffle_s3_uri}")
@@ -152,6 +159,7 @@ if config_env() == :prod do
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
     connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
+    timeout: String.to_integer(System.get_env("DB_TIMEOUT") || "30000"),
     socket_options: maybe_ipv6,
     queue_target: 5000
 
@@ -174,17 +182,38 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  config :data_aggregator, DataAggregator.Mailer,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: "smtp.office365.com",
-    username: System.get_env("MAILBOX_USERNAME") || "",
-    password: System.get_env("MAILBOX_PASSWORD") || "",
-    ssl: true,
-    tls: :always,
-    auth: :always,
-    port: 587,
-    retries: 2,
-    no_mx_lookups: false
+  case System.get_env("USE_LOGGER_MAILER_ADAPTER") do
+    "true" ->
+      Logger.info("use the Logger adapter for Swoosh Mailer")
+
+      config :data_aggregator, DataAggregator.Mailer,
+        adapter: Swoosh.Adapters.Logger,
+        level: :debug,
+        log_full_email: true
+
+    _ ->
+      config :data_aggregator, DataAggregator.Mailer,
+        adapter: Swoosh.Adapters.SMTP,
+        relay: System.get_env("MAILBOX_SMTP_RELAY") || "",
+        username: System.get_env("MAILBOX_USERNAME") || "",
+        password: System.get_env("MAILBOX_PASSWORD") || "",
+        ssl: false,
+        tls: :always,
+        auth: :always,
+        port: 587,
+        retries: 2,
+        no_mx_lookups: false,
+        tls_options: [
+          versions: [:"tlsv1.3"],
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          server_name_indication: ~c"smtp.office365.com",
+          depth: 99,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+  end
 
   config :data_aggregator, DataAggregatorWeb.Endpoint,
     url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],

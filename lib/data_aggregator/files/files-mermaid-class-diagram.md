@@ -4,13 +4,16 @@ classDiagram
         UUID id
         String filename
         Integer byte_size
+        UtcDatetime deleted_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         read()
-        import_from_path(String path, String filename)
-        destroy()
+        read_deleted()
+        import_from_path(String path, Struct collection, String filename)
+        destroy(String filename, Integer byte_size, UtcDatetime deleted_at)
+        hard_destroy()
     }
 
-
+    Attachment -- Collection
 
 ```

@@ -14,24 +14,29 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
   ## Arguments
 
   * `id` - the ID of the ValidationResponse to run
-  * `collection_id` - the ID of the collection to validate
 
   """
 
   use Oban.Worker, queue: :validation_responses, max_attempts: 1
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records
   alias DataAggregator.Records.ValidationResponse
 
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
     with {:ok, validation_response} <-
-           ValidationResponse.get_by_id(id, load: :collection, tenant: collection_id) do
+           ValidationResponse.get_by_id(id) do
       Logger.info("Running ValidationResponse #{inspect(validation_response.id)} ...")
-      ValidationResponse.run(validation_response, tenant: validation_response.collection)
+      perform_with_actor(validation_response, User.get_by_id!(user_id))
     end
+  end
+
+  defp perform_with_actor(validation_response, actor) do
+    Logger.info("Running ValidationResponse #{inspect(validation_response.id)} ...")
+    ValidationResponse.run(validation_response, actor: actor)
   end
 
   @impl Oban.Worker

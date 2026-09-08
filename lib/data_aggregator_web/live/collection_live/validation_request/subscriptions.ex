@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
 
   @load load()
   @load_all load_all()
-  @update_events ~w(set_running set_done set_failed add_validation_request_progress)
+  @update_events ~w(set_running set_done set_failed add_validation_request_progress set_total_rows_count)
   @collection_action_events ~w(
     set_mapping
     set_importing
@@ -117,8 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions do
   defp maybe_assign_selected_validation_request(
          %{assigns: %{selected_validation_request: nil}} = socket,
          _validation_request
-       ),
-       do: socket
+       ), do: socket
 
   defp maybe_assign_selected_validation_request(socket, validation_request),
     do: assign(socket, :selected_validation_request, validation_request)

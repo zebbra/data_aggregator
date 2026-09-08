@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.ValidationRequest do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
-  alias DataAggregator.Records.PublicationLicenseType
   alias DataAggregator.Records.ValidationRequest.Changes
 
   @type t :: %ValidationRequest{}
@@ -31,12 +30,9 @@ defmodule DataAggregator.Records.ValidationRequest do
     attribute :records_query, :map, allow_nil?: false, public?: true
     attribute :processed_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :total_rows_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :sent_for_validation_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
-
-    attribute :license, PublicationLicenseType,
-      allow_nil?: false,
-      default: :cc_by,
-      public?: true
+    attribute :oban_job_id, :integer, allow_nil?: true, public?: false
 
     timestamps public?: true, writable?: false
   end
@@ -61,8 +57,14 @@ defmodule DataAggregator.Records.ValidationRequest do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn validation_request, _opts ->
-        Enum.map(validation_request, & &1.attachment.url)
+      calculation fn validation_requests, _opts ->
+        Enum.map(validation_requests, fn vr ->
+          if vr.attachment == nil do
+            nil
+          else
+            vr.attachment.url
+          end
+        end)
       end
 
       load attachment: :url
@@ -81,18 +83,17 @@ defmodule DataAggregator.Records.ValidationRequest do
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
-      transition :set_failed, from: :running, to: :failed
+      transition :set_failed, from: [:running, :queued], to: :failed
       transition :cancel_validation_request, from: [:running, :queued], to: :failed
     end
 
     preparations do
-      prepare build(sort: [id: :desc])
       prepare DataAggregator.Preparations.Sort
     end
 
     actions do
       default_accept :*
-      defaults [:read, :destroy, :update]
+      defaults [:read, :update]
 
       read :active do
         filter expr(state in [:running, :queued])
@@ -125,6 +126,22 @@ defmodule DataAggregator.Records.ValidationRequest do
         change ensure_selected(:processed_rows_count)
       end
 
+      update :set_total_rows_count do
+        accept [:total_rows_count]
+      end
+
+      update :add_sent_for_validation_progress do
+        accept []
+        argument :processed_rows, :integer, allow_nil?: false
+
+        change atomic_update(
+                 :sent_for_validation_count,
+                 expr(sent_for_validation_count + ^arg(:processed_rows))
+               )
+
+        change ensure_selected(:sent_for_validation_count)
+      end
+
       update :set_running do
         accept []
         require_atomic? false
@@ -151,7 +168,9 @@ defmodule DataAggregator.Records.ValidationRequest do
         change transition_state(:running)
         change set_attribute(:started_at, &DateTime.utc_now/0)
         change Changes.SendValidationRequest
+        change Changes.SetFailedOnError
         change Changes.SetDoneAfterAction
+        change Changes.SetCollectionIdleAfterTransaction
         change load(:attachment)
       end
 
@@ -180,6 +199,14 @@ defmodule DataAggregator.Records.ValidationRequest do
         change transition_state(:failed)
         change set_attribute(:finished_at, &DateTime.utc_now/0)
       end
+
+      destroy :destroy do
+        primary? true
+        require_atomic? false
+
+        change Changes.CancelObanJob
+        change cascade_destroy(:attachment, after_action?: false)
+      end
     end
 
     pub_sub do
@@ -189,6 +216,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       publish_all :create, [[:collection_id, nil], "created"]
       publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
       publish :add_validation_request_progress, [[:collection_id, nil], "updated", [:id, nil]]
+      publish :set_total_rows_count, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
       publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
@@ -208,6 +236,8 @@ defmodule DataAggregator.Records.ValidationRequest do
       define :set_failed
       define :update_attachment, action: :update_attachment, args: [:attachment]
       define :add_validation_request_progress, args: [:processed_rows]
+      define :add_sent_for_validation_progress, args: [:processed_rows]
+      define :set_total_rows_count, args: [:total_rows_count]
       define :cancel_validation_request
     end
 
@@ -220,7 +250,11 @@ defmodule DataAggregator.Records.ValidationRequest do
         authorize_if always()
       end
 
-      policy action_type(:destroy) do
+      policy action_type([:create]) do
+        authorize_if with_role("data_digitizer")
+      end
+
+      policy action_type([:destroy]) do
         authorize_if with_role("collection_administrator")
       end
     end
@@ -230,8 +264,11 @@ defmodule DataAggregator.Records.ValidationRequest do
       repo DataAggregator.Repo
 
       references do
-        reference :collection, on_delete: :delete, on_update: :update, index?: true
-        reference :attachment, on_delete: :delete, on_update: :update, index?: true
+        reference :collection,
+          on_delete: :delete,
+          on_update: :update,
+          index?: true,
+          deferrable: true
       end
     end
 
@@ -252,6 +289,10 @@ defmodule DataAggregator.Records.ValidationRequest do
     multitenancy do
       strategy :attribute
       attribute :collection_id
+    end
+
+    identities do
+      identity :by_collection, [:id, :collection_id]
     end
   end
 end

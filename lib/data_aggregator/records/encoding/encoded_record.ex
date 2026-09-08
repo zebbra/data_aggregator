@@ -24,6 +24,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
   @type t :: %EncodedRecord{}
 
@@ -52,6 +53,12 @@ defmodule DataAggregator.Records.EncodedRecord do
     has_many :swiss_species, SwissSpecies do
       source_attribute :tax_taxon_id
       destination_attribute :usage_key
+      public? true
+    end
+
+    has_one :swiss_species_registry, SwissSpeciesRegistry do
+      source_attribute :tax_scientific_name
+      destination_attribute :scientific_name
       public? true
     end
 
@@ -85,7 +92,6 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
@@ -110,6 +116,10 @@ defmodule DataAggregator.Records.EncodedRecord do
       change Encoding.Changes.SetOptionalAttributes
     end
 
+    update :update_return_minimal_fields do
+      change Encoding.Changes.SelectMinimalFields
+    end
+
     update :add_image_url do
       argument :image, :struct, allow_nil?: false
       require_atomic? false
@@ -127,6 +137,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :read
     define :create
     define :update
+    define :update_return_minimal_fields
     define :add_image_url, args: [:image]
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
@@ -149,6 +160,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     custom_indexes do
       index [:loc_continent, :tax_kingdom, :tax_phylum]
+      index [:collection_id, :tax_scientific_name]
     end
   end
 

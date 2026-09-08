@@ -34,8 +34,6 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
       |> assign(:busy_action, busy_action(collection))
       |> subscribe_for_validation_request_updates(connected?(socket))
 
-    # |> subscribe_for_publication_updates(connected?(socket))
-
     {:ok, socket}
   end
 
@@ -118,7 +116,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
           {validation.center}
         </:col>
         <:col :let={{_id, validation}} label={~t"File"m}>
-          <.file_info attachment={validation.attachment} rows={validation.total_rows_count} />
+          <.file_info attachment={validation.attachment} rows={validation.sent_for_validation_count} />
         </:col>
         <:col :let={{_id, validation}} label={~t"Size"m}>
           <.attachment_download_badge
@@ -141,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
           label={~t"Records"m}
           class="text-right"
         >
-          {format_number(validation.total_rows_count, format: :short)}
+          {format_number(validation.sent_for_validation_count, format: :short)}
         </:col>
 
         <:action
@@ -224,21 +222,35 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
             <:item title={~t"Created at"m}>
               {format_datetime(@selected_validation_request.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}>
+            <:item title={~t"Total Rows Processed"m}>
               {format_number(@selected_validation_request.total_rows_count)}
             </:item>
-
+            <:item title={~t"Changed records (sending for validation)"m}>
+              {format_number(@selected_validation_request.sent_for_validation_count)}
+            </:item>
+            <:item title={~t"Unchanged records (not sending for validation)"m}>
+              {format_number(
+                @selected_validation_request.total_rows_count -
+                  @selected_validation_request.sent_for_validation_count
+              )}
+            </:item>
             <:item title={~t"Done"m}>
               <div class="flex flex-col">
-                <.progress
-                  value={@selected_validation_request.validation_request_progress || 0}
-                  max={1}
-                  class="progress progress-primary w-full"
-                />
-                <div>
-                  {format_number(@selected_validation_request.processed_rows_count)} / {format_number(
-                    @selected_validation_request.total_rows_count
-                  )} {~t"rows"m}
+                <div :if={@selected_validation_request.total_rows_count == 0}>
+                  <.progress max={1} class="progress progress-primary w-full" />
+                  <div>{~t"Counting records…"m}</div>
+                </div>
+                <div :if={@selected_validation_request.total_rows_count > 0}>
+                  <.progress
+                    value={@selected_validation_request.validation_request_progress || 0}
+                    max={1}
+                    class="progress progress-primary w-full"
+                  />
+                  <div>
+                    {format_number(@selected_validation_request.processed_rows_count)} / {format_number(
+                      @selected_validation_request.total_rows_count
+                    )} {~t"rows"m}
+                  </div>
                 </div>
               </div>
             </:item>
@@ -357,6 +369,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
   defp list_validation_requests(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
+
     AshPagify.validate_and_run(ValidationRequest, params, opts)
   end
 

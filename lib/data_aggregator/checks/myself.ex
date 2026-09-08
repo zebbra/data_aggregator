@@ -12,7 +12,7 @@ defmodule DataAggregator.Checks.Myself do
   end
 
   @impl true
-  def requires_original_data?(_, _), do: false
+  def requires_original_data?(_, _), do: true
 
   @impl true
   def match?(nil, _, _), do: false

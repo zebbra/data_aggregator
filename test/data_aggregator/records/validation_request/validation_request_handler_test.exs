@@ -46,7 +46,7 @@ defmodule DataAggregator.ValidationRequestHandlerTest do
 
       query = %{
         collection: %{id: %{eq: collection.id}},
-        tax_kingdom: %{is_nil: false}
+        encoded_record: %{tax_kingdom: %{is_nil: false}}
       }
 
       validation_request =

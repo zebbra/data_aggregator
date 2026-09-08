@@ -9,7 +9,6 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.InfoSpecies
 
@@ -27,7 +26,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record2 =
@@ -38,7 +37,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record3 =
@@ -49,7 +48,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record4 =
@@ -60,7 +59,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       record5 =
@@ -71,7 +70,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
           validation_status: :not_validated,
           last_imported_at: nil,
           last_validation_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: "9368"
         })
 
       encoded_record_fixture(%{record: record1})
@@ -79,14 +78,6 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
       encoded_record_fixture(%{record: record3})
       encoded_record_fixture(%{record: record4})
       encoded_record_fixture(%{record: record5})
-
-      records = [
-        Ash.load!(record1, [:encoded_record]),
-        Ash.load!(record2, [:encoded_record]),
-        Ash.load!(record3, [:encoded_record]),
-        Ash.load!(record4, [:encoded_record]),
-        Ash.load!(record5, [:encoded_record])
-      ]
 
       query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}
 
@@ -99,13 +90,14 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
         }
         |> ValidationRequest.create!(tenant: collection)
         |> ValidationRequest.update_attachment!(
-          Attachment.import_from_path!("test/support/fixtures/files/validation_dwca.zip")
+          Attachment.import_from_path!(
+            "test/support/fixtures/files/validation_dwca.zip",
+            collection
+          )
         )
 
       [
         collection: collection,
-        records: records,
-        query: query,
         validation_request: validation_request
       ]
     end
@@ -114,36 +106,11 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
       collection: collection,
       validation_request: validation_request
     } do
-      query =
-        Record
-        |> Ash.Query.filter_input(validation_request.records_query)
-        |> Ash.Query.set_tenant(validation_request.collection)
-
       {:ok, validation_request} =
-        InfoSpecies.notify(validation_request, query)
+        InfoSpecies.notify(validation_request, 2)
 
       assert validation_request.collection_id == collection.id
-      assert validation_request.attachment_id != nil
-    end
-
-    test "InfoSpecies.notify/2 all records have an updated last_validation_started_at date",
-         %{
-           validation_request: validation_request
-         } do
-      query =
-        Record
-        |> Ash.Query.filter_input(validation_request.records_query)
-        |> Ash.Query.set_tenant(validation_request.collection)
-
-      {:ok, _validation_request} =
-        InfoSpecies.notify(validation_request, query)
-
-      assert {:ok, records} = Record.read(tenant: validation_request.collection)
-      assert length(records) == 5
-
-      Enum.each(records, fn record ->
-        assert record.last_validation_started_at !== nil
-      end)
+      assert validation_request.attachment_id
     end
   end
 end

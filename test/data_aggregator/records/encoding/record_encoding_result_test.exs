@@ -98,7 +98,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
       update_attrs =
         Map.merge(get_default_attrs(), %{
-          catalog: :gbif_taxonomy,
+          catalog: :col_taxonomy,
           state: :error,
           input: %{tax_taxon_id: 9876},
           output: %{tax_kingdom: "Fungi"}
@@ -113,7 +113,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert updated_record_encoding_result.output == %{"tax_kingdom" => "Fungi"}
       assert updated_record_encoding_result.input == %{"tax_taxon_id" => 9876}
       assert updated_record_encoding_result.state == :error
-      assert updated_record_encoding_result.catalog == :gbif_taxonomy
+      assert updated_record_encoding_result.catalog == :col_taxonomy
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -127,7 +127,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
       record_encoding_result = record_encoding_result_fixture()
       assert :ok = RecordEncodingResult.destroy(record_encoding_result)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         RecordEncodingResult.get_by_id!(record_encoding_result.id,
           tenant: record_encoding_result.collection
         )

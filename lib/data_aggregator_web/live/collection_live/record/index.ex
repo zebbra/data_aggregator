@@ -69,7 +69,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     assign_async(
       socket,
-      [:records_count_not_validated, :records_count_not_encoded, :records_count_not_published],
+      [
+        :records_count_not_validated,
+        :records_count_not_encoded,
+        :records_count_not_published
+      ],
       fn ->
         count_not_encoded =
           Record
@@ -263,7 +267,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
           />
 
-          <.placeholder_stat :if={@records_count_not_validated.loading} title={~t"Not validated"m} />
+          <.placeholder_stat
+            :if={@records_count_not_validated.loading}
+            title={~t"Not validated"m}
+          />
           <.scope_stat
             :if={@records_count_not_validated.ok?}
             href={path_helper(@collection, @layer, @meta.result, %{status: :not_validated})}
@@ -482,29 +489,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :oth_swiss_species_center)}
-          field={:oth_swiss_species_center}
-          label={~t"Swiss Registry"m}
-          class="text-center"
-        >
-          <.swiss_species_center_badge
-            registered={record.encoded_record.oth_swiss_species_registered}
-            center={record.encoded_record.oth_swiss_species_center}
-          />
-        </:col>
-        <:col
-          :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :validation_status)}
-          field={:validation_status}
-          label={~t"Validation status"m}
-          class="text-center"
-        >
-          <%= unless record.encoded_record.oth_swiss_species_registered == false do %>
-            <.validation_state_badge state={record.validation_status} />
-          <% end %>
-        </:col>
-        <:col
-          :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
           label={~t"MIDS Level"m}
           class="text-center"
@@ -554,7 +538,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.publication_status} tooltip={false} />
-              <%= unless @selected_record.encoded_record.oth_swiss_species_registered == false do %>
+              <%= if show_validation_badge?(@selected_record) do %>
                 <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
               <% end %>
             </div>
@@ -597,17 +581,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   center={@selected_record.encoded_record.oth_swiss_species_center}
                 />
               </:item>
+              <:item
+                :if={show_validation_badge?(@selected_record)}
+                title={~t"Validation Status"m}
+              >
+                <.validation_state_badge
+                  state={@selected_record.validation_status}
+                  annotation={@selected_record.validation_annotation}
+                />
+              </:item>
+              <:item :if={@selected_record.validation_annotation} title={~t"Info Species Feedback"m}>
+                {@selected_record.validation_annotation}
+              </:item>
             </.list>
-            <div :if={@selected_record.encoded_record.mte_associated_media} class="p-8">
-              <.image_carousel
-                deletable={true}
-                delete_action="image:delete"
-                data-tip={~t"Delete this image"m}
-                data-confirm={~t"Are you sure you want to delete this image?"m}
-                data-confirm_id="confirm_image_alert"
-                record={@selected_record}
-              />
-            </div>
+            <.image_carousel
+              deletable={true}
+              delete_action="image:delete"
+              data-tip={~t"Delete this image"m}
+              data-confirm={~t"Are you sure you want to delete this image?"m}
+              data-confirm_id="confirm_image_alert"
+              record={@selected_record}
+            />
             <%= for category <- @attrs_in_categories do %>
               <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
@@ -627,14 +621,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                     items={category.attributes}
                   >
-                    <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                    <:col :let={attribute} label={~t"Name"} class="font-semibold w-40">
                       {attribute.name}
                     </:col>
-                    <:col :let={attribute} label={~t"Imported"}>
-                      {format_value(attribute.imported, attribute.name)}
-                    </:col>
-                    <:col :let={attribute} label={~t"Encoded"}>
-                      {format_value(attribute.encoded, attribute.name)}
+                    <:col :let={attribute} label={~t"layer"}>
+                      <.list
+                        dense
+                        dense_vertical
+                        grid_cols_class="sm:grid-cols-4"
+                        col_span_class="sm:col-span-3"
+                      >
+                        <:item title="Imported">
+                          {format_value(attribute.imported, attribute.name)}
+                        </:item>
+                        <:item title="Encoded">
+                          {format_value(attribute.encoded, attribute.name)}
+                        </:item>
+                        <:item :if={attribute.validated != "-"} title="Validated">
+                          {format_value(attribute.validated, attribute.name)}
+                        </:item>
+                      </.list>
                     </:col>
                   </.table>
                 </div>
@@ -988,18 +994,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:validation_pub", _params, socket) do
-    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
+    %{collection: collection} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
-
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(validation_query)
-      |> Ash.Query.set_tenant(collection)
-
-    case create_and_enqueue(collection, validation_query, count_query, :validation, actor) do
+    case create_and_enqueue(collection, actor) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -1051,8 +1049,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, _count_query, :validation, actor) do
-    Collection.start_validations(collection, query, actor: actor, tenant: collection)
+  defp create_and_enqueue(collection, actor) do
+    Collection.start_validations(collection, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -1088,7 +1086,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :loc_decimal_longitude,
         :state,
         :publication_status,
-        :validation_status,
+        :validation_annotation,
         :updated_at
       ]
 

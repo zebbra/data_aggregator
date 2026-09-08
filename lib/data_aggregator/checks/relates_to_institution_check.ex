@@ -5,6 +5,7 @@ defmodule DataAggregator.Checks.RelatesToInstitutionCheck do
   """
   use Ash.Policy.SimpleCheck
 
+  alias Ash.Policy.Authorizer
   alias Ash.Resource.Actions
 
   @impl true
@@ -28,7 +29,7 @@ defmodule DataAggregator.Checks.RelatesToInstitutionCheck do
     foreign_key = Keyword.fetch!(options, :foreign_key)
     path = Keyword.fetch!(options, :path)
 
-    institution_id = get_institution_id(context.changeset, path, foreign_key, context.action)
+    institution_id = get_institution_id(context, path, foreign_key)
     institution_id == actor_institution_id(actor) || institution_id == nil
   end
 
@@ -36,11 +37,15 @@ defmodule DataAggregator.Checks.RelatesToInstitutionCheck do
   defp actor_institution_id(%{"institution_id" => institution_id}), do: institution_id
   defp actor_institution_id(_), do: nil
 
-  defp get_institution_id(changeset, [], foreign_key, _action) do
+  defp get_institution_id(%Authorizer{changeset: nil, action_input: %Ash.ActionInput{tenant: tenant}}, [], foreign_key) do
+    Map.get(tenant, foreign_key)
+  end
+
+  defp get_institution_id(%Authorizer{changeset: changeset}, [], foreign_key) do
     Ash.Changeset.get_attribute(changeset, foreign_key)
   end
 
-  defp get_institution_id(changeset, path, foreign_key, action) do
+  defp get_institution_id(%Authorizer{changeset: changeset, action: action}, path, foreign_key) do
     [root_key | rest] = path
     rest = rest ++ [foreign_key]
 

@@ -2277,6 +2277,42 @@
       "references": null,
       "scale": null,
       "size": null,
+      "source": "tax_subclass",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "tax_subkingdom",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "tax_domain",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
       "source": "tax_taxon_remarks",
       "type": "text"
     },
@@ -2770,7 +2806,7 @@
       "scale": null,
       "size": null,
       "source": "tax_taxon_id",
-      "type": "bigint"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -3682,7 +3718,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "0AFA5351DCAD14AC210B5ED852D527F488DEC884EA95C1F065C47ACEB8D919E8",
+  "hash": "2B9E9FCE817CA9223070C6F4F06C8391E84BDC2C8343EAFD36103CC8D9CFD684",
   "identities": [
     {
       "all_tenants?": false,

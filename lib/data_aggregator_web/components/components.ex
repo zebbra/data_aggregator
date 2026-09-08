@@ -86,6 +86,7 @@ defmodule DataAggregatorWeb.Components do
         only: [table: 1, build_path: 2, build_path: 3, build_scope_path: 3]
 
       import DataAggregatorWeb.Components.Alert
+      import DataAggregatorWeb.Components.AsyncData
       import DataAggregatorWeb.Components.Attachment
       import DataAggregatorWeb.Components.Badge
       import DataAggregatorWeb.Components.Breadcrumbs

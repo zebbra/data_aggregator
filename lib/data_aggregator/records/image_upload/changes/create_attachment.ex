@@ -7,11 +7,11 @@ defmodule DataAggregator.Records.ImageUpload.Changes.CreateAttachment do
 
   alias Ash.Changeset
 
-  def change(%Changeset{} = changeset, _opts, _ctx) do
+  def change(%Changeset{} = changeset, _opts, %{tenant: collection}) do
     path = Changeset.get_argument(changeset, :path)
     filename = Changeset.get_argument(changeset, :filename)
 
-    attachment = %{path: path, filename: filename}
+    attachment = %{path: path, filename: filename, collection: collection}
 
     Changeset.manage_relationship(changeset, :attachment, attachment, type: :create)
   end

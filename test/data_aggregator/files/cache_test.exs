@@ -5,11 +5,18 @@ defmodule DataAggregator.Files.CacheTest do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Files.Cache
+  alias DataAggregator.RecordsFixtures
 
   @example "test/support/fixtures/files/museum-dataset-import-example.csv"
 
-  test "store/1" do
-    {:ok, attachment} = Attachment.import_from_path(@example)
+  setup do
+    collection = RecordsFixtures.collection_fixture()
+
+    %{collection: collection}
+  end
+
+  test "store/1", %{collection: collection} do
+    {:ok, attachment} = Attachment.import_from_path(@example, collection)
     {:ok, path} = Cache.store(attachment)
 
     assert File.exists?(path)
@@ -17,8 +24,8 @@ defmodule DataAggregator.Files.CacheTest do
     assert file_hash(path) == file_hash(@example)
   end
 
-  test "delete/1" do
-    {:ok, attachment} = Attachment.import_from_path(@example)
+  test "delete/1", %{collection: collection} do
+    {:ok, attachment} = Attachment.import_from_path(@example, collection)
     {:ok, path} = Cache.store(attachment)
 
     assert File.exists?(path)

@@ -90,13 +90,12 @@ defmodule DataAggregator.Records.Publication do
   end
 
   preparations do
-    prepare build(sort: [id: :desc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
     default_accept :*
-    defaults [:read, :destroy, :update]
+    defaults [:read, :update]
 
     read :active do
       filter expr(state in [:running, :queued])
@@ -182,6 +181,12 @@ defmodule DataAggregator.Records.Publication do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
+
+    destroy :destroy do
+      primary? true
+
+      change cascade_destroy(:attachment)
+    end
   end
 
   pub_sub do
@@ -233,7 +238,6 @@ defmodule DataAggregator.Records.Publication do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
-      reference :attachment, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

@@ -94,7 +94,7 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
 
-      assert not is_nil(data)
+      assert data
       assert data["id"] == swiss_species.id
     end
 
@@ -102,7 +102,7 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
       conn: conn
     } do
       # Generate a unique usage_key for this test
-      usage_key = :rand.uniform(1_000_000)
+      usage_key = "#{:rand.uniform(1_000_000)}"
 
       # Make the request
       conn =
@@ -180,7 +180,7 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
       error = Enum.at(errors, 0)
 
       # Assert on the response
-      assert not is_nil(error)
+      assert error
       assert length(errors) == 1
       assert error["code"] == "not_found"
       assert error["detail"] =~ "No swiss_species record found with "

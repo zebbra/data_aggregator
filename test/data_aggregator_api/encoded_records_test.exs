@@ -102,9 +102,7 @@ defmodule DataAggregatorApi.EncodedRecordsTest do
       encoded_record_3: encoded_record_3
     } do
       # Make the request
-      conn = get(conn, "/api/json/datasets/#{collection.id}/encoded_records", status: 200)
-
-      EncodedRecord.read!(tenant: collection.id)
+      conn = get(conn, "/api/json/datasets/#{collection.id}/encoded_records?sort=id", status: 200)
 
       # Asert on the response
       assert %{"data" => data} = json_response(conn, 200)
@@ -151,7 +149,7 @@ defmodule DataAggregatorApi.EncodedRecordsTest do
       # Assert on the response
       assert %{"data" => data} = json_response(conn, 200)
 
-      assert not is_nil(data)
+      assert data
       assert data["id"] == encoded_record.id
     end
 
@@ -213,7 +211,7 @@ defmodule DataAggregatorApi.EncodedRecordsTest do
       error = Enum.at(errors, 0)
 
       # Assert on the response
-      assert not is_nil(error)
+      assert error
       assert length(errors) == 1
       assert error["code"] == "not_found"
       assert error["detail"] =~ "No encoded_records record found with "

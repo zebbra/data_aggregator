@@ -11,7 +11,6 @@ defmodule DataAggregator.RegisterAtGbifTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Record
 
   require Ash.Query
 
@@ -136,73 +135,5 @@ defmodule DataAggregator.RegisterAtGbifTest do
 
       assert logs =~ "Failed due to bla"
     end
-
-    test "check_if_published/2 success", %{collection: collection} do
-      record_to_check = get_record_to_check(collection)
-
-      {:ok, record} = Record.check_if_published(record_to_check)
-
-      assert record.publication_status === :published
-    end
-
-    test "check_if_published/2 not published yet", %{collection: collection} do
-      stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
-        {:ok, %{status: 200, body: %{"results" => []}}}
-      end)
-
-      record_to_check = get_record_to_check(collection)
-
-      {:ok, record} = Record.check_if_published(record_to_check)
-
-      assert record.publication_status === :in_publication
-    end
-
-    test "check_if_published/2 failed with non http 200", %{collection: collection} do
-      stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
-        {:ok, %{status: 500, body: %{}}}
-      end)
-
-      record_to_check = get_record_to_check(collection)
-
-      {{:error, error}, logs} =
-        with_log(fn -> Record.check_if_published(record_to_check) end)
-
-      record = Record.get_by_id!(record_to_check.id, tenant: collection)
-
-      assert record.publication_status === :in_publication
-      assert %Invalid{} = error
-
-      assert logs =~
-               "Error while checking if record is published: \"No valid response (status 500) from GBIF API while searching for occurrences"
-    end
-
-    test "check_if_published/2 failed with multiple occurrences found", %{
-      collection: collection
-    } do
-      stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
-        {:ok, %{status: 200, body: %{"results" => [%{"key" => "1"}, %{"key" => "2"}]}}}
-      end)
-
-      record_to_check = get_record_to_check(collection)
-
-      {{:error, error}, logs} =
-        with_log(fn -> Record.check_if_published(record_to_check) end)
-
-      record = Record.get_by_id!(record_to_check.id, tenant: collection)
-
-      assert record.publication_status === :in_publication
-      assert %Invalid{} = error
-
-      assert logs =~
-               "More than one occurrence found on GBIF"
-    end
-  end
-
-  defp get_record_to_check(collection) do
-    record_fixture(%{
-      collection: collection,
-      mte_catalog_number: "MZL-INVERT-182861",
-      publication_status: :in_publication
-    })
   end
 end

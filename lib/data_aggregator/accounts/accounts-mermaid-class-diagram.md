@@ -29,6 +29,7 @@ classDiagram
         get_confirmation_changes(String jti)
         revoked?(String token, String jti)
         revoke_all_stored_for_subject(String subject, Map extra_data)
+        revoke_jti(String jti, String subject, Map extra_data)
         revoke_token(String token, Map extra_data)
         read_expired()
         expunge_expired()

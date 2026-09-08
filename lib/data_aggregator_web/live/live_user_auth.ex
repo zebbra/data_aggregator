@@ -48,6 +48,14 @@ defmodule DataAggregatorWeb.LiveUserAuth do
     end
   end
 
+  def on_mount(:live_admin_required, _params, _session, socket) do
+    if has_role?(socket.assigns[:current_user], ["admin"]) do
+      {:cont, socket}
+    else
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}
+    end
+  end
+
   def on_mount(:password_set_required, _params, _session, socket) do
     user = Ash.load!(socket.assigns[:current_user], :password_set?)
 

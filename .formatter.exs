@@ -8,6 +8,8 @@
     "storybook/**/*.exs"
   ],
   import_deps: [
+    :ash_oban,
+    :oban,
     :ecto,
     :ecto_sql,
     :phoenix,

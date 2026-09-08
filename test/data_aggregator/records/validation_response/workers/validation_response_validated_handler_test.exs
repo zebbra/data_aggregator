@@ -1,0 +1,359 @@
+defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseValidatedHandlerTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: false
+  use Mimic
+
+  import DataAggregator.AccountsFixtures, only: [user_fixture: 1]
+  import DataAggregator.RecordsFixtures
+  import DataAggregator.ValidationResponseFixtures
+
+  alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
+  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandler
+
+  require Ash.Query
+
+  describe "DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandler.perform/1" do
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+
+      collection = collection_fixture(%{name: "Collection NumberO!+ne"})
+
+      records = [
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993760",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993778",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993789",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993799",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00995787",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00995788",
+          tax_kingdom: "Plantae"
+        })
+      ]
+
+      actor = user_fixture(%{roles: [:admin]})
+
+      validation_response = validation_response_fixture()
+
+      [
+        validation_response: validation_response,
+        records: records,
+        collection: collection,
+        actor: actor
+      ]
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
+         %{
+           validation_response: validation_response,
+           collection: collection,
+           actor: actor
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      assert length(validated_records) == 4
+
+      # ensure all records from the validation layer have now the imported value "Plantae" under tax_kingdom
+      Enum.all?(validated_records, fn record ->
+        assert record.tax_kingdom == "Plantae"
+      end)
+
+      assert validation_response.state == :done
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :validated
+      end)
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 only create ValidatedRecords if the input data is valid",
+         %{
+           validation_response: validation_response,
+           collection: collection,
+           actor: actor
+         } do
+      {{:ok, _validation_response}, logs} =
+        with_log(fn ->
+          perform_job(ValidationResponseHandler, %{
+            id: validation_response.id,
+            user_id: actor.id
+          })
+        end)
+
+      {:ok, validated_records} =
+        ValidatedRecord.read(page: false, tenant: collection)
+
+      # we import 6 records but only 4 are valid and raw records exist for them in the db,
+      # so the correct amount should be present and the log should warn us appropriate
+      assert length(validated_records) == 4
+      assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :validated
+      end)
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 all affected records are in state :validated",
+         %{
+           validation_response: validation_response,
+           collection: collection,
+           actor: actor
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      {:ok, validated_records} =
+        ValidatedRecord.read(page: false, load: [:record], tenant: collection)
+
+      # ensure all processed records are now in :validation_status :validated
+      Enum.all?(validated_records, fn validated_record ->
+        assert validated_record.record.validation_status == :validated
+      end)
+
+      assert validation_response.state == :done
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :validated
+      end)
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
+      validation_response: validation_response,
+      actor: actor,
+      collection: collection
+    } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert {:ok, validation_response} =
+               validation_response.id
+               |> ValidationResponse.get_by_id()
+               |> Ash.load([:error_log])
+
+      assert validation_response.rows_count == 6
+      assert validation_response.rows_invalid_count == 2
+      assert validation_response.rows_validated_count == 4
+
+      assert validation_response.rows_error_count == 2
+
+      assert validation_response.error_log
+
+      assert {:ok, data_frame} =
+               Explorer.DataFrame.from_csv(validation_response.error_log.url,
+                 infer_schema_length: 0
+               )
+
+      assert Explorer.DataFrame.n_columns(data_frame) == 6
+
+      assert Explorer.DataFrame.n_rows(data_frame) == 3
+      data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :validated
+      end)
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 has set the correct :affected_collections on validated_record and :validation_responses on collection",
+         %{
+           validation_response: validation_response,
+           collection: collection,
+           actor: actor
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      assert {:ok, collection} = Ash.load(collection, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :validated
+      end)
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 correctly strips prefixes from taxonIdCH",
+         %{
+           collection: collection,
+           actor: actor
+         } do
+      validation_response =
+        validation_response_fixture(
+          %{},
+          "test/support/fixtures/files/validated_with_prefixes.csv"
+        )
+
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert validation_response.state == :done
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      record = Enum.find(validated_records, &(&1.mte_catalog_number == "GBIFCH00993760"))
+      assert record.tax_taxon_id_ch == 123_456
+      assert record.oth_swiss_species_center == "infofauna"
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 ingests organismID and stateProvince but ignores county",
+         %{
+           collection: collection,
+           actor: actor
+         } do
+      validation_response =
+        validation_response_fixture(
+          %{},
+          "test/support/fixtures/files/validated_edited_attributes.csv"
+        )
+
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id,
+          user_id: actor.id
+        })
+
+      assert validation_response.state == :done
+      assert validation_response.rows_validated_count == 2
+      assert validation_response.rows_error_count == 0
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      record = Enum.find(validated_records, &(&1.mte_catalog_number == "GBIFCH00993760"))
+
+      assert record.org_organism_id == "ORG-1"
+      assert record.loc_state_province == "Vaud"
+
+      # county is no longer part of the validation and must not reach the validation layer
+      assert is_nil(record.loc_county)
+
+      # the ignored columns are reported once, but do not count as row errors
+      assert {:ok, data_frame} =
+               Explorer.DataFrame.from_csv(validation_response.error_log.url,
+                 infer_schema_length: 0
+               )
+
+      assert data_frame |> Explorer.DataFrame.pull("field") |> Explorer.Series.to_list() ==
+               ["encoded *", "county", "someUnknownColumn"]
+    end
+  end
+
+  defp expected_errors do
+    [
+      %{
+        "catalogNumber" => nil,
+        "field" => "county",
+        "message" => "Column is not part of the validation and was ignored.",
+        "occurrenceID" => nil,
+        "scientificName" => nil,
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => nil,
+        "field" => nil,
+        "message" => "Record not found for given catalogNumber and collectionCode",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => "GBIFCH00995787",
+        "field" => nil,
+        "message" => "Record not found for given catalogNumber and collectionCode",
+        "occurrenceID" => "occurrenceID5",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      }
+    ]
+  end
+end

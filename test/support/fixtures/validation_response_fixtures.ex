@@ -4,7 +4,6 @@ defmodule DataAggregator.ValidationResponseFixtures do
   entities via the `DataAggregator.Records` context.
   """
 
-  alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.ValidatedRecord
   alias DataAggregator.RecordsFixtures
@@ -12,19 +11,14 @@ defmodule DataAggregator.ValidationResponseFixtures do
   @doc """
   Generate a validation
   """
-  def validation_response_fixture(attrs \\ %{}) do
-    path = "test/support/fixtures/files/validation_dwca.zip"
+  def validation_response_fixture(attrs \\ %{}, file_path \\ "test/support/fixtures/files/validated.csv") do
+    params = Map.merge(%{type: :validated}, attrs)
 
-    attachment = Attachment.import_from_path!(path)
-
-    params =
-      %{file_url: attachment.url}
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    ValidationResponse.create!(params, tenant: params.collection)
+    ValidationResponse.create_from_path!(
+      file_path,
+      "test/support/fixtures/files/validated.csv",
+      params
+    )
   end
 
   @doc """

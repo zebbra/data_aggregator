@@ -38,11 +38,6 @@ defmodule DataAggregator.Api.Helpers do
     gbif_api_base_url() <> "/dataset/#{dataset_key}"
   end
 
-  @spec search_occurrence_url() :: String.t()
-  def search_occurrence_url do
-    gbif_api_base_url() <> "/occurrence/search"
-  end
-
   @spec grscicoll_entity_by_key_url(String.t(), atom()) :: String.t()
   def grscicoll_entity_by_key_url(key, :collection) do
     grscicoll_api_base_url() <> "/collection/#{key}"

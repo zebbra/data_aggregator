@@ -50,10 +50,10 @@ defmodule DataAggregator.Records.Export.RunnerTest do
       export_with_attachment =
         Export.get_by_id!(export.id, load: [:attachment], tenant: export.collection)
 
-      assert export_with_attachment.attachment.url != nil
+      assert export_with_attachment.attachment.url
       assert export_with_attachment.state == :exported
-      assert export_with_attachment.exported_at != nil
-      assert export_with_attachment.finished_at != nil
+      assert export_with_attachment.exported_at
+      assert export_with_attachment.finished_at
     end
   end
 end

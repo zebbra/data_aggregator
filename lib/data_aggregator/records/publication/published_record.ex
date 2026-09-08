@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     end
 
     belongs_to :publication, Publication do
-      allow_nil? false
+      allow_nil? true
       public? true
     end
 
@@ -47,6 +47,17 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
   actions do
     default_accept :*
     defaults [:create, :read, :update, :destroy]
+
+    read :by_publication do
+      description "The records that were written into the archive of the given publication."
+
+      argument :publication_id, :string, allow_nil?: false
+
+      filter expr(publication_id == ^arg(:publication_id))
+
+      # streamed in batches by `DataAggregator.Records.Publication.Scheduler.PublicationFinalizer`
+      pagination keyset?: true, required?: false
+    end
   end
 
   code_interface do
@@ -54,6 +65,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     define :create
     define :update
     define :get_by_id, action: :read, get_by: [:id]
+    define :by_publication, args: [:publication_id]
   end
 
   postgres do
@@ -62,7 +74,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
-      reference :publication, on_delete: :nothing, on_update: :update
+      reference :publication, on_delete: :delete, on_update: :update
 
       reference :record,
         on_delete: :delete,

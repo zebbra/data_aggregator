@@ -7,9 +7,10 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
 
   require Ash.Query
 
-  @endangered_categories ["VU", "CR", "EN"]
-  @not_threatened_categories ["LC", "NT", "EW", "EX"]
-  @other_categories ["NE", "DD"]
+  @threatened_categories ["VU", "CR", "EN"]
+  @less_threatened_categories ["LC", "NT"]
+  @extinct_categories ["RE", "EW", "EX"]
+  @uncertain_data_categories ["NE", "DD"]
 
   @impl true
   def calculate(records, _opts, _ctx) do
@@ -18,17 +19,20 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
 
   defp map_iucn_category_to_group(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
     cond do
+      iucn_redlist_category in @threatened_categories ->
+        "threatened"
+
+      iucn_redlist_category in @less_threatened_categories ->
+        "less_threatened"
+
+      iucn_redlist_category in @extinct_categories ->
+        "extinct"
+
+      iucn_redlist_category in @uncertain_data_categories ->
+        "uncertain_data"
+
       is_nil(iucn_redlist_category) ->
-        nil
-
-      iucn_redlist_category in @endangered_categories ->
-        "endangered"
-
-      iucn_redlist_category in @not_threatened_categories ->
-        "not_threatened"
-
-      iucn_redlist_category in @other_categories ->
-        "other"
+        "uncertain_data"
 
       true ->
         nil
@@ -47,17 +51,20 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
   def expression(_opts, _context) do
     expr(
       cond do
+        encoded_record.iucn_redlist_category in @threatened_categories ->
+          "threatened"
+
+        encoded_record.iucn_redlist_category in @less_threatened_categories ->
+          "less_threatened"
+
+        encoded_record.iucn_redlist_category in @extinct_categories ->
+          "extinct"
+
+        encoded_record.iucn_redlist_category in @uncertain_data_categories ->
+          "uncertain_data"
+
         is_nil(encoded_record.iucn_redlist_category) ->
-          nil
-
-        encoded_record.iucn_redlist_category in @endangered_categories ->
-          "endangered"
-
-        encoded_record.iucn_redlist_category in @not_threatened_categories ->
-          "not_threatened"
-
-        encoded_record.iucn_redlist_category in @other_categories ->
-          "other"
+          "uncertain_data"
 
         true ->
           nil

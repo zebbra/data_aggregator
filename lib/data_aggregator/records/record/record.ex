@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
+  alias DataAggregator.Records.ValidationRequestRecord
   alias DataAggregator.Records.ValidationStatusType
 
   require Ash.Expr
@@ -57,7 +58,7 @@ defmodule DataAggregator.Records.Record do
         },
         %{
           name: :not_validated,
-          filter: %{validation_status: %{not_equals: :validated}}
+          filter: %{validation_status: %{equals: :not_validated}}
         }
       ]
     },
@@ -83,10 +84,11 @@ defmodule DataAggregator.Records.Record do
 
     attribute :validation_status, ValidationStatusType,
       allow_nil?: false,
-      default: :not_validated,
+      default: :unknown,
       public?: true
 
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
+    attribute :validation_annotation, :string, allow_nil?: true, public?: true
 
     attribute :last_validation_started_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :last_imported_at, :utc_datetime, allow_nil?: true, public?: true
@@ -124,12 +126,18 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
       public? true
-      filter expr(collection_id == parent(collection_id))
     end
 
     has_one :published_record, PublishedRecord do
       public? true
-      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :validation_request_record, ValidationRequestRecord do
+      public? true
+    end
+
+    has_one :validated_record, DataAggregator.Records.ValidationResponse.ValidatedRecord do
+      public? true
     end
   end
 
@@ -222,7 +230,7 @@ defmodule DataAggregator.Records.Record do
 
     calculate :not_validated,
               :boolean,
-              expr(validation_status != :validated)
+              expr(validation_status == :not_validated)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false
@@ -244,7 +252,12 @@ defmodule DataAggregator.Records.Record do
     ]
 
     ignore_actions [:destroy]
-    on_actions [:update_publication_status, :update_validation_status]
+
+    on_actions [
+      :update_publication_status,
+      :update_validation_status,
+      :set_validation_status_not_validated
+    ]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
@@ -279,7 +292,6 @@ defmodule DataAggregator.Records.Record do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
@@ -333,7 +345,9 @@ defmodule DataAggregator.Records.Record do
                         :state,
                         :last_imported_at,
                         :import_data,
-                        :extra_data
+                        :extra_data,
+                        :validation_status,
+                        :validation_annotation
                       ]
     end
 
@@ -343,12 +357,6 @@ defmodule DataAggregator.Records.Record do
 
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
-    end
-
-    action :enqueue_publication_verifier, :map do
-      argument :published_record, :struct, allow_nil?: false
-
-      run Record.Actions.EnqueuePublicationVerifier
     end
 
     action :bulk_import, :map do
@@ -370,12 +378,6 @@ defmodule DataAggregator.Records.Record do
       argument :catalog, :atom, allow_nil?: false
 
       run Encoding.Actions.EncodeRecord
-    end
-
-    update :check_if_published do
-      require_atomic? false
-
-      change Changes.CheckIfPublished
     end
 
     update :set_imported do
@@ -415,13 +417,21 @@ defmodule DataAggregator.Records.Record do
       require_atomic? false
 
       change set_attribute(:validation_status, expr(^arg(:status)))
+      change set_attribute(:validation_annotation, nil)
+    end
+
+    update :set_validation_status_not_validated do
+      argument :annotation, :string, allow_nil?: false
+      require_atomic? false
+
+      change set_attribute(:validation_status, :not_validated)
+      change set_attribute(:validation_annotation, expr(^arg(:annotation)))
     end
 
     update :update_last_validation_started_at do
       accept []
-      require_atomic? false
 
-      change set_attribute(:last_validation_started_at, &DateTime.utc_now/0)
+      change atomic_update(:last_validation_started_at, expr(now()))
     end
 
     update :add_images do
@@ -436,6 +446,7 @@ defmodule DataAggregator.Records.Record do
       require_atomic? false
 
       change Changes.DecrementCollectionRecordsCountAfterAction
+      change cascade_destroy(:images, after_action?: false)
     end
   end
 
@@ -469,8 +480,7 @@ defmodule DataAggregator.Records.Record do
     define :enqueue_encoder
     define :update_publication_status, args: [:status]
     define :update_validation_status, args: [:status]
-    define :check_if_published
-    define :enqueue_publication_verifier, args: [:published_record]
+    define :set_validation_status_not_validated, args: [:annotation]
     define :update_last_validation_started_at
     define :add_images, args: [:images]
   end
@@ -480,7 +490,7 @@ defmodule DataAggregator.Records.Record do
       authorize_if always()
     end
 
-    bypass action([:bulk_import, :import, :encode, :enqueue_publication_verifier]) do
+    bypass action([:bulk_import, :import, :encode]) do
       authorize_if always()
     end
 
