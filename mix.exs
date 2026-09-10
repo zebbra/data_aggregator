@@ -237,7 +237,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.3"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
-      {:phoenix_live_view, "~> 1.1.14"},
+      {:phoenix_live_view, "~> 1.2.11"},
       {:phoenix_storybook, "~> 1.3"},
       {:tidewave, "~> 0.4", only: [:dev]},
       {:live_debugger, "~> 1.0", only: [:dev]},
