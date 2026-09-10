@@ -323,7 +323,7 @@ defmodule DataAggregator.MixProject do
       {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
-      {:phoenix_live_dashboard, "~> 0.8.4"},
+      {:phoenix_live_dashboard, "~> 0.9.1"},
       {:sentry, "~> 13.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
