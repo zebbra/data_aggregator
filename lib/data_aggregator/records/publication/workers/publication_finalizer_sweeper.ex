@@ -47,15 +47,21 @@ defmodule DataAggregator.Records.Publication.Scheduler.PublicationFinalizerSweep
   def timeout(_job), do: to_timeout(hour: 1)
 
   defp sweep(collection, stranded_before) do
-    Record
-    |> Ash.Query.filter(
-      publication_status == :publishing and updated_at < ^stranded_before and
-        exists(published_record, publication.state == :done)
-    )
-    |> Finalization.finalize(collection.id)
-    |> case do
-      {:ok, count} ->
-        count
+    query =
+      Ash.Query.filter(
+        Record,
+        publication_status == :publishing and updated_at < ^stranded_before and
+          exists(published_record, publication.state == :done)
+      )
+
+    # Nearly every collection has nothing stranded. A cheap `EXISTS ... LIMIT 1` check skips the
+    # bulk update pipeline (read + update + versions) for those, keeping the hourly sweep light
+    with {:ok, true} <- Ash.exists(query, tenant: collection.id, authorize?: false),
+         {:ok, count} <- Finalization.finalize(query, collection.id) do
+      count
+    else
+      {:ok, false} ->
+        0
 
       {:error, errors} ->
         # one bad collection must not stop the sweep of the others

@@ -38,6 +38,7 @@ config :data_aggregator, DataAggregator.Counter, backend: DataAggregator.Counter
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
 config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
+config :data_aggregator, DataAggregator.Repo, parameters: [plan_cache_mode: "force_custom_plan"]
 
 # Configures the endpoint
 config :data_aggregator, DataAggregatorWeb.Endpoint,
