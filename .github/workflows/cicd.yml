@@ -10,6 +10,7 @@ on:
 
 env:
   MIX_ENV: test
+  MIX_OS_DEPS_COMPILE_PARTITION_COUNT: 4
   DATABASE_URL: postgres://data_aggregator:secret@localhost:5432/data_aggregator
 
 permissions:
@@ -61,7 +62,7 @@ jobs:
           cache-dependency-path: assets/package-lock.json
 
       - name: Restore cache
-        id: cache
+        id: restore-cache
         uses: actions/cache/restore@v6
         with:
           path: |
@@ -73,15 +74,27 @@ jobs:
             ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-
             ${{ runner.os }}-mix-
 
-      - run: mix deps.clean --all
-      - run: mix deps.get
-      - run: mix compile --warnings-as-errors
-      - run: rm -rf priv/plts
-      - run: mix dialyzer --plt
+      - name: Install mix dependencies
+        run: mix deps.get --check-locked
+
+      - name: Compile dependencies
+        run: mix deps.compile
+
+      - name: Check unused deps
+        run: mix deps.unlock --check-unused
+
+      - name: Compile app
+        run: mix compile --warnings-as-errors
+
+      - name: Build PLTs
+        run: mix dialyzer --plt
+
+      - name: Install asset tooling
+        run: mix assets.setup
 
       - name: Save cache
         uses: actions/cache/save@v6
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: success() && steps.restore-cache.outputs.cache-hit != 'true'
         with:
           path: |
             deps
@@ -89,7 +102,6 @@ jobs:
             priv/plts
           key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
 
-      - run: mix assets.setup
       - run: mix assets.build
       - run: mix lint
       - run: mix test
@@ -164,8 +176,8 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=data-aggregator-${{ github.ref_name }}
+          cache-to: type=gha,scope=data-aggregator-${{ github.ref_name }},mode=max,ignore-error=true
           build-args: |
             OTP_VERSION=${{ steps.versions.outputs.erlang }}
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
