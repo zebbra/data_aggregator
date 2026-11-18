@@ -26,6 +26,7 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+ENV MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
 
 # set app version
 ENV APP_VERSION=${APP_VERSION}
@@ -53,11 +54,12 @@ COPY assets assets
 COPY docs docs
 COPY README.md README.md
 
+# Compile the release
+RUN mix compile
+
 # Compile assets
 RUN mix assets.deploy
 
-# Compile the release
-RUN mix compile
 RUN mix sentry.package_source_code
 
 # Changes to config/runtime.exs don't require recompiling the code

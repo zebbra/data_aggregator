@@ -12,8 +12,6 @@ defmodule DataAggregator.RegisterAtGbifTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
 
-  require Ash.Query
-
   describe "Registering Collection at GBIF tests" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)

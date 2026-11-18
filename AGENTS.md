@@ -1,3 +1,7 @@
+## Before committing
+
+Run `mix precommit` when you are done with changes and fix any issues it reports.
+
 <-- usage-rules-start -->
 <-- ash_postgres-start -->
 ## ash_postgres usage

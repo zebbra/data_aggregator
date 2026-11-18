@@ -25,8 +25,6 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Taxonomy.Catalog
   alias Explorer.DataFrame
 
-  require Ash.Query
-
   @catalog_versions length(Catalog.get_catalogs()) - 2
 
   @mapping [
