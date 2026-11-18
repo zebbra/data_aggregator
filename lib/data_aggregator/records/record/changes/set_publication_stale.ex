@@ -7,8 +7,6 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
 
   alias Ash.Changeset
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     changeset

@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.Record.Image.Changes.RemoveAssociatedMedia do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.EncodedRecord
 
-  require Ash.Query
   require Logger
 
   @impl true

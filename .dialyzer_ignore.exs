@@ -14,5 +14,6 @@
   {"lib/data_aggregator/bench.ex", "Function Mimic.copy/1 does not exist."},
   {"lib/data_aggregator/bench.ex", "Function Mimic.set_mimic_global/0 does not exist."},
   {"lib/data_aggregator/bench.ex", "Function Mimic.stub_with/2 does not exist."},
-  {"lib/data_aggregator_web/gettext.ex"}
+  {"lib/data_aggregator_web/gettext.ex"},
+  {"lib/ash_authentication_phoenix/controller.ex", :unknown_type}
 ]

@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ResetErrorMsgBeforeTransact
   alias Ash.Changeset
   alias DataAggregator.Records.ImageUpload
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &reset_error_message/1)

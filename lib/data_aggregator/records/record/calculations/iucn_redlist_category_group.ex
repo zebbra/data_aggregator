@@ -5,8 +5,6 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
 
   use Ash.Resource.Calculation
 
-  require Ash.Query
-
   @threatened_categories ["VU", "CR", "EN"]
   @less_threatened_categories ["LC", "NT"]
   @extinct_categories ["RE", "EW", "EX"]

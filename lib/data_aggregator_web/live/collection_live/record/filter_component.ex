@@ -12,8 +12,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   alias DataAggregator.Records.Record
   alias Phoenix.LiveView.AsyncResult
 
-  require Ash.Query
-
   @impl true
   def mount(socket) do
     socket = assign(socket, :error, nil)

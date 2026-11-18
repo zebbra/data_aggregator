@@ -10,8 +10,6 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.UpdateRawRecordState
   alias Ash.Changeset
   alias DataAggregator.Records.Record
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, ctx) do
     Changeset.after_action(changeset, fn _, validated_record ->

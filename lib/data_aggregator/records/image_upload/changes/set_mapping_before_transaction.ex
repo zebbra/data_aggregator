@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingBeforeTransaction
   alias Ash.Changeset
   alias DataAggregator.Records.ImageUpload
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &set_mapping/1)

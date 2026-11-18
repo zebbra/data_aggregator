@@ -14,8 +14,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
 
-  require Logger
-
   @output_attributes Catalog.get_output_attributes(:relate_images)
 
   @doc """

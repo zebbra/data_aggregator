@@ -17,8 +17,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
 
-  require Ash.Query
-
   @load load()
   @load_publication load_all()
 

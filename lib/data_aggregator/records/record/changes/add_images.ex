@@ -9,8 +9,6 @@ defmodule DataAggregator.Records.Record.Changes.AddImages do
   alias Ash.Changeset
   alias DataAggregator.Records.EncodedRecord
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, ctx) do
     Changeset.before_action(changeset, &add_images(&1, ctx))

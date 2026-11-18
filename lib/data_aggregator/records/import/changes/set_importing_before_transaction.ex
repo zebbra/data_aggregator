@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.Import.Changes.SetImportingBeforeTransaction do
   alias Ash.Changeset
   alias DataAggregator.Records.Import
 
-  require Logger
-
   # def change(%Changeset{phase: :validate} = changeset, _opts, _ctx) do
   #   # fake transition so validation doesn't fail
   #   put_in(changeset.data.state, :importing)

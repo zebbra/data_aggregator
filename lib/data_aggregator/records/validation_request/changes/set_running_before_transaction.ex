@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.SetRunningBeforeTrans
   alias Ash.Changeset
   alias DataAggregator.Records.ValidationRequest
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &set_running/1)

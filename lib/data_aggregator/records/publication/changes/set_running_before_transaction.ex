@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.Publication.Changes.SetRunningBeforeTransaction
   alias Ash.Changeset
   alias DataAggregator.Records.Publication
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &set_running/1)

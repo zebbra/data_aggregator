@@ -9,9 +9,6 @@ defmodule DataAggregator.Records.Import.Changes.SetRecordsCountAfterTransaction 
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
-  require Ash.Query
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_transaction(changeset, &set_records_count/2)

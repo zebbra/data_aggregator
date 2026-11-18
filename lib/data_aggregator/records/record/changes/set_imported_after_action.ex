@@ -6,8 +6,6 @@ defmodule DataAggregator.Records.Record.Changes.SetImportedAfterAction do
 
   use Ash.Resource.Change
 
-  require Logger
-
   @impl true
   def batch_change(changesets, _opts, _context) do
     changesets

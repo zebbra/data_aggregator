@@ -25,7 +25,6 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
 
-  require Ecto.Query
   require Logger
 
   @impl true

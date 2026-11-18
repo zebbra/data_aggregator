@@ -7,8 +7,6 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
 
   alias DataAggregator.Records.ImageUpload
 
-  require Logger
-
   @impl true
   def load(_query, _opts, _context) do
     [images: [:record_id]]

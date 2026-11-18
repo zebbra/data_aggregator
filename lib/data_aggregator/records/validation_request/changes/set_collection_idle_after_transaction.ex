@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.SetCollectionIdleAfte
   alias Ash.Changeset
   alias DataAggregator.Records.Collection
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_transaction(changeset, &set_collection_idle/2)

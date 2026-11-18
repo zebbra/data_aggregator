@@ -28,7 +28,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpeciesRegistry
 
-  require Ash.Query
   require Logger
 
   @record_attributes Enum.map(Schema.prefixed_attributes(), &Map.get(&1, :name))
