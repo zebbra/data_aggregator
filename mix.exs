@@ -42,7 +42,12 @@ defmodule DataAggregator.MixProject do
       source_url: "https://github.com/zebbra/data_aggregator",
       homepage_url: "https://github.com/zebbra/data_aggregator",
       docs: docs(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      hex: [
+        # assent 0.3.2 is blocked by ash_authentication (< 0.3.0); no OAuth/Apple strategy in use
+        # as soon as ash_authentication 5.x is out, this is solved
+        ignore_advisories: ["EEF-CVE-2026-117656"]
+      ]
     ]
   end
 
