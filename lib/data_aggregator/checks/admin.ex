@@ -38,14 +38,14 @@ defmodule DataAggregator.Checks.Admin do
   end
 
   defp get_entry(changeset, key, %Actions.Update{}) do
-    Ash.Changeset.get_data(changeset, key) || %{}
+    Ash.Changeset.get_data(changeset, key)
   end
 
   defp get_entry(changeset, key, %Actions.Destroy{}) do
-    Ash.Changeset.get_data(changeset, key) || %{}
+    Ash.Changeset.get_data(changeset, key)
   end
 
   defp get_entry(changeset, key, _action) do
-    Ash.Changeset.get_argument(changeset, key) || %{}
+    Ash.Changeset.get_argument(changeset, key)
   end
 end

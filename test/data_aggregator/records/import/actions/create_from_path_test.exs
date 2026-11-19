@@ -92,14 +92,6 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
       )
     end
 
-    defp assert_invalid_path(error, message) when is_binary(message) do
-      assert_has_error(
-        error.changeset,
-        Invalid,
-        &(&1.field == :path && &1.message == message)
-      )
-    end
-
     defp assert_invalid_path(error, message) when is_struct(message, Regex) do
       assert_has_error(
         error.changeset,

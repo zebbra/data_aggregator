@@ -1,19 +1,8 @@
-# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
-# instead of Alpine to avoid DNS resolution issues in production.
-#
-# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
-# https://hub.docker.com/_/ubuntu?tab=tags
-#
-# This file is based on these images:
-#
-#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
-#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20230612-slim - for the release image
-#   - https://pkgs.org/ - resource for finding needed packages
-#   - Ex: hexpm/elixir:1.15.4-erlang-26.0.2-debian-bullseye-20230612-slim
-#
-ARG ELIXIR_VERSION=1.19.3
-ARG OTP_VERSION=28.2
-ARG ALPINE_VERSION=3.22.2
+# Builder images: https://hub.docker.com/r/hexpm/elixir/tags?name=alpine
+# Runner images: https://hub.docker.com/_/alpine?tab=tags
+ARG ELIXIR_VERSION=1.20.5
+ARG OTP_VERSION=29.1.2
+ARG ALPINE_VERSION=3.22.8
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-alpine-${ALPINE_VERSION}"
 ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
@@ -37,6 +26,7 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+ENV MIX_OS_DEPS_COMPILE_PARTITION_COUNT=4
 
 # set app version
 ENV APP_VERSION=${APP_VERSION}
@@ -64,11 +54,12 @@ COPY assets assets
 COPY docs docs
 COPY README.md README.md
 
+# Compile the release
+RUN mix compile
+
 # Compile assets
 RUN mix assets.deploy
 
-# Compile the release
-RUN mix compile
 RUN mix sentry.package_source_code
 
 # Changes to config/runtime.exs don't require recompiling the code

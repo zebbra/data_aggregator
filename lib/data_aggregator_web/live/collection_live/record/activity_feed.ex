@@ -460,8 +460,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp text(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
 
-  defp text(name, _), do: name
-
   def badge_text(:set_encoded, _), do: ~t"Successful"m
   def badge_text(:set_encoding_failed, _), do: ~t"Failed"m
 

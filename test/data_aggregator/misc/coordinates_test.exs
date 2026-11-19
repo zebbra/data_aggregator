@@ -63,21 +63,15 @@ defmodule DataAggregator.CoordinatesTest do
     assert Coordinates.wgs84_to_lv95!(input) !== expected
   end
 
-  test "lv95_to_wgs84!/1 returns coordinates in wgs84 format for given lv95 coordinates - error" do
-    input = %Coordinates{
-      e: nil,
-      n: nil
-    }
-
+  @tag input: %Coordinates{e: nil, n: nil}
+  test "lv95_to_wgs84!/1 returns coordinates in wgs84 format for given lv95 coordinates - error",
+       %{input: input} do
     assert_raise ArithmeticError, fn -> Coordinates.lv95_to_wgs84!(input) end
   end
 
-  test "wgs84_to_lv95!/1 returns coordinates in lv95 format for given wgs84 coordinates - error" do
-    input = %Coordinates{
-      e: nil,
-      n: nil
-    }
-
+  @tag input: %Coordinates{e: nil, n: nil}
+  test "wgs84_to_lv95!/1 returns coordinates in lv95 format for given wgs84 coordinates - error",
+       %{input: input} do
     assert_raise ArithmeticError, fn -> Coordinates.wgs84_to_lv95!(input) end
   end
 end

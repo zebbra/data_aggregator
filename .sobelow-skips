@@ -1,0 +1,58 @@
+Config.CSP: Missing Content-Security-Policy,lib/data_aggregator_web/router.ex:33,2CB75EA
+Config.CSRF: Missing CSRF Protections,lib/data_aggregator_web/router.ex:12,7E433C5
+Config.CSWH: Cross-Site Websocket Hijacking,lib/data_aggregator_web/endpoint.ex:27,930F02
+Config.CSWH: Cross-Site Websocket Hijacking,lib/data_aggregator_web/endpoint.ex:55,265F907
+Config.HTTPS: HTTPS Not Enabled,config/prod.exs:0,2B5C077
+Config.Secrets: Hardcoded Secret,config/bench.exs:29,79BE4A
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/darwin_core/publication/dwca_file.ex:137,663650C
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/darwin_core/schema/category.ex:45,56B862A
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/darwin_core/schema/schema.ex:2284,5C7E407
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/darwin_core/schema/schema.ex:2311,3F4BC5A
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/records/collection/actions/export_records.ex:161,383E3B9
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/records/encoding/strategies/location/reverse_geo_encoding_strategy.ex:235,2AA0B71
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/records/encoding/strategies/location/reverse_geo_encoding_strategy.ex:238,390C925
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/records/encoding/strategies/taxonomy/col_taxonomy_strategy.ex:146,192C71E
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator/records/record/changes/extract_attributes_helpers.ex:77,F6458E
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator_web/live/administration_live/validation_response/components/upload.ex:185,4738543
+DOS.StringToAtom: Unsafe `String.to_atom`,lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:667,3562A8C
+DOS.Zip: Potential Resource Exhaustion in ZIP Extraction,lib/data_aggregator/records/image_upload/changes/extract_images.ex:70,3144D7E
+Misc.BinToTerm: Unsafe `binary_to_term`,lib/data_aggregator/cache/http_disk_cache.ex:109,62C1FDF
+SQL.Query: SQL injection,lib/data_aggregator/helpers.ex:57,20740E0
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/data_aggregator/bench/snapshot.ex:18,6E2D2DB
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/data_aggregator/cache/http_disk_cache.ex:104,3E86924
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/data_aggregator/misc/flat_file_utils.ex:186,5F49ECE
+Traversal.FileModule: Directory Traversal in `File.mkdir_p!`,lib/data_aggregator/records/image_upload/image_upload_log_utils.ex:89,13A0372
+Traversal.FileModule: Directory Traversal in `File.mkdir_p`,lib/data_aggregator/files/cache.ex:85,7B89337
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/darwin_core/publication/eml_file.ex:32,1EDBF85
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/darwin_core/publication/meta_file.ex:27,1FB3E23
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/misc/flat_file_utils.ex:271,42FA26
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/records/image_upload/image_upload_log_utils.ex:94,5C1AE0F
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/records/import/helpers.ex:72,75B0F42
+Traversal.FileModule: Directory Traversal in `File.open!`,lib/data_aggregator/records/validation_response/helpers.ex:345,1E7884F
+Traversal.FileModule: Directory Traversal in `File.read!`,lib/data_aggregator/cache/http_disk_cache.ex:109,5D7B738
+Traversal.FileModule: Directory Traversal in `File.read`,lib/data_aggregator/records/image_upload/changes/validate_file.ex:14,BC4B50
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/misc/flat_file_utils.ex:279,665CEF3
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/image_upload/changes/extract_images.ex:119,419F388
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/image_upload/changes/extract_images.ex:125,4C89144
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/import/helpers.ex:118,44C47C
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/import/helpers.ex:129,66A564A
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/validation_response/helpers.ex:431,12A46A
+Traversal.FileModule: Directory Traversal in `File.rm!`,lib/data_aggregator/records/validation_response/helpers.ex:452,238540F
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/data_aggregator/records/collection/actions/publish.ex:113,4891968
+Traversal.FileModule: Directory Traversal in `File.rm_rf`,lib/data_aggregator/records/collection/actions/validate.ex:95,3D47E4A
+Traversal.FileModule: Directory Traversal in `File.rm`,lib/data_aggregator/cache/http_disk_cache.ex:122,27BC2F3
+Traversal.FileModule: Directory Traversal in `File.rm`,lib/data_aggregator/files/cache.ex:32,5400C3F
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/accounts/user_importer.ex:14,1C72F37
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/bench/seeder.ex:39,3A91FEB
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/files/cache.ex:65,58C5BA4
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/records/data_frame.ex:130,24D5204
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/taxonomy/catalogs/swiss_species_importer.ex:13,1A7ADFA
+Traversal.FileModule: Directory Traversal in `File.stream!`,lib/data_aggregator/taxonomy/catalogs/swiss_species_registry_importer.ex:60,6F45E57
+Traversal.FileModule: Directory Traversal in `File.write!`,lib/data_aggregator/bench.ex:136,52220B9
+Traversal.FileModule: Directory Traversal in `File.write!`,lib/data_aggregator/bench/scenarios.ex:192,539954D
+Traversal.FileModule: Directory Traversal in `File.write!`,lib/data_aggregator/cache/http_disk_cache.ex:105,76947A8
+Traversal.SendFile: Directory Traversal in `send_file`,lib/data_aggregator_web/controllers/image_upload/image_upload_controller.ex:77,7897685
+XSS.ContentType: XSS in `put_resp_content_type`,lib/data_aggregator_web/controllers/attachment_controller.ex:89,64E081E
+XSS.ContentType: XSS in `put_resp_content_type`,lib/data_aggregator_web/controllers/image_upload/image_upload_controller.ex:91,3963FBC
+XSS.SendResp: XSS in `send_resp`,lib/data_aggregator_web/controllers/attachment_controller.ex:91,83E85A
+XSS.SendResp: XSS in `send_resp`,lib/data_aggregator_web/controllers/image_upload/image_upload_controller.ex:93,55E24D0

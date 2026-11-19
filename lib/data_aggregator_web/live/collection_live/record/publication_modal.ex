@@ -25,8 +25,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   alias DataAggregator.Records.Record
   alias Phoenix.LiveView.AsyncResult
 
-  require Ash.Query
-
   @impl true
   def mount(socket) do
     {:ok,

@@ -15,8 +15,6 @@ defmodule DataAggregator.ValidationRequestTest do
   alias DataAggregator.Records.ValidationRequestRecord
   alias Explorer.DataFrame
 
-  require Ash.Query
-
   describe "validation request tests" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)

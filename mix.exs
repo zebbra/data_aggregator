@@ -42,7 +42,12 @@ defmodule DataAggregator.MixProject do
       source_url: "https://github.com/zebbra/data_aggregator",
       homepage_url: "https://github.com/zebbra/data_aggregator",
       docs: docs(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      hex: [
+        # assent 0.3.2 is blocked by ash_authentication (< 0.3.0); no OAuth/Apple strategy in use
+        # as soon as ash_authentication 5.x is out, this is solved
+        ignore_advisories: ["EEF-CVE-2026-117656"]
+      ]
     ]
   end
 
@@ -269,7 +274,9 @@ defmodule DataAggregator.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
       {:git_ops, "~> 2.10.0", only: [:dev]},
-      {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
+      {:ex_check, "~> 0.16", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false},
+      {:doctor, "~> 0.23", only: [:dev, :test], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 2.1", only: [:test, :bench]},
       {:styler, "~> 1.9", only: [:dev, :test], runtime: false},
@@ -353,8 +360,6 @@ defmodule DataAggregator.MixProject do
       # Setup Project
       setup: [
         "deps.get",
-        "git_hooks.install",
-        "git_ops.message_hook",
         "repo.setup",
         "assets.setup",
         "assets.build",
@@ -442,14 +447,16 @@ defmodule DataAggregator.MixProject do
 
       # Run linters
       lint: [
-        # temporarily disabled because of deprecation warning in Waffle
-        # "compile --all-warnings --warnings-as-errors",
-        "format --check-formatted",
-        "credo --strict",
         "deps.audit --ignore-file .mix_audit.ignore",
         "gettext.lint",
-        "repo.lint",
-        "dialyzer"
+        "repo.lint"
+      ],
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "gettext.extract --merge --no-fuzzy",
+        "format",
+        "check"
       ],
 
       # Generate documentation

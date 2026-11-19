@@ -27,8 +27,6 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
 
-  require Ash.Query
-
   describe "cancel_action/1" do
     @valid_mapping [
       %{name: "Scientific Name", mapped_to: "tax_scientific_name"},

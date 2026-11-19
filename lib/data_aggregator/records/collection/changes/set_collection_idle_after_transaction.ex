@@ -10,7 +10,6 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
 
-  require Changeset
   require Logger
 
   @impl true

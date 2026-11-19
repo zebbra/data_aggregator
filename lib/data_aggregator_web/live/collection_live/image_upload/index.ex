@@ -18,8 +18,6 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ImageUpload
 
-  require Logger
-
   @dialyzer {:no_unused, edit_data_tip: 1, edit_icon: 1}
 
   @load load()

@@ -11,8 +11,6 @@ defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.Records.Import
 
-  require Logger
-
   @impl Ash.Resource.Calculation
   def calculate(imports, _opts, _ctx) do
     Enum.map(imports, &missing_mappings(&1))

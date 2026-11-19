@@ -71,8 +71,8 @@ follow the [instructions](docs/development.md) to setup your development environ
 ### Elixir Code
 
 - Follow the official [Elixir Formatting Guidelines](https://hexdocs.pm/mix/master/Mix.Tasks.Format.html)
-- Run `mix format` before committing to ensure consistent code style
-- Use `mix credo` to check for code quality issues
+- Run `mix precommit` before committing. It formats the code and runs `mix check`
+  (compiler, credo, sobelow, doctor, dialyzer, lint and tests in parallel)
 - Follow the [Phoenix Best Practices](https://hexdocs.pm/phoenix/overview.html)
 - Adhere to the [Ash Framework Guidelines](https://hexdocs.pm/ash/readme.html)
 

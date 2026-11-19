@@ -9,8 +9,6 @@ defmodule DataAggregator.Records.Import.Calculations.Mappings do
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
-  require Logger
-
   @impl Ash.Resource.Calculation
   def calculate(imports, _opts, _ctx) do
     imports

@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetDoneAfterAction d
   alias Ash.Changeset
   alias DataAggregator.Records.ValidationResponse
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &set_done/2)

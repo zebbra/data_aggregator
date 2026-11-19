@@ -16,7 +16,6 @@ defmodule DataAggregator.Bench.Scenarios do
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationResponse
 
-  require Ash.Query
   require Logger
 
   @timeout to_timeout(hour: 4)

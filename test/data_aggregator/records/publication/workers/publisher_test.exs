@@ -10,8 +10,6 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.Workers.Publisher
 
-  require Ash.Query
-
   describe "DataAggregator.Records.Publication.Workers.Publisher.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)

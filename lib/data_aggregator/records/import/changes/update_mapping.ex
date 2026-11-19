@@ -9,8 +9,6 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import.Column
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     case Changeset.fetch_change(changeset, :columns) do

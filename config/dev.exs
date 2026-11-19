@@ -68,22 +68,6 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
-config :git_hooks,
-  auto_install: true,
-  verbose: true,
-  hooks: [
-    pre_commit: [
-      tasks: [
-        {:cmd, "mix lint"}
-      ]
-    ],
-    pre_push: [
-      tasks: [
-        {:cmd, "mix test --color"}
-      ]
-    ]
-  ]
-
 config :git_ops,
   mix_project: Mix.Project.get!(),
   changelog_file: "CHANGELOG.md",
@@ -135,8 +119,6 @@ config :git_ops,
 # Serve uploaded files from the priv/storage directory
 
 # Configure esbuild (the version is required)
-
-# Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

@@ -11,8 +11,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   alias DataAggregator.Records.Record
   alias Phoenix.LiveView.AsyncResult
 
-  require Logger
-
   @impl true
   def update(assigns, socket) do
     first_update? = not Map.has_key?(socket.assigns, :rows_count)

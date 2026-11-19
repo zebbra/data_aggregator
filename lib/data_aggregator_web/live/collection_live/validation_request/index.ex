@@ -17,8 +17,6 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationRequest
 
-  require Ash.Query
-
   @load load()
   @load_validation load_all()
 

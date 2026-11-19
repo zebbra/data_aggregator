@@ -9,8 +9,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.CoLTaxonomyStrategy do
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
 
-  require Logger
-
   @doc """
     query the gbif taxanomy api and return the encoded record
   """

@@ -40,7 +40,6 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.ValidationStatusType
 
   require Ash.Expr
-  require Ash.Query
 
   @type t :: %Record{}
 

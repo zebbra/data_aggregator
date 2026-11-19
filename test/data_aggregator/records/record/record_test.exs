@@ -15,8 +15,6 @@ defmodule DataAggregator.Records.RecordTest do
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
 
-  require Logger
-
   describe "records" do
     @invalid_attrs %{
       mte_catalog_number: nil,

@@ -8,8 +8,6 @@ defmodule DataAggregator.Records.Export.Changes.SetExportedAfterAction do
   alias Ash.Changeset
   alias DataAggregator.Records.Export
 
-  require Logger
-
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &set_exported/2)

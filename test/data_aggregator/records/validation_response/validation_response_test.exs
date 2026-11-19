@@ -14,8 +14,6 @@ defmodule DataAggregator.ValidationResponseTest do
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponseCollection
 
-  require Logger
-
   describe "validation responses" do
     @invalid_attrs %{
       type: nil

@@ -10,8 +10,6 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
-  require Logger
-
   defstruct [:file_descriptor, :header_fields, :headers, :record_attributes, :file_type]
   @type t() :: %__MODULE__{}
 

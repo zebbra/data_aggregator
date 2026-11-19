@@ -7,9 +7,6 @@ defmodule DataAggregator.Records.Calculations.PublicationQuery do
 
   alias DataAggregator.Records.Collection
 
-  require Ash.Query
-  require Logger
-
   @impl Ash.Resource.Calculation
   def calculate(collections, _opts, _ctx) do
     Enum.map(collections, &map_restriction(&1))

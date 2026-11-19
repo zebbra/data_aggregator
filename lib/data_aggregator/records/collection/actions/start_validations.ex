@@ -10,9 +10,6 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
-  require Ash.Query
-  require Logger
-
   @impl true
   def run(input, _opts, %{actor: actor, tenant: tenant}) do
     collection =
